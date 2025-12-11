@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,6 +20,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* جميع الأنماط السابقة تبقى كما هي */
+        /* ... (كل CSS السابق يبقى بدون تغيير) ... */
+        
         /* Reset & Base Styles */
         * {
             margin: 0;
@@ -49,7 +53,8 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* شاشة التسجيل */
+        /* ... (بقية الأنماط تبقى كما هي) ... */
+        
         .auth-screen {
             min-height: 100vh;
             display: flex;
@@ -1381,6 +1386,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyB8lL0EtnVYNtUqE7C2gzqiwFHK23TTM7w",
             authDomain: "hakr-1xbet.firebaseapp.com",
+            databaseURL: "https://hakr-1xbet-default-rtdb.firebaseio.com",
             projectId: "hakr-1xbet",
             storageBucket: "hakr-1xbet.firebasestorage.app",
             messagingSenderId: "516332204234",
@@ -1388,16 +1394,37 @@
             measurementId: "G-Y8Y9GKS43H"
         };
 
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-        }
+        // Initialize Firebase مع معالجة الأخطاء
+        let firebaseApp;
+        let db;
+        let auth;
+        let storage;
         
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        const storage = firebase.storage();
+        try {
+            // التحقق من أن Firebase متاح
+            if (typeof firebase === 'undefined') {
+                throw new Error('Firebase SDK لم يتم تحميله');
+            }
+            
+            // تهيئة Firebase
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase تم التهيئة بنجاح');
+            
+            // تهيئة الخدمات
+            db = firebase.firestore();
+            auth = firebase.auth();
+            storage = firebase.storage();
+            
+            // إعداد إعدادات Firestore للوضع غير المتصل (اختياري)
+            db.enablePersistence()
+                .catch((err) => {
+                    console.warn('⚠️ تعذر تمكين التخزين المحلي:', err.code);
+                });
+                
+        } catch (error) {
+            console.error('❌ خطأ في تهيئة Firebase:', error);
+            showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة والمحاولة مرة أخرى.', 'error');
+        }
 
         // حالات التطبيق
         let currentUser = null;
@@ -1459,7 +1486,7 @@
             loading.style.display = show ? 'flex' : 'none';
         }
 
-        // 3. بدء جلسة المستخدم - الاتصال بـ Firebase فقط
+        // 3. بدء جلسة المستخدم
         document.getElementById('startSessionBtn').addEventListener('click', async function() {
             await initUserSession();
         });
@@ -1468,10 +1495,9 @@
             showGlobalLoading(true);
             
             try {
-                // التحقق من اتصال Firebase أولاً
-                const connected = await checkFirebaseConnection();
-                if (!connected) {
-                    throw new Error('لا يمكن الاتصال بخادم Firebase');
+                // التحقق من اتصال Firebase
+                if (!db || !auth) {
+                    throw new Error('خدمة Firebase غير متوفرة');
                 }
                 
                 // تسجيل الدخول المجهول
@@ -1521,32 +1547,31 @@
             } catch (error) {
                 console.error('خطأ في بدء الجلسة:', error);
                 showAlert('حدث خطأ في الاتصال بخادم البيانات. يرجى المحاولة مرة أخرى.', 'error');
+                
+                // عرض التطبيق مع رسالة خطأ
+                showApp();
+                document.getElementById('accountsList').innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; grid-column: 1 / -1;">
+                        <i class="fas fa-wifi-slash fa-3x" style="color:#ef4444; margin-bottom:20px;"></i>
+                        <h3 style="color:white; margin-bottom:10px;">خطأ في الاتصال</h3>
+                        <p style="color:#94a3b8; margin-bottom:25px;">تعذر الاتصال بخادم البيانات. يرجى المحاولة مرة أخرى.</p>
+                        <button onclick="window.location.reload()" class="auth-btn" style="width: auto; padding: 12px 24px;">
+                            <i class="fas fa-redo"></i> إعادة المحاولة
+                        </button>
+                    </div>
+                `;
             } finally {
                 showGlobalLoading(false);
             }
         }
 
-        // 4. التحقق من اتصال Firebase
-        async function checkFirebaseConnection() {
-            try {
-                // محاولة قراءة وثيقة اختبار
-                const testDoc = await db.collection('test').doc('connection').get({
-                    source: 'server'
-                });
-                return true;
-            } catch (error) {
-                console.error('Firebase connection error:', error);
-                return false;
-            }
-        }
-
-        // 5. عرض التطبيق
+        // 4. عرض التطبيق
         function showApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
         }
 
-        // 6. إعداد المستمعين في الوقت الحقيقي
+        // 5. إعداد المستمعين في الوقت الحقيقي
         function setupRealTimeListeners() {
             // إيقاف أي مستمعين سابقين
             if (accountsListener) {
@@ -1595,7 +1620,7 @@
             console.log('✅ Real-time listeners activated');
         }
 
-        // 7. تنبيه بحساب جديد
+        // 6. تنبيه بحساب جديد
         function showNewAccountAlert(account) {
             const platformNames = {
                 instagram: 'إنستغرام',
@@ -1611,7 +1636,7 @@
             showAlert(`🆕 حساب ${platformName} جديد: ${account.username} - ${account.price} ر.س`, 'info');
         }
 
-        // 8. تحميل الحسابات من Firebase
+        // 7. تحميل الحسابات من Firebase
         async function loadAccountsFromFirebase() {
             showGlobalLoading(true);
             
@@ -1657,7 +1682,7 @@
             `;
         }
 
-        // 9. تطبيق الفلاتر
+        // 8. تطبيق الفلاتر
         function applyFilters() {
             const platformFilter = document.getElementById('platformFilter').value;
             const sortFilter = document.getElementById('sortFilter').value;
@@ -1686,7 +1711,7 @@
             displayAccounts(filteredAccounts);
         }
 
-        // 10. عرض الحسابات
+        // 9. عرض الحسابات
         function displayAccounts(accounts) {
             const accountsList = document.getElementById('accountsList');
             
@@ -1707,7 +1732,7 @@
             });
         }
 
-        // 11. إنشاء بطاقة حساب
+        // 10. إنشاء بطاقة حساب
         function createAccountCard(account) {
             const accountsList = document.getElementById('accountsList');
             
@@ -1811,7 +1836,7 @@
             accountsList.appendChild(accountCard);
         }
 
-        // 12. رفع الصور إلى Firebase Storage
+        // 11. رفع الصور إلى Firebase Storage
         async function uploadImageToFirebase(file) {
             try {
                 const fileName = `proof_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${file.name.split('.').pop()}`;
@@ -1828,7 +1853,7 @@
             }
         }
 
-        // 13. إعداد رفع الصور
+        // 12. إعداد رفع الصور
         document.getElementById('imageUploadArea').addEventListener('click', () => {
             document.getElementById('imageInput').click();
         });
@@ -1876,7 +1901,7 @@
             }
         });
 
-        // 14. تحديث معاينة الصور
+        // 13. تحديث معاينة الصور
         function updateImagePreview() {
             const preview = document.getElementById('imagesPreview');
             preview.innerHTML = '';
@@ -1894,20 +1919,20 @@
             });
         }
 
-        // 15. إزالة صورة
+        // 14. إزالة صورة
         window.removeImage = function(index) {
             uploadedImages.splice(index, 1);
             updateImagePreview();
         };
 
-        // 16. إعادة تعيين النموذج
+        // 15. إعادة تعيين النموذج
         function resetUploadForm() {
             document.getElementById('addAccountForm').reset();
             uploadedImages = [];
             updateImagePreview();
         }
 
-        // 17. نشر حساب جديد
+        // 16. نشر حساب جديد
         document.getElementById('addAccountForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1996,7 +2021,7 @@
             }
         });
 
-        // 18. بدء الدردشة
+        // 17. بدء الدردشة
         async function startChat(userId, userName) {
             if (!currentUser) {
                 showAlert('يجب تسجيل الدخول أولاً', 'error');
@@ -2024,7 +2049,7 @@
             setupChatListener(userId);
         }
 
-        // 19. تحميل الرسائل
+        // 18. تحميل الرسائل
         async function loadChatMessages(userId) {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 30px;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المحادثة...</div>';
@@ -2072,12 +2097,12 @@
             }
         }
 
-        // 20. معرف المحادثة
+        // 19. معرف المحادثة
         function getChatId(userId1, userId2) {
             return [userId1, userId2].sort().join('_');
         }
 
-        // 21. عرض الرسالة
+        // 20. عرض الرسالة
         function displayMessage(message) {
             const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -2096,7 +2121,7 @@
             chatMessages.appendChild(messageDiv);
         }
 
-        // 22. التمرير للأسفل
+        // 21. التمرير للأسفل
         function scrollToBottom() {
             const chatMessages = document.getElementById('chatMessages');
             setTimeout(() => {
@@ -2104,7 +2129,7 @@
             }, 100);
         }
 
-        // 23. إعداد مستمع الرسائل في الوقت الحقيقي
+        // 22. إعداد مستمع الرسائل في الوقت الحقيقي
         function setupChatListener(userId) {
             if (chatListener) {
                 chatListener();
@@ -2129,7 +2154,7 @@
                 });
         }
 
-        // 24. إرسال رسالة
+        // 23. إرسال رسالة
         document.getElementById('sendMessageBtn').addEventListener('click', async function() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
@@ -2173,9 +2198,9 @@
                 console.error('Error sending message:', error);
                 showAlert('حدث خطأ في إرسال الرسالة', 'error');
             }
-        });
+        }
 
-        // 25. إرسال بالضغط على Enter
+        // 24. إرسال بالضغط على Enter
         document.getElementById('chatInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -2183,7 +2208,7 @@
             }
         });
 
-        // 26. إغلاق الدردشة
+        // 25. إغلاق الدردشة
         document.getElementById('closeChat').addEventListener('click', function() {
             document.getElementById('chatModal').style.display = 'none';
             if (chatListener) {
@@ -2193,7 +2218,7 @@
             currentChatUser = null;
         });
 
-        // 27. فتح نافذة الإضافة
+        // 26. فتح نافذة الإضافة
         document.getElementById('addAccountBtn').addEventListener('click', function(e) {
             e.preventDefault();
             if (!currentUser) {
@@ -2203,13 +2228,13 @@
             document.getElementById('addModal').style.display = 'flex';
         });
 
-        // 28. إغلاق نافذة الإضافة
+        // 27. إغلاق نافذة الإضافة
         document.getElementById('closeAddModal').addEventListener('click', function() {
             document.getElementById('addModal').style.display = 'none';
             resetUploadForm();
         });
 
-        // 29. عرض محادثاتي
+        // 28. عرض محادثاتي
         document.getElementById('viewChatsBtn').addEventListener('click', async function(e) {
             e.preventDefault();
             if (!currentUser) {
@@ -2277,12 +2302,12 @@
             }
         }
 
-        // 30. إغلاق نافذة المحادثات
+        // 29. إغلاق نافذة المحادثات
         document.getElementById('closeChatsModal').addEventListener('click', function() {
             document.getElementById('chatsModal').style.display = 'none';
         });
 
-        // 31. التواصل مع البائع
+        // 30. التواصل مع البائع
         window.contactSeller = async function(sellerId, sellerName) {
             if (!currentUser) {
                 showAlert('يجب تسجيل الدخول أولاً', 'error');
@@ -2307,7 +2332,7 @@
             }
         };
 
-        // 32. عرض الصورة
+        // 31. عرض الصورة
         window.viewImage = function(url) {
             const newWindow = window.open('', '_blank');
             newWindow.document.write(`
@@ -2329,7 +2354,7 @@
 
         window.startChat = startChat;
 
-        // 33. وظائف مساعدة
+        // 32. وظائف مساعدة
         function getRandomColor() {
             const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#8b5cf6'];
             return colors[Math.floor(Math.random() * colors.length)];
@@ -2347,7 +2372,7 @@
             }
         }
 
-        // 34. إغلاق النوافذ بالنقر خارجها
+        // 33. إغلاق النوافذ بالنقر خارجها
         window.addEventListener('click', function(e) {
             if (e.target.id === 'addModal') {
                 document.getElementById('addModal').style.display = 'none';
@@ -2373,11 +2398,11 @@
             }
         });
 
-        // 35. تطبيق الفلاتر
+        // 34. تطبيق الفلاتر
         document.getElementById('platformFilter').addEventListener('change', applyFilters);
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
-        // 36. فتح نافذة الدعم الفني
+        // 35. فتح نافذة الدعم الفني
         document.getElementById('contactLink').addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -2391,13 +2416,13 @@
             document.getElementById('supportModal').style.display = 'flex';
         });
 
-        // 37. إغلاق نافذة الدعم
+        // 36. إغلاق نافذة الدعم
         document.getElementById('closeSupportModal').addEventListener('click', function() {
             document.getElementById('supportModal').style.display = 'none';
             document.getElementById('supportForm').reset();
         });
 
-        // 38. إرسال طلب الدعم
+        // 37. إرسال طلب الدعم
         document.getElementById('supportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -2437,19 +2462,25 @@
             }
         });
 
-        // 39. فتح نافذة عن التطبيق
+        // 38. فتح نافذة عن التطبيق
         document.getElementById('aboutLink').addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('aboutModal').style.display = 'flex';
         });
 
-        // 40. إغلاق نافذة عن التطبيق
+        // 39. إغلاق نافذة عن التطبيق
         document.getElementById('closeAboutModal').addEventListener('click', function() {
             document.getElementById('aboutModal').style.display = 'none';
         });
 
-        // 41. تهيئة عند التحميل - محاولة استعادة جلسة Firebase
+        // 40. تهيئة عند التحميل - محاولة استعادة جلسة Firebase
         document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من أن Firebase تم تهيئته
+            if (!firebaseApp) {
+                showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
+                return;
+            }
+            
             // محاولة التحقق من حالة المصادقة
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
@@ -2481,11 +2512,11 @@
             const yearSpan = document.querySelector('.copyright');
             if (yearSpan) {
                 const currentYear = new Date().getFullYear();
-                yearSpan.textContent = `© ${currentYear} سوق الحسابات. جميع الحقوق محفوظة`;
+                yearSpan.textContent = `© 2024-${currentYear} سوق الحسابات. جميع الحقوق محفوظة`;
             }
         });
 
-        // 42. تحديث حالة الاتصال
+        // 41. تحديث حالة الاتصال
         window.addEventListener('online', () => {
             if (currentUser) {
                 showAlert('تم استعادة الاتصال بالإنترنت', 'success');
