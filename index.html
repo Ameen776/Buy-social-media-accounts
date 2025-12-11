@@ -886,17 +886,12 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
-                    <input type="email" id="loginEmail" required placeholder="example@email.com">
-                </div>
-                
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> كلمة المرور</label>
-                    <input type="password" id="loginPassword" required minlength="6">
+                    <label><i class="fas fa-phone"></i> رقم الهاتف</label>
+                    <input type="tel" id="loginPhone" required placeholder="05XXXXXXXX">
                 </div>
                 
                 <button type="submit" class="btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    <i class="fas fa-sign-in-alt"></i> دخول
                 </button>
                 
                 <p style="text-align: center; margin-top: 20px; color: #94a3b8;">
@@ -905,61 +900,48 @@
             </form>
             
             <form id="registerForm" class="hidden">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> الاسم الكامل</label>
-                        <input type="text" id="registerName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-phone"></i> رقم الهاتف</label>
-                        <input type="tel" id="registerPhone" required placeholder="05XXXXXXXX">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> الدولة</label>
-                        <select id="registerCountry" required>
-                            <option value="">اختر الدولة</option>
-                            <option value="السعودية">السعودية</option>
-                            <option value="الإمارات">الإمارات</option>
-                            <option value="الكويت">الكويت</option>
-                            <option value="قطر">قطر</option>
-                            <option value="عُمان">عُمان</option>
-                            <option value="البحرين">البحرين</option>
-                            <option value="مصر">مصر</option>
-                            <option value="الأردن">الأردن</option>
-                            <option value="لبنان">لبنان</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-home"></i> المدينة</label>
-                        <input type="text" id="registerCity" required>
-                    </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> الاسم الكامل</label>
+                    <input type="text" id="registerName" required>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-map"></i> العنوان</label>
-                    <textarea id="registerAddress" rows="2"></textarea>
+                    <label><i class="fas fa-phone"></i> رقم الهاتف</label>
+                    <input type="tel" id="registerPhone" required placeholder="05XXXXXXXX">
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
-                    <input type="email" id="registerEmail" required>
+                    <label><i class="fas fa-map-marker-alt"></i> الدولة</label>
+                    <select id="registerCountry" required>
+                        <option value="">اختر الدولة</option>
+                        <option value="السعودية">السعودية</option>
+                        <option value="الإمارات">الإمارات</option>
+                        <option value="الكويت">الكويت</option>
+                        <option value="قطر">قطر</option>
+                        <option value="عُمان">عُمان</option>
+                        <option value="البحرين">البحرين</option>
+                        <option value="مصر">مصر</option>
+                        <option value="الأردن">الأردن</option>
+                        <option value="لبنان">لبنان</option>
+                        <option value="الجزائر">الجزائر</option>
+                        <option value="المغرب">المغرب</option>
+                        <option value="تونس">تونس</option>
+                        <option value="العراق">العراق</option>
+                        <option value="اليمن">اليمن</option>
+                        <option value="سوريا">سوريا</option>
+                        <option value="فلسطين">فلسطين</option>
+                        <option value="السودان">السودان</option>
+                        <option value="ليبيا">ليبيا</option>
+                        <option value="الصومال">الصومال</option>
+                        <option value="موريتانيا">موريتانيا</option>
+                        <option value="جيبوتي">جيبوتي</option>
+                        <option value="جزر القمر">جزر القمر</option>
+                    </select>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-lock"></i> كلمة المرور</label>
-                        <input type="password" id="registerPassword" required minlength="6">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-lock"></i> تأكيد كلمة المرور</label>
-                        <input type="password" id="confirmPassword" required>
-                    </div>
+                <div class="form-group">
+                    <label><i class="fas fa-home"></i> العنوان</label>
+                    <textarea id="registerAddress" rows="3"></textarea>
                 </div>
                 
                 <button type="submit" class="btn" id="registerBtn">
@@ -1133,16 +1115,13 @@
 
         // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         // حالات التطبيق
         let currentUser = null;
         let currentChatUser = null;
         let chatListener = null;
         let uploadedImages = [];
-        let imgbbApiKey = 'fc90a0a005031a9d572ad3476ef545c2';
 
         // 1. المشهد ثلاثي الأبعاد
         function initThreeJS() {
@@ -1210,7 +1189,7 @@
             });
         }
 
-        // 2. نظام المصادقة
+        // 2. نظام المصادقة المخصص
         function initAuth() {
             // تبديل بين نموذج الدخول والتسجيل
             document.getElementById('showRegister').addEventListener('click', (e) => {
@@ -1225,11 +1204,15 @@
                 document.getElementById('loginForm').classList.remove('hidden');
             });
             
-            // تسجيل الدخول
+            // تسجيل الدخول برقم الهاتف
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
+                const phone = document.getElementById('loginPhone').value.trim();
+                
+                if (!phone) {
+                    showAlert('يرجى إدخال رقم الهاتف', 'error');
+                    return;
+                }
                 
                 const loginBtn = document.getElementById('loginBtn');
                 const originalText = loginBtn.innerHTML;
@@ -1237,9 +1220,25 @@
                 loginBtn.disabled = true;
                 
                 try {
-                    await auth.signInWithEmailAndPassword(email, password);
+                    // البحث عن المستخدم برقم الهاتف
+                    const querySnapshot = await db.collection('users').where('phone', '==', phone).get();
+                    
+                    if (querySnapshot.empty) {
+                        showAlert('رقم الهاتف غير مسجل', 'error');
+                    } else {
+                        const userDoc = querySnapshot.docs[0];
+                        currentUser = { 
+                            id: userDoc.id, 
+                            ...userDoc.data() 
+                        };
+                        updateUserUI();
+                        showApp();
+                        loadAccounts();
+                        showAlert('تم الدخول بنجاح!', 'success');
+                    }
                 } catch (error) {
-                    showAlert(error.message, 'error');
+                    console.error('Login error:', error);
+                    showAlert('حدث خطأ أثناء الدخول', 'error');
                 } finally {
                     loginBtn.innerHTML = originalText;
                     loginBtn.disabled = false;
@@ -1250,17 +1249,18 @@
             document.getElementById('registerForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const name = document.getElementById('registerName').value;
-                const phone = document.getElementById('registerPhone').value;
+                const name = document.getElementById('registerName').value.trim();
+                const phone = document.getElementById('registerPhone').value.trim();
                 const country = document.getElementById('registerCountry').value;
-                const city = document.getElementById('registerCity').value;
-                const address = document.getElementById('registerAddress').value;
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
+                const address = document.getElementById('registerAddress').value.trim();
                 
-                if (password !== confirmPassword) {
-                    showAlert('كلمات المرور غير متطابقة', 'error');
+                if (!name || !phone || !country) {
+                    showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+                    return;
+                }
+                
+                if (phone.length < 10) {
+                    showAlert('رقم الهاتف غير صحيح', 'error');
                     return;
                 }
                 
@@ -1269,34 +1269,48 @@
                 document.getElementById('registerSpinner').style.display = 'block';
                 
                 try {
-                    // إنشاء حساب Firebase
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    const user = userCredential.user;
+                    // التحقق من عدم وجود رقم الهاتف مسبقًا
+                    const existingUser = await db.collection('users').where('phone', '==', phone).get();
                     
-                    // حفظ بيانات المستخدم الإضافية
-                    await db.collection('users').doc(user.uid).set({
+                    if (!existingUser.empty) {
+                        throw new Error('رقم الهاتف مسجل مسبقًا');
+                    }
+                    
+                    // إنشاء بيانات المستخدم
+                    const userData = {
                         name,
-                        email,
                         phone,
                         country,
-                        city,
                         address,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         avatarColor: getRandomColor(),
                         role: 'user'
-                    });
+                    };
                     
-                    // محاكاة عملية التسجيل
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // إضافة المستخدم إلى قاعدة البيانات
+                    const docRef = await db.collection('users').add(userData);
                     
-                    // إظعلام النجاح
-                    document.getElementById('registerSpinner').style.display = 'none';
-                    document.getElementById('registerSuccess').style.display = 'block';
-                    
-                    // الانتقال للتطبيق بعد 2 ثانية
+                    // عرض التحميل لمدة 10 ثواني
                     setTimeout(() => {
-                        showApp();
-                    }, 2000);
+                        // إخفاء التحميل وإظهار علامة النجاح
+                        document.getElementById('registerSpinner').style.display = 'none';
+                        document.getElementById('registerSuccess').style.display = 'block';
+                        
+                        // تعيين المستخدم الحالي
+                        currentUser = { 
+                            id: docRef.id, 
+                            ...userData 
+                        };
+                        
+                        // الانتقال للتطبيق بعد 2 ثانية
+                        setTimeout(() => {
+                            updateUserUI();
+                            showApp();
+                            loadAccounts();
+                            showAlert('تم إنشاء حسابك بنجاح!', 'success');
+                        }, 2000);
+                        
+                    }, 10000); // 10 ثواني تحميل
                     
                 } catch (error) {
                     document.getElementById('registerSpinner').style.display = 'none';
@@ -1307,53 +1321,20 @@
             
             // تسجيل الخروج
             document.getElementById('logoutBtn').addEventListener('click', () => {
-                auth.signOut();
-            });
-            
-            // مراقبة حالة المستخدم
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    currentUser = user;
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        updateUserUI(userData);
-                        loadAccounts();
-                        showApp();
-                    } else {
-                        // إذا لم يكن للمستخدم بيانات، إنشاءها
-                        await db.collection('users').doc(user.uid).set({
-                            name: user.email.split('@')[0],
-                            email: user.email,
-                            phone: '',
-                            country: '',
-                            city: '',
-                            address: '',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            avatarColor: getRandomColor(),
-                            role: 'user'
-                        });
-                        
-                        const newUserDoc = await db.collection('users').doc(user.uid).get();
-                        updateUserUI(newUserDoc.data());
-                        loadAccounts();
-                        showApp();
-                    }
-                } else {
-                    currentUser = null;
-                    document.getElementById('loginContainer').classList.remove('hidden');
-                    document.getElementById('app').classList.add('hidden');
-                }
+                currentUser = null;
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('app').classList.add('hidden');
+                showAlert('تم تسجيل الخروج', 'info');
             });
         }
 
         // 3. تحديث واجهة المستخدم
-        function updateUserUI(userData) {
-            document.getElementById('userName').textContent = userData.name;
-            document.getElementById('userPhone').textContent = userData.phone || 'بدون رقم';
-            document.getElementById('userAvatar').textContent = userData.name.charAt(0);
-            document.getElementById('userAvatar').style.background = userData.avatarColor;
+        function updateUserUI() {
+            if (!currentUser) return;
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userPhone').textContent = currentUser.phone || 'بدون رقم';
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            document.getElementById('userAvatar').style.background = currentUser.avatarColor || getRandomColor();
         }
 
         // 4. تحميل الحسابات
@@ -1474,7 +1455,7 @@
                     const user = doc.data();
                     const userId = doc.id;
                     
-                    if (userId === currentUser.uid) return; // تخطي المستخدم الحالي
+                    if (currentUser && userId === currentUser.id) return; // تخطي المستخدم الحالي
                     
                     addUserCard(user, userId);
                 });
@@ -1496,9 +1477,8 @@
                 </div>
                 <div class="user-card-info">
                     <h3>${user.name}</h3>
-                    <p>${user.email}</p>
-                    <p style="margin-top: 5px;"><i class="fas fa-phone"></i> ${user.phone || 'بدون رقم'}</p>
-                    <p><i class="fas fa-map-marker-alt"></i> ${user.city || ''} ${user.country ? `, ${user.country}` : ''}</p>
+                    <p>${user.phone || 'بدون رقم'}</p>
+                    <p style="margin-top: 5px;"><i class="fas fa-map-marker-alt"></i> ${user.city || ''} ${user.country ? `, ${user.country}` : ''}</p>
                 </div>
             `;
             
@@ -1536,9 +1516,10 @@
 
         document.getElementById('closeAddModal').addEventListener('click', () => {
             document.getElementById('addModal').style.display = 'none';
+            resetUploadForm();
         });
 
-        // 10. رفع الصور باستخدام IMGBB
+        // 10. إدارة رفع الصور
         document.getElementById('imageUploadArea').addEventListener('click', () => {
             document.getElementById('imageInput').click();
         });
@@ -1547,12 +1528,12 @@
             const files = Array.from(e.target.files).slice(0, 3);
             
             for (const file of files) {
-                await uploadImageToIMGBB(file);
+                await uploadImageToServer(file);
             }
         });
 
         // 11. رفع الصورة إلى IMGBB
-        async function uploadImageToIMGBB(file) {
+        async function uploadImageToServer(file) {
             if (uploadedImages.length >= 3) {
                 showAlert('يمكنك رفع 3 صور كحد أقصى', 'info');
                 return;
@@ -1560,9 +1541,12 @@
             
             const formData = new FormData();
             formData.append('image', file);
-            formData.append('key', imgbbApiKey);
             
             try {
+                // استخدم IMGBB API
+                const apiKey = 'fc90a0a005031a9d572ad3476ef545c2';
+                formData.append('key', apiKey);
+                
                 const response = await fetch('https://api.imgbb.com/1/upload', {
                     method: 'POST',
                     body: formData
@@ -1573,12 +1557,20 @@
                 if (data.success) {
                     uploadedImages.push(data.data.url);
                     updateImagePreview();
+                    showAlert('تم رفع الصورة بنجاح', 'success');
                 } else {
                     showAlert('فشل في رفع الصورة', 'error');
                 }
             } catch (error) {
                 console.error('Error uploading image:', error);
-                showAlert('حدث خطأ في رفع الصورة', 'error');
+                // في حالة فشل الرفع، استخدم صورة افتراضية
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push(e.target.result);
+                    updateImagePreview();
+                    showAlert('تم حفظ الصورة محلياً', 'info');
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -1606,9 +1598,21 @@
             updateImagePreview();
         }
 
-        // 14. إضافة حساب جديد
+        // 14. إعادة تعيين نموذج الرفع
+        function resetUploadForm() {
+            document.getElementById('addAccountForm').reset();
+            uploadedImages = [];
+            updateImagePreview();
+        }
+
+        // 15. إضافة حساب جديد
         document.getElementById('addAccountForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
             
             if (uploadedImages.length < 2) {
                 showAlert('يرجى رفع صورتين على الأقل كإثبات للملكية', 'error');
@@ -1621,8 +1625,10 @@
             const price = parseInt(document.getElementById('accountPrice').value);
             const description = document.getElementById('accountDescription').value;
             
-            const userDoc = await db.collection('users').doc(currentUser.uid).get();
-            const userData = userDoc.data();
+            if (!platform || !username || !followers || !price) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
             
             try {
                 await db.collection('accounts').add({
@@ -1632,9 +1638,9 @@
                     price,
                     description,
                     proofImages: uploadedImages,
-                    sellerId: currentUser.uid,
-                    sellerName: userData.name,
-                    sellerAvatarColor: userData.avatarColor,
+                    sellerId: currentUser.id,
+                    sellerName: currentUser.name,
+                    sellerAvatarColor: currentUser.avatarColor,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'active'
                 });
@@ -1643,9 +1649,7 @@
                 
                 // إعادة التعيين
                 document.getElementById('addModal').style.display = 'none';
-                document.getElementById('addAccountForm').reset();
-                uploadedImages = [];
-                updateImagePreview();
+                resetUploadForm();
                 
                 // إعادة تحميل الحسابات
                 loadAccounts();
@@ -1655,31 +1659,36 @@
             }
         });
 
-        // 15. التواصل مع البائع
+        // 16. التواصل مع البائع
         async function contactSeller(sellerId) {
             try {
                 const sellerDoc = await db.collection('users').doc(sellerId).get();
                 const seller = sellerDoc.data();
                 
-                alert(`معلومات البائع:\n\nالاسم: ${seller.name}\nالهاتف: ${seller.phone || 'غير متوفر'}\nالبريد: ${seller.email}\nالدولة: ${seller.country || 'غير محدد'}\nالمدينة: ${seller.city || 'غير محدد'}`);
+                alert(`معلومات البائع:\n\nالاسم: ${seller.name}\nالهاتف: ${seller.phone || 'غير متوفر'}\nالدولة: ${seller.country || 'غير محدد'}\nالعنوان: ${seller.address || 'غير محدد'}`);
             } catch (error) {
                 showAlert('حدث خطأ في تحميل معلومات البائع', 'error');
             }
         }
 
-        // 16. بدء الدردشة
-        function startChat(userId, userName) {
+        // 17. بدء الدردشة
+        async function startChat(userId, userName) {
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
             currentChatUser = { id: userId, name: userName };
             
             document.getElementById('chatAvatar').textContent = userName.charAt(0);
             document.getElementById('chatUserName').textContent = userName;
             document.getElementById('chatModal').style.display = 'flex';
             
-            loadChatMessages();
+            await loadChatMessages();
             setupChatListener();
         }
 
-        // 17. إغلاق الدردشة
+        // 18. إغلاق الدردشة
         document.getElementById('closeChat').addEventListener('click', () => {
             document.getElementById('chatModal').style.display = 'none';
             if (chatListener) {
@@ -1689,13 +1698,13 @@
             currentChatUser = null;
         });
 
-        // 18. تحميل الرسائل
+        // 19. تحميل الرسائل
         async function loadChatMessages() {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = '<p style="text-align: center; color: #94a3b8;">جاري تحميل المحادثة...</p>';
             
             try {
-                const chatId = [currentUser.uid, currentChatUser.id].sort().join('_');
+                const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
                 const snapshot = await db.collection('chats')
                     .doc(chatId)
                     .collection('messages')
@@ -1722,11 +1731,11 @@
             }
         }
 
-        // 19. إعداد مستمع الرسائل
+        // 20. إعداد مستمع الرسائل
         function setupChatListener() {
             if (chatListener) chatListener();
             
-            const chatId = [currentUser.uid, currentChatUser.id].sort().join('_');
+            const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
             
             chatListener = db.collection('chats')
                 .doc(chatId)
@@ -1742,7 +1751,7 @@
                 });
         }
 
-        // 20. إضافة رسالة للدردشة
+        // 21. إضافة رسالة للدردشة
         function addMessageToChat(message, scrollToBottom) {
             const chatMessages = document.getElementById('chatMessages');
             
@@ -1752,7 +1761,7 @@
             }
             
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
+            messageDiv.className = `message ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
             messageDiv.textContent = message.text;
             
             chatMessages.appendChild(messageDiv);
@@ -1762,27 +1771,27 @@
             }
         }
 
-        // 21. إرسال رسالة
+        // 22. إرسال رسالة
         document.getElementById('sendMessageBtn').addEventListener('click', async () => {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             
-            if (!text || !currentChatUser) return;
+            if (!text || !currentChatUser || !currentUser) return;
             
-            const chatId = [currentUser.uid, currentChatUser.id].sort().join('_');
+            const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
             
             try {
                 // إضافة الرسالة
                 await db.collection('chats').doc(chatId).collection('messages').add({
                     text,
-                    senderId: currentUser.uid,
-                    senderName: (await db.collection('users').doc(currentUser.uid).get()).data().name,
+                    senderId: currentUser.id,
+                    senderName: currentUser.name,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
                 // تحديث المحادثة
                 await db.collection('chats').doc(chatId).set({
-                    participants: [currentUser.uid, currentChatUser.id],
+                    participants: [currentUser.id, currentChatUser.id],
                     lastMessage: text,
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
@@ -1794,14 +1803,14 @@
             }
         });
 
-        // 22. إرسال بالضغط على Enter
+        // 23. إرسال بالضغط على Enter
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('sendMessageBtn').click();
             }
         });
 
-        // 23. عرض التطبيق
+        // 24. عرض التطبيق
         function showApp() {
             document.getElementById('loginContainer').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
@@ -1811,7 +1820,7 @@
             }, 100);
         }
 
-        // 24. إظهار التنبيهات
+        // 25. إظهار التنبيهات
         function showAlert(message, type) {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert ${type}`;
@@ -1827,7 +1836,7 @@
             }, 5000);
         }
 
-        // 25. الحصول على لون عشوائي
+        // 26. الحصول على لون عشوائي
         function getRandomColor() {
             const colors = [
                 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
@@ -1839,23 +1848,38 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // 26. إغلاق النوافذ بالنقر خارجها
+        // 27. إغلاق النوافذ بالنقر خارجها
         window.addEventListener('click', (e) => {
             if (e.target.id === 'addModal') {
                 document.getElementById('addModal').style.display = 'none';
+                resetUploadForm();
             }
         });
 
-        // 27. تهيئة التطبيق
+        // 28. تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
             initAuth();
             
-            // إخفاء التحميل بعد 2 ثانية
-            setTimeout(() => {
-                const loadingElement = document.querySelector('.loading-spinner');
-                if (loadingElement) loadingElement.style.display = 'none';
-            }, 2000);
+            // تحقق إذا كان هناك مستخدم مسجل مسبقاً
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    updateUserUI();
+                    showApp();
+                    loadAccounts();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+        });
+
+        // 29. حفظ المستخدم عند الخروج
+        window.addEventListener('beforeunload', () => {
+            if (currentUser) {
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
         });
     </script>
 </body>
