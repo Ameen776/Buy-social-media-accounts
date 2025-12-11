@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOCIAL ACCOUNTS MARKET - سوق الحسابات</title>
-    <!-- الخطوط -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>سوق الحسابات | منصة بيع وشراء الحسابات</title>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* Reset & Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -23,179 +26,143 @@
         }
 
         body {
-            background: #0a0a1a;
+            background: #0f172a;
             color: #fff;
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* شاشة الدخول ثلاثية الأبعاد */
-        .login-container {
-            position: fixed;
-            width: 100%;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+        /* شاشة التسجيل */
+        .auth-screen {
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        #three-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .login-box {
-            position: relative;
-            z-index: 2;
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
+        .auth-container {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 20px;
             padding: 40px;
-            width: 90%;
+            width: 100%;
             max-width: 500px;
-            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            animation: float 8s ease-in-out infinite;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-15px) rotate(0.5deg); }
-            75% { transform: translateY(-10px) rotate(-0.5deg); }
-        }
-
-        .logo {
+        .auth-header {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .logo h1 {
-            font-size: 36px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        .auth-header h1 {
+            font-size: 32px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
-            font-weight: 900;
         }
 
-        .logo p {
+        .auth-header p {
             color: #94a3b8;
-            font-size: 16px;
+            font-size: 14px;
         }
 
-        .social-cube {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotateCube 15s infinite linear;
+        .brand-icons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 30px;
+            flex-wrap: wrap;
         }
 
-        @keyframes rotateCube {
-            0% { transform: rotateX(0deg) rotateY(0deg); }
-            25% { transform: rotateX(90deg) rotateY(90deg); }
-            50% { transform: rotateX(180deg) rotateY(180deg); }
-            75% { transform: rotateX(270deg) rotateY(270deg); }
-            100% { transform: rotateX(360deg) rotateY(360deg); }
-        }
-
-        .cube-face {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid rgba(59, 130, 246, 0.5);
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            color: #3b82f6;
+            font-size: 22px;
+            color: white;
         }
-
-        .front { transform: translateZ(75px); }
-        .back { transform: rotateY(180deg) translateZ(75px); }
-        .right { transform: rotateY(90deg) translateZ(75px); }
-        .left { transform: rotateY(-90deg) translateZ(75px); }
-        .top { transform: rotateX(90deg) translateZ(75px); }
-        .bottom { transform: rotateX(-90deg) translateZ(75px); }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
             margin-bottom: 8px;
             color: #cbd5e1;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 15px;
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: rgba(30, 41, 59, 0.8);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: #f1f5f9;
-            font-size: 16px;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
             transition: all 0.3s;
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
-        .form-row {
-            display: flex;
-            gap: 15px;
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
         }
 
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn {
+        .auth-btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-top: 10px;
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .loading-section {
+            text-align: center;
+            padding: 30px 0;
         }
 
         .loading-spinner {
-            display: none;
             width: 50px;
             height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #3b82f6;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
@@ -204,12 +171,11 @@
         }
 
         .success-check {
-            display: none;
-            width: 80px;
-            height: 80px;
-            margin: 20px auto;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
             color: #10b981;
-            font-size: 80px;
+            font-size: 70px;
             animation: checkmark 0.5s ease-in-out;
         }
 
@@ -225,55 +191,50 @@
 
         /* التطبيق الرئيسي */
         #app {
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        #app.loaded {
-            opacity: 1;
+            min-height: 100vh;
+            display: none;
         }
 
         /* شريط التنقل */
         .navbar {
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.95);
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
             border-bottom: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .nav-brand {
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: #3b82f6;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-controls {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .nav-brand i {
-            font-size: 32px;
-            color: #3b82f6;
-        }
-
-        .nav-brand h2 {
-            font-size: 28px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
         .nav-btn {
-            padding: 12px 25px;
+            padding: 10px 20px;
             background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             border-radius: 10px;
             color: white;
@@ -281,374 +242,32 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
 
         .nav-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
 
-        .user-menu {
+        .nav-btn.red {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .nav-btn.green {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .user-profile {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             cursor: pointer;
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
-        /* المحتوى الرئيسي */
-        .container {
-            padding: 30px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .page-title {
-            font-size: 36px;
-            margin-bottom: 30px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
-        /* بطاقات الحسابات */
-        .accounts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        .account-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .account-card:hover {
-            transform: translateY(-10px);
-            border-color: #3b82f6;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .account-header {
-            padding: 25px;
-            background: rgba(15, 23, 42, 0.8);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .platform-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            color: white;
-        }
-
-        .instagram { background: linear-gradient(45deg, #833AB4, #E1306C, #FCAF45); }
-        .facebook { background: #1877F2; }
-        .tiktok { background: #000; }
-        .twitter { background: #1DA1F2; }
-        .youtube { background: #FF0000; }
-        .snapchat { background: #FFFC00; color: #000 !important; }
-
-        .account-title h3 {
-            font-size: 22px;
-            margin-bottom: 5px;
-        }
-
-        .account-title p {
-            color: #94a3b8;
-            font-size: 16px;
-        }
-
-        .account-details {
-            padding: 25px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-        }
-
-        .detail-label {
-            color: #94a3b8;
-        }
-
-        .detail-value {
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
-        .price-tag {
-            text-align: center;
-            font-size: 36px;
-            font-weight: 800;
-            color: #10b981;
-            padding: 25px;
-            background: rgba(16, 185, 129, 0.1);
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .account-actions {
-            padding: 0 25px 25px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .action-btn.contact {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            color: white;
-        }
-
-        .action-btn.chat {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .seller-info {
-            padding: 20px;
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .seller-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-        }
-
-        /* نافذة الإضافة */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal {
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(30px);
-            border-radius: 25px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 40px;
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.8);
-            animation: modalSlide 0.4s ease-out;
-        }
-
-        @keyframes modalSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-100px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .modal-header h2 {
-            font-size: 28px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 30px;
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-
-        .image-upload-area {
-            border: 3px dashed rgba(59, 130, 246, 0.5);
-            border-radius: 20px;
-            padding: 50px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 30px;
-        }
-
-        .image-upload-area:hover {
-            border-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.05);
-        }
-
-        .image-upload-area i {
-            font-size: 60px;
-            color: #3b82f6;
-            margin-bottom: 20px;
-        }
-
-        .images-preview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .image-preview-item {
-            position: relative;
-            height: 120px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .remove-image {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        /* نافذة الدردشة */
-        .chat-modal {
-            display: none;
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 400px;
-            height: 600px;
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(30px);
-            border-radius: 20px;
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            z-index: 1000;
-            flex-direction: column;
-            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.8);
-            overflow: hidden;
-        }
-
-        .chat-header {
-            padding: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .chat-avatar {
             width: 45px;
             height: 45px;
             border-radius: 50%;
@@ -658,134 +277,510 @@
             justify-content: center;
             color: white;
             font-weight: 700;
+            font-size: 18px;
         }
 
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 15px;
-            border-radius: 18px;
-            position: relative;
-        }
-
-        .message.sent {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-
-        .message.received {
-            background: rgba(30, 41, 59, 0.8);
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-        }
-
-        .chat-input-container {
-            padding: 20px;
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            display: flex;
-            gap: 15px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 15px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-        }
-
-        .send-btn {
-            width: 60px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            border: none;
-            border-radius: 12px;
-            color: white;
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 20px;
-        }
-
-        /* صفحة المستخدمين */
-        .users-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .user-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.3s;
-            cursor: pointer;
+            gap: 5px;
         }
 
-        .user-card:hover {
+        /* المحتوى الرئيسي */
+        .main-content {
+            padding: 30px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: white;
+            text-align: center;
+        }
+
+        /* بطاقات الحسابات */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .account-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #475569;
+            transition: all 0.3s;
+        }
+
+        .account-card:hover {
             transform: translateY(-5px);
             border-color: #3b82f6;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
-        .user-card-avatar {
-            width: 70px;
-            height: 70px;
+        .card-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid #475569;
+        }
+
+        .platform-badge {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: white;
+        }
+
+        .platform-badge.instagram {
+            background: linear-gradient(45deg, #833AB4, #E1306C, #FCAF45);
+        }
+        .platform-badge.facebook {
+            background: #1877F2;
+        }
+        .platform-badge.tiktok {
+            background: #000;
+        }
+        .platform-badge.twitter {
+            background: #1DA1F2;
+        }
+        .platform-badge.youtube {
+            background: #FF0000;
+        }
+        .platform-badge.snapchat {
+            background: #FFFC00;
+            color: #000;
+        }
+
+        .card-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .card-info p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .card-details {
+            padding: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .card-price {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #10b981;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border-top: 1px solid #475569;
+        }
+
+        .card-images {
+            padding: 15px;
+            border-top: 1px solid #475569;
+        }
+
+        .images-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .images-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .image-thumb {
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #1e293b;
+        }
+
+        .image-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-actions {
+            padding: 15px 20px 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: #475569;
+            color: white;
+        }
+
+        .action-btn.secondary:hover {
+            background: #64748b;
+            transform: translateY(-2px);
+        }
+
+        .seller-info {
+            padding: 15px 20px;
+            border-top: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .seller-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 28px;
             font-weight: 700;
+            font-size: 16px;
         }
 
-        .user-card-info h3 {
-            font-size: 20px;
-            margin-bottom: 5px;
+        /* نافذة الإضافة */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
         }
 
-        .user-card-info p {
+        .modal {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            color: white;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
             color: #94a3b8;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed #475569;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+
+        .upload-info {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preview-item {
+            position: relative;
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1e293b;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* نافذة الدردشة */
+        .chat-window {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 380px;
+            height: 500px;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 15px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 2000;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 15px;
+            position: relative;
             font-size: 14px;
         }
 
-        /* التنبيهات */
-        .alert {
+        .message-bubble.sent {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            align-self: flex-end;
+        }
+
+        .message-bubble.received {
+            background: #475569;
+            align-self: flex-start;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #475569;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            width: 45px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* صفحة المستخدمين */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #475569;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+        }
+
+        .user-avatar-large {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .user-details h3 {
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* تنبيهات */
+        .alert-container {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 20px 25px;
-            border-radius: 12px;
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid;
-            z-index: 10000;
-            animation: slideIn 0.3s ease-out;
+            z-index: 3000;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .alert {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease-out;
+            font-size: 14px;
         }
 
         .alert.success {
@@ -803,116 +798,118 @@
             color: #3b82f6;
         }
 
-        /* التجاوب مع الأجهزة */
-        @media (max-width: 1200px) {
-            .accounts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 20px;
-                padding: 20px;
-            }
-            
-            .nav-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
             .accounts-grid {
                 grid-template-columns: 1fr;
             }
             
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .chat-modal {
+            .chat-window {
                 width: 100%;
-                height: 80vh;
+                height: 70vh;
                 bottom: 0;
                 left: 0;
-                border-radius: 20px 20px 0 0;
+                border-radius: 15px 15px 0 0;
             }
             
-            .users-grid {
-                grid-template-columns: 1fr;
+            .nav-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
             }
             
-            .login-box {
+            .modal {
+                padding: 20px;
+            }
+            
+            .auth-container {
                 padding: 30px 20px;
             }
-            
-            .social-cube {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .cube-face {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .front { transform: translateZ(60px); }
-            .back { transform: rotateY(180deg) translateZ(60px); }
-            .right { transform: rotateY(90deg) translateZ(60px); }
-            .left { transform: rotateY(-90deg) translateZ(60px); }
-            .top { transform: rotateX(90deg) translateZ(60px); }
-            .bottom { transform: rotateX(-90deg) translateZ(60px); }
+        }
+
+        /* أدوات مساعدة */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-sold {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #475569;
         }
     </style>
 </head>
 <body>
-    <!-- شاشة الدخول ثلاثية الأبعاد -->
-    <div class="login-container" id="loginContainer">
-        <canvas id="three-canvas"></canvas>
-        <div class="login-box">
-            <div class="logo">
-                <div class="social-cube">
-                    <div class="cube-face front"><i class="fab fa-instagram"></i></div>
-                    <div class="cube-face back"><i class="fab fa-facebook"></i></div>
-                    <div class="cube-face right"><i class="fab fa-tiktok"></i></div>
-                    <div class="cube-face left"><i class="fab fa-twitter"></i></div>
-                    <div class="cube-face top"><i class="fab fa-youtube"></i></div>
-                    <div class="cube-face bottom"><i class="fas fa-shopping-cart"></i></div>
-                </div>
+    <!-- شاشة التسجيل -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
                 <h1>سوق الحسابات</h1>
                 <p>منصة بيع وشراء حسابات التواصل الاجتماعي</p>
             </div>
             
-            <form id="loginForm">
-                <div class="form-group">
-                    <label><i class="fas fa-phone"></i> رقم الهاتف</label>
-                    <input type="tel" id="loginPhone" required placeholder="05XXXXXXXX">
+            <div class="brand-icons">
+                <div class="brand-icon" style="background: linear-gradient(45deg, #833AB4, #E1306C);">
+                    <i class="fab fa-instagram"></i>
                 </div>
-                
-                <button type="submit" class="btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> دخول
-                </button>
-                
-                <p style="text-align: center; margin-top: 20px; color: #94a3b8;">
-                    ليس لديك حساب؟ <a href="#" id="showRegister" style="color: #3b82f6; text-decoration: none; font-weight: 600;">سجل الآن</a>
-                </p>
-            </form>
+                <div class="brand-icon" style="background: #1877F2;">
+                    <i class="fab fa-facebook"></i>
+                </div>
+                <div class="brand-icon" style="background: #000;">
+                    <i class="fab fa-tiktok"></i>
+                </div>
+                <div class="brand-icon" style="background: #1DA1F2;">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <div class="brand-icon" style="background: #FF0000;">
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
             
-            <form id="registerForm" class="hidden">
+            <form id="registerForm">
                 <div class="form-group">
-                    <label><i class="fas fa-user"></i> الاسم الكامل</label>
-                    <input type="text" id="registerName" required>
+                    <label class="form-label"><i class="fas fa-user"></i> الاسم الكامل</label>
+                    <input type="text" class="form-input" id="userName" placeholder="أحمد محمد" required>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> رقم الهاتف</label>
-                    <input type="tel" id="registerPhone" required placeholder="05XXXXXXXX">
+                    <label class="form-label"><i class="fas fa-phone"></i> رقم الهاتف</label>
+                    <input type="tel" class="form-input" id="userPhone" placeholder="05XXXXXXXX" required>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-map-marker-alt"></i> الدولة</label>
-                    <select id="registerCountry" required>
+                    <label class="form-label"><i class="fas fa-globe"></i> الدولة</label>
+                    <select class="form-select" id="userCountry" required>
                         <option value="">اختر الدولة</option>
                         <option value="السعودية">السعودية</option>
                         <option value="الإمارات">الإمارات</option>
@@ -922,87 +919,84 @@
                         <option value="البحرين">البحرين</option>
                         <option value="مصر">مصر</option>
                         <option value="الأردن">الأردن</option>
-                        <option value="لبنان">لبنان</option>
-                        <option value="الجزائر">الجزائر</option>
-                        <option value="المغرب">المغرب</option>
-                        <option value="تونس">تونس</option>
-                        <option value="العراق">العراق</option>
-                        <option value="اليمن">اليمن</option>
-                        <option value="سوريا">سوريا</option>
-                        <option value="فلسطين">فلسطين</option>
-                        <option value="السودان">السودان</option>
-                        <option value="ليبيا">ليبيا</option>
-                        <option value="الصومال">الصومال</option>
-                        <option value="موريتانيا">موريتانيا</option>
-                        <option value="جيبوتي">جيبوتي</option>
-                        <option value="جزر القمر">جزر القمر</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-home"></i> العنوان</label>
-                    <textarea id="registerAddress" rows="3"></textarea>
+                    <label class="form-label"><i class="fas fa-home"></i> العنوان</label>
+                    <textarea class="form-textarea" id="userAddress" placeholder="اكتب عنوانك بالتفصيل"></textarea>
                 </div>
                 
-                <button type="submit" class="btn" id="registerBtn">
+                <button type="submit" class="auth-btn">
                     <i class="fas fa-user-plus"></i> إنشاء حساب جديد
                 </button>
-                
-                <div class="loading-spinner" id="registerSpinner"></div>
-                <div class="success-check" id="registerSuccess"><i class="fas fa-check-circle"></i></div>
-                
-                <p style="text-align: center; margin-top: 20px; color: #94a3b8;">
-                    لديك حساب بالفعل؟ <a href="#" id="showLogin" style="color: #3b82f6; text-decoration: none; font-weight: 600;">سجل الدخول</a>
-                </p>
             </form>
             
-            <div id="authMessage" class="hidden"></div>
+            <!-- شاشة التحميل -->
+            <div id="loadingSection" class="hidden">
+                <div class="loading-section">
+                    <div class="loading-spinner"></div>
+                    <div style="text-align: center; color: #94a3b8; margin-top: 15px;">جاري إنشاء حسابك...</div>
+                </div>
+            </div>
+            
+            <!-- شاشة النجاح -->
+            <div id="successSection" class="hidden">
+                <div class="loading-section">
+                    <div class="success-check">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="text-align: center; color: #10b981; margin-top: 15px; font-weight: 600;">تم إنشاء حسابك بنجاح!</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- التطبيق الرئيسي -->
-    <div id="app" class="hidden">
+    <div id="app">
         <!-- شريط التنقل -->
         <nav class="navbar">
-            <div class="nav-brand">
-                <i class="fas fa-store"></i>
-                <h2>سوق الحسابات</h2>
+            <div class="logo-container">
+                <i class="logo-icon fas fa-store"></i>
+                <div class="logo-text">سوق الحسابات</div>
             </div>
             
-            <div class="nav-actions">
-                <a href="#" class="nav-btn" id="openAddModal">
-                    <i class="fas fa-plus-circle"></i>
-                    إضافة حساب للبيع
+            <div class="nav-controls">
+                <a href="#" class="nav-btn" id="addAccountBtn">
+                    <i class="fas fa-plus"></i> إضافة حساب
                 </a>
                 
-                <a href="#" class="nav-btn" id="viewUsersBtn" style="background: linear-gradient(90deg, #8b5cf6, #ec4899);">
-                    <i class="fas fa-users"></i>
-                    المستخدمين
+                <a href="#" class="nav-btn red" id="viewUsersBtn">
+                    <i class="fas fa-users"></i> المستخدمين
                 </a>
                 
-                <div class="user-menu" id="userMenu">
+                <a href="#" class="nav-btn green" id="viewChatsBtn">
+                    <i class="fas fa-comments"></i> الدردشات
+                </a>
+                
+                <div class="user-profile">
                     <div class="user-avatar" id="userAvatar">أ</div>
                     <div>
-                        <div id="userName">أحمد محمد</div>
-                        <div style="font-size: 12px; color: #94a3b8;" id="userPhone">05XXXXXXXX</div>
+                        <div id="userDisplayName">أحمد محمد</div>
+                        <div id="userDisplayPhone" style="font-size: 12px; color: #94a3b8;">05XXXXXXXX</div>
                     </div>
                 </div>
                 
                 <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> خروج
+                    <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
         </nav>
 
         <!-- المحتوى الرئيسي -->
-        <div class="container">
-            <h1 class="page-title">الحسابات المتاحة للشراء</h1>
+        <div class="main-content">
+            <h1 class="section-title" id="pageTitle">الحسابات المتاحة للشراء</h1>
             
-            <div id="accountsContainer" class="accounts-grid">
-                <!-- الحسابات تظهر هنا من Firebase -->
+            <div id="accountsList" class="accounts-grid">
+                <!-- الحسابات تظهر هنا -->
             </div>
             
-            <div id="usersContainer" class="users-grid hidden">
+            <div id="usersList" class="users-grid hidden">
                 <!-- المستخدمين يظهرون هنا -->
             </div>
         </div>
@@ -1011,63 +1005,59 @@
         <div class="modal-overlay" id="addModal">
             <div class="modal">
                 <div class="modal-header">
-                    <h2><i class="fas fa-plus-circle"></i> إضافة حساب جديد للبيع</h2>
-                    <button class="close-modal" id="closeAddModal">&times;</button>
+                    <div class="modal-title"><i class="fas fa-plus-circle"></i> إضافة حساب للبيع</div>
+                    <button class="modal-close" id="closeAddModal">×</button>
                 </div>
                 
                 <form id="addAccountForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-globe"></i> منصة التواصل</label>
-                            <select id="accountPlatform" required>
-                                <option value="">اختر المنصة</option>
-                                <option value="instagram">إنستغرام</option>
-                                <option value="facebook">فيسبوك</option>
-                                <option value="tiktok">تيك توك</option>
-                                <option value="twitter">تويتر</option>
-                                <option value="youtube">يوتيوب</option>
-                                <option value="snapchat">سناب شات</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-at"></i> اسم المستخدم</label>
-                            <input type="text" id="accountUsername" placeholder="@username" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-users"></i> عدد المتابعين</label>
-                            <input type="number" id="accountFollowers" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-tag"></i> السعر (ريال سعودي)</label>
-                            <input type="number" id="accountPrice" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-globe"></i> منصة التواصل</label>
+                        <select class="form-select" id="accountPlatform" required>
+                            <option value="">اختر المنصة</option>
+                            <option value="instagram">إنستغرام</option>
+                            <option value="facebook">فيسبوك</option>
+                            <option value="tiktok">تيك توك</option>
+                            <option value="twitter">تويتر</option>
+                            <option value="youtube">يوتيوب</option>
+                            <option value="snapchat">سناب شات</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-file-alt"></i> وصف الحساب</label>
-                        <textarea id="accountDescription" rows="3" placeholder="صف الحساب..."></textarea>
+                        <label class="form-label"><i class="fas fa-at"></i> اسم المستخدم</label>
+                        <input type="text" class="form-input" id="accountUsername" placeholder="@username" required>
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-images"></i> صور إثبات الملكية (2-3 صور)</label>
-                        <div class="image-upload-area" id="imageUploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p style="font-size: 18px; margin-bottom: 10px;">انقر لرفع صور إثبات ملكية الحساب</p>
-                            <p style="color: #94a3b8;">يمكنك رفع حتى 3 صور</p>
+                        <label class="form-label"><i class="fas fa-users"></i> عدد المتابعين</label>
+                        <input type="number" class="form-input" id="accountFollowers" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-tag"></i> السعر (ريال سعودي)</label>
+                        <input type="number" class="form-input" id="accountPrice" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-file-alt"></i> وصف الحساب</label>
+                        <textarea class="form-textarea" id="accountDescription" rows="3" placeholder="صف الحساب..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-images"></i> صور إثبات الملكية (2-3 صور)</label>
+                        <div class="upload-area" id="imageUploadArea">
+                            <i class="upload-icon fas fa-cloud-upload-alt"></i>
+                            <div style="font-size: 16px; color: white;">انقر لرفع صور إثبات ملكية الحساب</div>
+                            <div class="upload-info">يمكنك رفع حتى 3 صور (الحجم المسموح: 5MB لكل صورة)</div>
                             <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
                         </div>
                         
-                        <div class="images-preview" id="imagesPreview">
+                        <div class="preview-grid" id="imagesPreview">
                             <!-- معاينة الصور تظهر هنا -->
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn" style="margin-top: 20px;">
+                    <button type="submit" class="auth-btn">
                         <i class="fas fa-upload"></i> نشر الحساب للبيع
                     </button>
                 </form>
@@ -1075,31 +1065,33 @@
         </div>
 
         <!-- نافذة الدردشة -->
-        <div class="chat-modal" id="chatModal">
+        <div class="chat-window" id="chatModal">
             <div class="chat-header">
-                <div class="chat-user-info">
-                    <div class="chat-avatar" id="chatAvatar">س</div>
+                <div class="chat-user">
+                    <div class="user-badge" id="chatAvatar">س</div>
                     <div>
-                        <h4 id="chatUserName">سالم أحمد</h4>
-                        <p style="font-size: 12px; color: #94a3b8;" id="chatUserStatus">متصل الآن</p>
+                        <div id="chatUserName">سالم أحمد</div>
+                        <div id="chatUserStatus" style="font-size: 12px; color: #94a3b8;">متصل الآن</div>
                     </div>
                 </div>
-                <button class="close-modal" id="closeChat">&times;</button>
+                <button class="modal-close" id="closeChat">×</button>
             </div>
             
             <div class="chat-messages" id="chatMessages">
                 <!-- الرسائل تظهر هنا -->
             </div>
             
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chatInput" placeholder="اكتب رسالتك هنا...">
-                <button class="send-btn" id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+            <div class="chat-input-area">
+                <input type="text" class="message-input" id="chatInput" placeholder="اكتب رسالتك هنا...">
+                <button class="send-btn" id="sendMessageBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- التنبيهات -->
-    <div id="alertContainer"></div>
+    <!-- تنبيهات -->
+    <div class="alert-container" id="alertContainer"></div>
 
     <script>
         // تهيئة Firebase
@@ -1113,7 +1105,7 @@
             measurementId: "G-Y8Y9GKS43H"
         };
 
-        // تهيئة Firebase
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -1122,225 +1114,184 @@
         let currentChatUser = null;
         let chatListener = null;
         let uploadedImages = [];
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
 
-        // 1. المشهد ثلاثي الأبعاد
-        function initThreeJS() {
-            const canvas = document.getElementById('three-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ 
-                canvas, 
-                alpha: true, 
-                antialias: true,
-                powerPreference: "high-performance"
-            });
+        // 1. عرض التنبيه
+        function showAlert(message, type = 'error') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 
+                                     type === 'success' ? 'check-circle' : 
+                                     'info-circle'}"></i>
+                ${message}
+            `;
             
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.getElementById('alertContainer').appendChild(alertDiv);
             
-            // إضافة الضوء
-            const light = new THREE.DirectionalLight(0x3b82f6, 1);
-            light.position.set(5, 5, 5);
-            scene.add(light);
-            
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-            
-            // خلفية النجوم
-            const starsGeometry = new THREE.BufferGeometry();
-            const starsCount = 5000;
-            const starsPositions = new Float32Array(starsCount * 3);
-            
-            for(let i = 0; i < starsCount * 3; i++) {
-                starsPositions[i] = (Math.random() - 0.5) * 2000;
-            }
-            
-            starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
-            
-            const starsMaterial = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 2,
-                sizeAttenuation: true
-            });
-            
-            const stars = new THREE.Points(starsGeometry, starsMaterial);
-            scene.add(stars);
-            
-            // تحريك الكاميرا
-            camera.position.z = 15;
-            
-            // دوران النجوم
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                stars.rotation.x += 0.0005;
-                stars.rotation.y += 0.0005;
-                
-                renderer.render(scene, camera);
-            }
-            
-            animate();
-            
-            // تكيف مع تغيير حجم النافذة
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 300);
+            }, 5000);
         }
 
-        // 2. نظام المصادقة المخصص
-        function initAuth() {
-            // تبديل بين نموذج الدخول والتسجيل
-            document.getElementById('showRegister').addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.remove('hidden');
-            });
+        // 2. تسجيل حساب جديد
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            document.getElementById('showLogin').addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('loginForm').classList.remove('hidden');
-            });
+            const name = document.getElementById('userName').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+            const country = document.getElementById('userCountry').value;
+            const address = document.getElementById('userAddress').value.trim();
             
-            // تسجيل الدخول برقم الهاتف
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const phone = document.getElementById('loginPhone').value.trim();
-                
-                if (!phone) {
-                    showAlert('يرجى إدخال رقم الهاتف', 'error');
-                    return;
-                }
-                
-                const loginBtn = document.getElementById('loginBtn');
-                const originalText = loginBtn.innerHTML;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
-                loginBtn.disabled = true;
-                
-                try {
-                    // البحث عن المستخدم برقم الهاتف
-                    const querySnapshot = await db.collection('users').where('phone', '==', phone).get();
-                    
-                    if (querySnapshot.empty) {
-                        showAlert('رقم الهاتف غير مسجل', 'error');
-                    } else {
-                        const userDoc = querySnapshot.docs[0];
-                        currentUser = { 
-                            id: userDoc.id, 
-                            ...userDoc.data() 
-                        };
-                        updateUserUI();
-                        showApp();
-                        loadAccounts();
-                        showAlert('تم الدخول بنجاح!', 'success');
-                    }
-                } catch (error) {
-                    console.error('Login error:', error);
-                    showAlert('حدث خطأ أثناء الدخول', 'error');
-                } finally {
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                }
-            });
+            // تحقق من البيانات
+            if (!name || !phone || !country) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
             
-            // إنشاء حساب جديد
-            document.getElementById('registerForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
+            if (phone.length < 10) {
+                showAlert('رقم الهاتف يجب أن يكون 10 أرقام على الأقل');
+                return;
+            }
+            
+            if (!phone.startsWith('05')) {
+                showAlert('رقم الهاتف يجب أن يبدأ بـ 05');
+                return;
+            }
+            
+            // إخفاء النموذج وإظهار التحميل
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            
+            try {
+                // التحقق من عدم وجود رقم الهاتف مسبقًا
+                const usersRef = db.collection('users');
+                const snapshot = await usersRef.where('phone', '==', phone).get();
                 
-                const name = document.getElementById('registerName').value.trim();
-                const phone = document.getElementById('registerPhone').value.trim();
-                const country = document.getElementById('registerCountry').value;
-                const address = document.getElementById('registerAddress').value.trim();
-                
-                if (!name || !phone || !country) {
-                    showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-                    return;
+                if (!snapshot.empty) {
+                    throw new Error('رقم الهاتف مسجل مسبقاً');
                 }
                 
-                if (phone.length < 10) {
-                    showAlert('رقم الهاتف غير صحيح', 'error');
-                    return;
-                }
-                
-                // إخفاء النموذج وإظهار التحميل
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('registerSpinner').style.display = 'block';
-                
-                try {
-                    // التحقق من عدم وجود رقم الهاتف مسبقًا
-                    const existingUser = await db.collection('users').where('phone', '==', phone).get();
-                    
-                    if (!existingUser.empty) {
-                        throw new Error('رقم الهاتف مسجل مسبقًا');
-                    }
-                    
-                    // إنشاء بيانات المستخدم
-                    const userData = {
-                        name,
-                        phone,
-                        country,
-                        address,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        avatarColor: getRandomColor(),
-                        role: 'user'
-                    };
-                    
-                    // إضافة المستخدم إلى قاعدة البيانات
-                    const docRef = await db.collection('users').add(userData);
-                    
-                    // عرض التحميل لمدة 10 ثواني
-                    setTimeout(() => {
-                        // إخفاء التحميل وإظهار علامة النجاح
-                        document.getElementById('registerSpinner').style.display = 'none';
-                        document.getElementById('registerSuccess').style.display = 'block';
-                        
-                        // تعيين المستخدم الحالي
-                        currentUser = { 
-                            id: docRef.id, 
-                            ...userData 
+                // الانتظار 10 ثواني
+                setTimeout(async () => {
+                    try {
+                        // إنشاء بيانات المستخدم
+                        const userData = {
+                            name: name,
+                            phone: phone,
+                            country: country,
+                            address: address,
+                            avatarColor: getRandomColor(),
+                            createdAt: new Date().toISOString(),
+                            lastLogin: new Date().toISOString(),
+                            accountsCount: 0,
+                            isOnline: true
                         };
                         
-                        // الانتقال للتطبيق بعد 2 ثانية
+                        // إضافة المستخدم إلى Firebase
+                        const docRef = await usersRef.add(userData);
+                        
+                        // حفظ بيانات المستخدم
+                        currentUser = {
+                            id: docRef.id,
+                            ...userData
+                        };
+                        
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        
+                        // إظهار شاشة النجاح
+                        document.getElementById('loadingSection').classList.add('hidden');
+                        document.getElementById('successSection').classList.remove('hidden');
+                        
+                        // الانتقال للتطبيق بعد 2 ثواني
                         setTimeout(() => {
-                            updateUserUI();
                             showApp();
                             loadAccounts();
                             showAlert('تم إنشاء حسابك بنجاح!', 'success');
                         }, 2000);
                         
-                    }, 10000); // 10 ثواني تحميل
-                    
+                    } catch (error) {
+                        document.getElementById('loadingSection').classList.add('hidden');
+                        document.getElementById('registerForm').classList.remove('hidden');
+                        showAlert(error.message);
+                    }
+                }, 10000);
+                
+            } catch (error) {
+                document.getElementById('loadingSection').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                showAlert(error.message);
+            }
+        });
+
+        // 3. تسجيل الدخول التلقائي
+        function autoLogin() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    updateUserStatus(true);
+                    showApp();
+                    loadAccounts();
+                    updateUserInfo();
                 } catch (error) {
-                    document.getElementById('registerSpinner').style.display = 'none';
-                    document.getElementById('registerForm').classList.remove('hidden');
-                    showAlert(error.message, 'error');
+                    localStorage.removeItem('currentUser');
                 }
-            });
-            
-            // تسجيل الخروج
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                currentUser = null;
-                document.getElementById('loginContainer').classList.remove('hidden');
-                document.getElementById('app').classList.add('hidden');
-                showAlert('تم تسجيل الخروج', 'info');
-            });
+            }
         }
 
-        // 3. تحديث واجهة المستخدم
-        function updateUserUI() {
+        // 4. تحديث حالة المستخدم
+        async function updateUserStatus(isOnline) {
             if (!currentUser) return;
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userPhone').textContent = currentUser.phone || 'بدون رقم';
-            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
-            document.getElementById('userAvatar').style.background = currentUser.avatarColor || getRandomColor();
+            
+            try {
+                await db.collection('users').doc(currentUser.id).update({
+                    isOnline: isOnline,
+                    lastLogin: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Error updating user status:', error);
+            }
         }
 
-        // 4. تحميل الحسابات
+        // 5. تحديث معلومات المستخدم
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            document.getElementById('userDisplayName').textContent = currentUser.name;
+            document.getElementById('userDisplayPhone').textContent = currentUser.phone;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            document.getElementById('userAvatar').style.background = currentUser.avatarColor;
+        }
+
+        // 6. تسجيل الخروج
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            await updateUserStatus(false);
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+            showAlert('تم تسجيل الخروج', 'info');
+        });
+
+        // 7. عرض التطبيق
+        function showApp() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            updateUserInfo();
+        }
+
+        // 8. تحميل الحسابات
         async function loadAccounts() {
-            const container = document.getElementById('accountsContainer');
-            container.innerHTML = '<p style="text-align: center; width: 100%; color: #94a3b8;">جاري تحميل الحسابات...</p>';
+            const accountsList = document.getElementById('accountsList');
+            accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><div>جاري تحميل الحسابات...</div></div>';
             
             try {
                 const snapshot = await db.collection('accounts')
@@ -1349,27 +1300,27 @@
                     .limit(20)
                     .get();
                 
-                container.innerHTML = '';
+                accountsList.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    container.innerHTML = '<p style="text-align: center; width: 100%; color: #94a3b8; padding: 40px;">لا توجد حسابات للبيع حالياً</p>';
+                    accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><div>لا توجد حسابات للبيع حالياً</div></div>';
                     return;
                 }
                 
                 snapshot.forEach(doc => {
                     const account = doc.data();
                     const accountId = doc.id;
-                    addAccountCard(account, accountId);
+                    createAccountCard(account, accountId);
                 });
             } catch (error) {
                 console.error('Error loading accounts:', error);
-                container.innerHTML = '<p style="text-align: center; width: 100%; color: #ef4444; padding: 40px;">حدث خطأ في تحميل الحسابات</p>';
+                accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><div>حدث خطأ في تحميل الحسابات</div></div>';
             }
         }
 
-        // 5. إضافة بطاقة حساب
-        function addAccountCard(account, accountId) {
-            const container = document.getElementById('accountsContainer');
+        // 9. إنشاء بطاقة حساب
+        function createAccountCard(account, accountId) {
+            const accountsList = document.getElementById('accountsList');
             
             const platformIcons = {
                 instagram: { icon: 'fab fa-instagram', class: 'instagram', name: 'إنستغرام' },
@@ -1384,41 +1335,61 @@
             
             const accountCard = document.createElement('div');
             accountCard.className = 'account-card';
+            
+            // إعداد تاريخ النشر
+            const postDate = account.createdAt ? 
+                new Date(account.createdAt).toLocaleDateString('ar-SA') : 'غير محدد';
+            
             accountCard.innerHTML = `
-                <div class="account-header">
-                    <div class="platform-icon ${platform.class}">
+                <div class="card-header">
+                    <div class="platform-badge ${platform.class}">
                         <i class="${platform.icon}"></i>
                     </div>
-                    <div class="account-title">
+                    <div class="card-info">
                         <h3>${platform.name}</h3>
                         <p>${account.username}</p>
                     </div>
                 </div>
                 
-                <div class="account-details">
-                    <div class="detail-row">
+                <div class="card-details">
+                    <div class="detail-item">
                         <span class="detail-label">المتابعون</span>
-                        <span class="detail-value">${account.followers.toLocaleString()}</span>
+                        <span class="detail-value">${account.followers ? account.followers.toLocaleString() : '0'}</span>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-item">
                         <span class="detail-label">البائع</span>
                         <span class="detail-value">${account.sellerName}</span>
                     </div>
                     ${account.description ? `
-                    <div class="detail-row">
+                    <div class="detail-item">
                         <span class="detail-label">الوصف</span>
                         <span class="detail-value">${account.description}</span>
                     </div>` : ''}
                 </div>
                 
-                <div class="price-tag">${account.price.toLocaleString()} ر.س</div>
+                <div class="card-price">${account.price ? account.price.toLocaleString() : '0'} ر.س</div>
                 
-                <div class="account-actions">
-                    <button class="action-btn contact" onclick="contactSeller('${account.sellerId}')">
+                ${account.proofImages && account.proofImages.length > 0 ? `
+                <div class="card-images">
+                    <div class="images-header">
+                        <i class="fas fa-images"></i>
+                        صور إثبات الملكية
+                    </div>
+                    <div class="images-container">
+                        ${account.proofImages.slice(0, 3).map((img, index) => `
+                            <div class="image-thumb" onclick="viewImage('${img}')">
+                                <img src="${img}" alt="إثبات ${index + 1}" loading="lazy">
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>` : ''}
+                
+                <div class="card-actions">
+                    <button class="action-btn primary" onclick="contactSeller('${account.sellerId}')">
                         <i class="fas fa-phone-alt"></i>
                         تواصل مع البائع
                     </button>
-                    <button class="action-btn chat" onclick="startChat('${account.sellerId}', '${account.sellerName}')">
+                    <button class="action-btn secondary" onclick="startChat('${account.sellerId}', '${account.sellerName}')">
                         <i class="fas fa-comment-dots"></i>
                         دردشة مباشرة
                     </button>
@@ -1426,255 +1397,62 @@
                 
                 <div class="seller-info">
                     <div class="seller-avatar" style="background: ${account.sellerAvatarColor || getRandomColor()}">
-                        ${account.sellerName.charAt(0)}
+                        ${account.sellerName ? account.sellerName.charAt(0) : '?'}
                     </div>
                     <div>
-                        <h4>${account.sellerName}</h4>
-                        <p style="color: #94a3b8; font-size: 14px;">بائع منذ ${new Date(account.createdAt?.toDate()).toLocaleDateString('ar-SA')}</p>
+                        <h4>${account.sellerName || 'غير معروف'}</h4>
+                        <p style="font-size: 12px; color: #94a3b8;">تم النشر: ${postDate}</p>
                     </div>
                 </div>
             `;
             
-            container.appendChild(accountCard);
+            accountsList.appendChild(accountCard);
         }
 
-        // 6. تحميل المستخدمين
-        async function loadUsers() {
-            const container = document.getElementById('usersContainer');
-            container.innerHTML = '<p style="text-align: center; width: 100%; color: #94a3b8;">جاري تحميل المستخدمين...</p>';
-            
-            try {
-                const snapshot = await db.collection('users')
-                    .orderBy('createdAt', 'desc')
-                    .limit(50)
-                    .get();
-                
-                container.innerHTML = '';
-                
-                snapshot.forEach(doc => {
-                    const user = doc.data();
-                    const userId = doc.id;
-                    
-                    if (currentUser && userId === currentUser.id) return; // تخطي المستخدم الحالي
-                    
-                    addUserCard(user, userId);
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-                container.innerHTML = '<p style="text-align: center; width: 100%; color: #ef4444;">حدث خطأ في تحميل المستخدمين</p>';
-            }
+        // 10. عرض صورة
+        function viewImage(url) {
+            window.open(url, '_blank');
         }
 
-        // 7. إضافة بطاقة مستخدم
-        function addUserCard(user, userId) {
-            const container = document.getElementById('usersContainer');
-            
-            const userCard = document.createElement('div');
-            userCard.className = 'user-card';
-            userCard.innerHTML = `
-                <div class="user-card-avatar" style="background: ${user.avatarColor || getRandomColor()}">
-                    ${user.name.charAt(0)}
-                </div>
-                <div class="user-card-info">
-                    <h3>${user.name}</h3>
-                    <p>${user.phone || 'بدون رقم'}</p>
-                    <p style="margin-top: 5px;"><i class="fas fa-map-marker-alt"></i> ${user.city || ''} ${user.country ? `, ${user.country}` : ''}</p>
-                </div>
-            `;
-            
-            userCard.addEventListener('click', () => {
-                startChat(userId, user.name);
-            });
-            
-            container.appendChild(userCard);
-        }
-
-        // 8. عرض صفحة المستخدمين
-        document.getElementById('viewUsersBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            const accountsContainer = document.getElementById('accountsContainer');
-            const usersContainer = document.getElementById('usersContainer');
-            
-            if (usersContainer.classList.contains('hidden')) {
-                accountsContainer.classList.add('hidden');
-                usersContainer.classList.remove('hidden');
-                document.querySelector('.page-title').textContent = 'المستخدمين النشطين';
-                await loadUsers();
-            } else {
-                usersContainer.classList.add('hidden');
-                accountsContainer.classList.remove('hidden');
-                document.querySelector('.page-title').textContent = 'الحسابات المتاحة للشراء';
-            }
-        });
-
-        // 9. إدارة نافذة الإضافة
-        document.getElementById('openAddModal').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('addModal').style.display = 'flex';
-        });
-
-        document.getElementById('closeAddModal').addEventListener('click', () => {
-            document.getElementById('addModal').style.display = 'none';
-            resetUploadForm();
-        });
-
-        // 10. إدارة رفع الصور
-        document.getElementById('imageUploadArea').addEventListener('click', () => {
-            document.getElementById('imageInput').click();
-        });
-
-        document.getElementById('imageInput').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files).slice(0, 3);
-            
-            for (const file of files) {
-                await uploadImageToServer(file);
-            }
-        });
-
-        // 11. رفع الصورة إلى IMGBB
-        async function uploadImageToServer(file) {
-            if (uploadedImages.length >= 3) {
-                showAlert('يمكنك رفع 3 صور كحد أقصى', 'info');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('image', file);
-            
-            try {
-                // استخدم IMGBB API
-                const apiKey = 'fc90a0a005031a9d572ad3476ef545c2';
-                formData.append('key', apiKey);
-                
-                const response = await fetch('https://api.imgbb.com/1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    uploadedImages.push(data.data.url);
-                    updateImagePreview();
-                    showAlert('تم رفع الصورة بنجاح', 'success');
-                } else {
-                    showAlert('فشل في رفع الصورة', 'error');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                // في حالة فشل الرفع، استخدم صورة افتراضية
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImages.push(e.target.result);
-                    updateImagePreview();
-                    showAlert('تم حفظ الصورة محلياً', 'info');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // 12. تحديث معاينة الصور
-        function updateImagePreview() {
-            const preview = document.getElementById('imagesPreview');
-            preview.innerHTML = '';
-            
-            uploadedImages.forEach((url, index) => {
-                const item = document.createElement('div');
-                item.className = 'image-preview-item';
-                item.innerHTML = `
-                    <img src="${url}" alt="صورة الإثبات">
-                    <div class="remove-image" onclick="removeImage(${index})">
-                        <i class="fas fa-times"></i>
-                    </div>
-                `;
-                preview.appendChild(item);
-            });
-        }
-
-        // 13. إزالة صورة
-        function removeImage(index) {
-            uploadedImages.splice(index, 1);
-            updateImagePreview();
-        }
-
-        // 14. إعادة تعيين نموذج الرفع
-        function resetUploadForm() {
-            document.getElementById('addAccountForm').reset();
-            uploadedImages = [];
-            updateImagePreview();
-        }
-
-        // 15. إضافة حساب جديد
-        document.getElementById('addAccountForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!currentUser) {
-                showAlert('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-            
-            if (uploadedImages.length < 2) {
-                showAlert('يرجى رفع صورتين على الأقل كإثبات للملكية', 'error');
-                return;
-            }
-            
-            const platform = document.getElementById('accountPlatform').value;
-            const username = document.getElementById('accountUsername').value;
-            const followers = parseInt(document.getElementById('accountFollowers').value);
-            const price = parseInt(document.getElementById('accountPrice').value);
-            const description = document.getElementById('accountDescription').value;
-            
-            if (!platform || !username || !followers || !price) {
-                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-                return;
-            }
-            
-            try {
-                await db.collection('accounts').add({
-                    platform,
-                    username,
-                    followers,
-                    price,
-                    description,
-                    proofImages: uploadedImages,
-                    sellerId: currentUser.id,
-                    sellerName: currentUser.name,
-                    sellerAvatarColor: currentUser.avatarColor,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    status: 'active'
-                });
-                
-                showAlert('تم نشر الحساب بنجاح!', 'success');
-                
-                // إعادة التعيين
-                document.getElementById('addModal').style.display = 'none';
-                resetUploadForm();
-                
-                // إعادة تحميل الحسابات
-                loadAccounts();
-            } catch (error) {
-                console.error('Error adding account:', error);
-                showAlert('حدث خطأ في نشر الحساب', 'error');
-            }
-        });
-
-        // 16. التواصل مع البائع
+        // 11. التواصل مع البائع
         async function contactSeller(sellerId) {
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
             try {
                 const sellerDoc = await db.collection('users').doc(sellerId).get();
+                if (!sellerDoc.exists) {
+                    showAlert('المستخدم غير موجود');
+                    return;
+                }
+                
                 const seller = sellerDoc.data();
                 
-                alert(`معلومات البائع:\n\nالاسم: ${seller.name}\nالهاتف: ${seller.phone || 'غير متوفر'}\nالدولة: ${seller.country || 'غير محدد'}\nالعنوان: ${seller.address || 'غير محدد'}`);
+                const message = `معلومات البائع:
+                
+الاسم: ${seller.name}
+الهاتف: ${seller.phone || 'غير متوفر'}
+الدولة: ${seller.country || 'غير محدد'}
+العنوان: ${seller.address || 'غير محدد'}`;
+                
+                alert(message);
+                
             } catch (error) {
-                showAlert('حدث خطأ في تحميل معلومات البائع', 'error');
+                showAlert('حدث خطأ في تحميل معلومات البائع');
             }
         }
 
-        // 17. بدء الدردشة
+        // 12. بدء الدردشة
         async function startChat(userId, userName) {
             if (!currentUser) {
-                showAlert('يجب تسجيل الدخول أولاً', 'error');
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            if (userId === currentUser.id) {
+                showAlert('لا يمكنك الدردشة مع نفسك');
                 return;
             }
             
@@ -1684,27 +1462,17 @@
             document.getElementById('chatUserName').textContent = userName;
             document.getElementById('chatModal').style.display = 'flex';
             
-            await loadChatMessages();
-            setupChatListener();
+            await loadChatMessages(userId);
+            setupChatListener(userId);
         }
 
-        // 18. إغلاق الدردشة
-        document.getElementById('closeChat').addEventListener('click', () => {
-            document.getElementById('chatModal').style.display = 'none';
-            if (chatListener) {
-                chatListener();
-                chatListener = null;
-            }
-            currentChatUser = null;
-        });
-
-        // 19. تحميل الرسائل
-        async function loadChatMessages() {
+        // 13. تحميل الرسائل
+        async function loadChatMessages(userId) {
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '<p style="text-align: center; color: #94a3b8;">جاري تحميل المحادثة...</p>';
+            chatMessages.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 30px;">جاري تحميل المحادثة...</div>';
             
             try {
-                const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
+                const chatId = getChatId(currentUser.id, userId);
                 const snapshot = await db.collection('chats')
                     .doc(chatId)
                     .collection('messages')
@@ -1715,27 +1483,60 @@
                 chatMessages.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    chatMessages.innerHTML = '<p style="text-align: center; color: #94a3b8;">ابدأ محادثة جديدة</p>';
+                    chatMessages.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 30px;">ابدأ محادثة جديدة</div>';
                     return;
                 }
                 
                 snapshot.forEach(doc => {
                     const message = doc.data();
-                    addMessageToChat(message, false);
+                    displayMessage(message);
                 });
                 
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                scrollToBottom();
+                
             } catch (error) {
                 console.error('Error loading messages:', error);
-                chatMessages.innerHTML = '<p style="text-align: center; color: #ef4444;">حدث خطأ في تحميل المحادثة</p>';
+                chatMessages.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 30px;">حدث خطأ في تحميل المحادثة</div>';
             }
         }
 
-        // 20. إعداد مستمع الرسائل
-        function setupChatListener() {
-            if (chatListener) chatListener();
+        // 14. إنشاء معرف المحادثة
+        function getChatId(userId1, userId2) {
+            return [userId1, userId2].sort().join('_');
+        }
+
+        // 15. عرض الرسالة
+        function displayMessage(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-bubble ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
+            messageDiv.textContent = message.text;
             
-            const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
+            // إضافة الوقت
+            const timeSpan = document.createElement('span');
+            timeSpan.style.cssText = 'display: block; font-size: 11px; opacity: 0.7; margin-top: 5px; text-align: right;';
+            timeSpan.textContent = message.timestamp ? 
+                new Date(message.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 
+                'الآن';
+            
+            messageDiv.appendChild(timeSpan);
+            chatMessages.appendChild(messageDiv);
+        }
+
+        // 16. التمرير للأسفل
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 17. إعداد مستمع الرسائل
+        function setupChatListener(userId) {
+            // إزالة المستمع القديم
+            if (chatListener) {
+                chatListener();
+            }
+            
+            const chatId = getChatId(currentUser.id, userId);
             
             chatListener = db.collection('chats')
                 .doc(chatId)
@@ -1745,98 +1546,362 @@
                     snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             const message = change.doc.data();
-                            addMessageToChat(message, true);
+                            displayMessage(message);
+                            scrollToBottom();
                         }
                     });
+                }, (error) => {
+                    console.error('Chat listener error:', error);
                 });
         }
 
-        // 21. إضافة رسالة للدردشة
-        function addMessageToChat(message, scrollToBottom) {
-            const chatMessages = document.getElementById('chatMessages');
-            
-            // إزالة رسالة التحميل
-            if (chatMessages.children.length === 1 && chatMessages.children[0].tagName === 'P') {
-                chatMessages.innerHTML = '';
-            }
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
-            messageDiv.textContent = message.text;
-            
-            chatMessages.appendChild(messageDiv);
-            
-            if (scrollToBottom) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
-
-        // 22. إرسال رسالة
-        document.getElementById('sendMessageBtn').addEventListener('click', async () => {
+        // 18. إرسال رسالة
+        document.getElementById('sendMessageBtn').addEventListener('click', async function() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             
-            if (!text || !currentChatUser || !currentUser) return;
+            if (!text || !currentChatUser || !currentUser) {
+                return;
+            }
             
-            const chatId = [currentUser.id, currentChatUser.id].sort().join('_');
+            if (text.length === 0) {
+                showAlert('يرجى كتابة رسالة');
+                return;
+            }
+            
+            const chatId = getChatId(currentUser.id, currentChatUser.id);
             
             try {
-                // إضافة الرسالة
-                await db.collection('chats').doc(chatId).collection('messages').add({
-                    text,
+                // إنشاء بيانات الرسالة
+                const messageData = {
+                    text: text,
                     senderId: currentUser.id,
                     senderName: currentUser.name,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    timestamp: new Date().toISOString(),
+                    read: false
+                };
+                
+                // إضافة الرسالة
+                await db.collection('chats')
+                    .doc(chatId)
+                    .collection('messages')
+                    .add(messageData);
                 
                 // تحديث المحادثة
                 await db.collection('chats').doc(chatId).set({
                     participants: [currentUser.id, currentChatUser.id],
                     lastMessage: text,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    lastUpdated: new Date().toISOString(),
+                    unreadCount: {
+                        [currentChatUser.id]: firebase.firestore.FieldValue.increment(1)
+                    }
                 }, { merge: true });
                 
+                // مسح حقل الإدخال
                 input.value = '';
+                input.focus();
+                
             } catch (error) {
                 console.error('Error sending message:', error);
-                showAlert('حدث خطأ في إرسال الرسالة', 'error');
+                showAlert('حدث خطأ في إرسال الرسالة');
             }
         });
 
-        // 23. إرسال بالضغط على Enter
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+        // 19. إرسال بالضغط على Enter
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 document.getElementById('sendMessageBtn').click();
             }
         });
 
-        // 24. عرض التطبيق
-        function showApp() {
-            document.getElementById('loginContainer').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
+        // 20. إغلاق الدردشة
+        document.getElementById('closeChat').addEventListener('click', function() {
+            document.getElementById('chatModal').style.display = 'none';
+            if (chatListener) {
+                chatListener();
+                chatListener = null;
+            }
+            currentChatUser = null;
+        });
+
+        // 21. فتح نافذة الإضافة
+        document.getElementById('addAccountBtn').addEventListener('click', function(e) {
+            e.preventDefault();
             
-            setTimeout(() => {
-                document.getElementById('app').classList.add('loaded');
-            }, 100);
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            document.getElementById('addModal').style.display = 'flex';
+        });
+
+        // 22. إغلاق نافذة الإضافة
+        document.getElementById('closeAddModal').addEventListener('click', function() {
+            document.getElementById('addModal').style.display = 'none';
+            resetUploadForm();
+        });
+
+        // 23. رفع الصور
+        document.getElementById('imageUploadArea').addEventListener('click', function() {
+            document.getElementById('imageInput').click();
+        });
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files).slice(0, 3);
+            
+            files.forEach(file => {
+                validateAndUploadImage(file);
+            });
+        });
+
+        // 24. التحقق من الصورة ورفعها
+        async function validateAndUploadImage(file) {
+            // التحقق من عدد الصور
+            if (uploadedImages.length >= 3) {
+                showAlert('يمكنك رفع 3 صور كحد أقصى', 'info');
+                return;
+            }
+            
+            // التحقق من نوع الملف
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showAlert('نوع الملف غير مدعوم. يرجى رفع صور بصيغة JPG, PNG, أو GIF');
+                return;
+            }
+            
+            // التحقق من حجم الملف
+            if (file.size > MAX_FILE_SIZE) {
+                showAlert('حجم الملف كبير جداً. الحد الأقصى 5MB');
+                return;
+            }
+            
+            // رفع الصورة
+            await uploadImageToFirebase(file);
         }
 
-        // 25. إظهار التنبيهات
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert ${type}`;
-            alertDiv.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                ${message}
+        // 25. رفع الصورة إلى Firebase
+        async function uploadImageToFirebase(file) {
+            try {
+                // إنشاء اسم فريد للملف
+                const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                const storageRef = firebase.storage().ref();
+                const imageRef = storageRef.child(`account-proofs/${currentUser.id}/${fileName}`);
+                
+                // رفع الملف
+                const uploadTask = imageRef.put(file);
+                
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // يمكن إضافة شريط تقدم هنا إذا لزم الأمر
+                    },
+                    (error) => {
+                        console.error('Upload error:', error);
+                        showAlert('حدث خطأ في رفع الصورة');
+                    },
+                    async () => {
+                        // الحصول على رابط التحميل
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        // حفظ الرابط في المصفوفة
+                        uploadedImages.push(downloadURL);
+                        updateImagePreview();
+                        
+                        showAlert('تم رفع الصورة بنجاح', 'success');
+                    }
+                );
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('حدث خطأ في رفع الصورة');
+            }
+        }
+
+        // 26. تحديث معاينة الصور
+        function updateImagePreview() {
+            const preview = document.getElementById('imagesPreview');
+            preview.innerHTML = '';
+            
+            uploadedImages.forEach((url, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${url}" alt="صورة الإثبات" loading="lazy">
+                    <div class="remove-btn" onclick="removeImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                preview.appendChild(item);
+            });
+        }
+
+        // 27. إزالة صورة
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImagePreview();
+        }
+
+        // 28. إعادة تعيين النموذج
+        function resetUploadForm() {
+            document.getElementById('addAccountForm').reset();
+            uploadedImages = [];
+            updateImagePreview();
+        }
+
+        // 29. نشر حساب جديد
+        document.getElementById('addAccountForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            if (uploadedImages.length < 2) {
+                showAlert('يرجى رفع صورتين على الأقل كإثبات للملكية');
+                return;
+            }
+            
+            const platform = document.getElementById('accountPlatform').value;
+            const username = document.getElementById('accountUsername').value.trim();
+            const followers = parseInt(document.getElementById('accountFollowers').value);
+            const price = parseInt(document.getElementById('accountPrice').value);
+            const description = document.getElementById('accountDescription').value.trim();
+            
+            if (!platform || !username || !followers || !price) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            if (followers < 0 || price < 0) {
+                showAlert('القيم يجب أن تكون إيجابية');
+                return;
+            }
+            
+            try {
+                await db.collection('accounts').add({
+                    platform: platform,
+                    username: username,
+                    followers: followers,
+                    price: price,
+                    description: description,
+                    proofImages: uploadedImages,
+                    sellerId: currentUser.id,
+                    sellerName: currentUser.name,
+                    sellerAvatarColor: currentUser.avatarColor,
+                    createdAt: new Date().toISOString(),
+                    status: 'active',
+                    views: 0
+                });
+                
+                showAlert('تم نشر الحساب بنجاح!', 'success');
+                
+                document.getElementById('addModal').style.display = 'none';
+                resetUploadForm();
+                loadAccounts();
+                
+            } catch (error) {
+                console.error('Error adding account:', error);
+                showAlert('حدث خطأ في نشر الحساب');
+            }
+        });
+
+        // 30. عرض المستخدمين
+        document.getElementById('viewUsersBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            document.getElementById('pageTitle').textContent = 'المستخدمين النشطين';
+            document.getElementById('accountsList').classList.add('hidden');
+            document.getElementById('usersList').classList.remove('hidden');
+            
+            await loadUsers();
+        });
+
+        // 31. تحميل المستخدمين
+        async function loadUsers() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><div>جاري تحميل المستخدمين...</div></div>';
+            
+            try {
+                const snapshot = await db.collection('users')
+                    .orderBy('lastLogin', 'desc')
+                    .limit(50)
+                    .get();
+                
+                usersList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    usersList.innerHTML = '<div class="empty-state"><i class="fas fa-users-slash"></i><div>لا توجد مستخدمين</div></div>';
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const userId = doc.id;
+                    
+                    if (userId === currentUser.id) return;
+                    
+                    createUserCard(user, userId);
+                });
+                
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><div>حدث خطأ في تحميل المستخدمين</div></div>';
+            }
+        }
+
+        // 32. إنشاء بطاقة مستخدم
+        function createUserCard(user, userId) {
+            const usersList = document.getElementById('usersList');
+            
+            const userCard = document.createElement('div');
+            userCard.className = 'user-card';
+            
+            userCard.innerHTML = `
+                <div class="user-avatar-large" style="background: ${user.avatarColor || getRandomColor()}">
+                    ${user.name.charAt(0)}
+                </div>
+                <div class="user-details">
+                    <h3>${user.name}</h3>
+                    <p><i class="fas fa-phone"></i> ${user.phone}</p>
+                    <p style="margin-top: 5px;"><i class="fas fa-map-marker-alt"></i> ${user.country || 'غير محدد'}</p>
+                    ${user.isOnline ? `<span class="status-badge status-active" style="margin-top: 5px; display: inline-block;"><i class="fas fa-circle" style="font-size: 8px;"></i> متصل الآن</span>` : ''}
+                </div>
             `;
             
-            document.getElementById('alertContainer').appendChild(alertDiv);
+            userCard.addEventListener('click', () => {
+                startChat(userId, user.name);
+            });
             
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+            usersList.appendChild(userCard);
         }
 
-        // 26. الحصول على لون عشوائي
+        // 33. عرض الحسابات عند النقر على العلامة
+        document.querySelector('.logo-container').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('pageTitle').textContent = 'الحسابات المتاحة للشراء';
+            document.getElementById('accountsList').classList.remove('hidden');
+            document.getElementById('usersList').classList.add('hidden');
+        });
+
+        // 34. عرض الدردشات
+        document.getElementById('viewChatsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً');
+                return;
+            }
+            
+            showAlert('قريباً: صفحة الدردشات', 'info');
+        });
+
+        // 35. وظائف مساعدة
         function getRandomColor() {
             const colors = [
                 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
@@ -1848,38 +1913,23 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // 27. إغلاق النوافذ بالنقر خارجها
-        window.addEventListener('click', (e) => {
+        // 36. إغلاق النوافذ بالنقر خارجها
+        window.addEventListener('click', function(e) {
             if (e.target.id === 'addModal') {
                 document.getElementById('addModal').style.display = 'none';
                 resetUploadForm();
             }
         });
 
-        // 28. تهيئة التطبيق
-        document.addEventListener('DOMContentLoaded', () => {
-            initThreeJS();
-            initAuth();
-            
-            // تحقق إذا كان هناك مستخدم مسجل مسبقاً
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    updateUserUI();
-                    showApp();
-                    loadAccounts();
-                } catch (e) {
-                    localStorage.removeItem('currentUser');
-                }
-            }
-        });
+        // 37. جعل الدوال متاحة عالمياً
+        window.viewImage = viewImage;
+        window.contactSeller = contactSeller;
+        window.startChat = startChat;
+        window.removeImage = removeImage;
 
-        // 29. حفظ المستخدم عند الخروج
-        window.addEventListener('beforeunload', () => {
-            if (currentUser) {
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
+        // 38. تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            autoLogin();
         });
     </script>
 </body>
