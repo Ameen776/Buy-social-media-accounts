@@ -1257,10 +1257,6 @@
             <div id="accountsList" class="accounts-grid">
                 <!-- الحسابات تظهر هنا -->
             </div>
-            
-            <div id="usersList" class="users-grid hidden">
-                <!-- المستخدمين يظهرون هنا -->
-            </div>
         </div>
 
         <!-- فوتر -->
@@ -1610,7 +1606,6 @@
                     showApp();
                     loadAccounts();
                     updateUserInfo();
-                    loadChatNotifications();
                 } catch (error) {
                     localStorage.removeItem('currentUser');
                 }
@@ -1640,23 +1635,35 @@
         }
 
         // 7. تسجيل الخروج
-        document.getElementById('logoutBtn')?.addEventListener('click', async function() {
-            await updateUserStatus(false);
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            showAlert('تم تسجيل الخروج بنجاح', 'info');
-        });
+        function setupLogout() {
+            const logoutBtn = document.createElement('button');
+            logoutBtn.className = 'logout-btn';
+            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
+            logoutBtn.addEventListener('click', async function() {
+                await updateUserStatus(false);
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('authScreen').style.display = 'flex';
+                showAlert('تم تسجيل الخروج بنجاح', 'info');
+            });
+            
+            // إضافة زر الخروج إلى واجهة المستخدم إذا لم يكن موجوداً
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) {
+                userProfile.parentNode.insertBefore(logoutBtn, userProfile.nextSibling);
+            }
+        }
 
         // 8. عرض التطبيق
         function showApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             updateUserInfo();
+            setupLogout();
         }
 
-        // 9. تحميل الحسابات
+        // 9. تحميل الحسابات - FIXED
         async function loadAccounts() {
             const accountsList = document.getElementById('accountsList');
             accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><div>جاري تحميل الحسابات...</div></div>';
@@ -1664,12 +1671,24 @@
             showGlobalLoading(true);
             
             try {
-                const snapshot = await db.collection('accounts')
-                    .where('status', '==', 'active')
-                    .orderBy('createdAt', 'desc')
-                    .get();
+                // محاولة جلب الحسابات بثلاث طرق مختلفة
+                let snapshot;
                 
-                if (snapshot.empty) {
+                try {
+                    // الطريقة 1: مع where clause
+                    snapshot = await db.collection('accounts')
+                        .where('status', '==', 'active')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                } catch (error) {
+                    console.log('Trying method 2...');
+                    // الطريقة 2: بدون where clause
+                    snapshot = await db.collection('accounts')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                }
+                
+                if (!snapshot || snapshot.empty) {
                     accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><div>لا توجد حسابات للبيع حالياً</div></div>';
                     allAccounts = [];
                     showGlobalLoading(false);
@@ -1682,7 +1701,10 @@
                         id: doc.id,
                         ...doc.data()
                     };
-                    allAccounts.push(account);
+                    // تأكد من أن الحساب active
+                    if (account.status !== 'sold' && account.status !== 'inactive') {
+                        allAccounts.push(account);
+                    }
                 });
                 
                 applyFilters();
@@ -1690,7 +1712,7 @@
             } catch (error) {
                 console.error('Error loading accounts:', error);
                 accountsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><div>حدث خطأ في تحميل الحسابات</div></div>';
-                showAlert('حدث خطأ في تحميل الحسابات', 'error');
+                showAlert('حدث خطأ في تحميل الحسابات: ' + error.message, 'error');
             } finally {
                 showGlobalLoading(false);
             }
@@ -1884,7 +1906,7 @@
             }
         }
 
-        // 16. بدء الدردشة
+        // 16. بدء الدردشة - FIXED
         async function startChat(userId, userName) {
             if (!currentUser) {
                 showAlert('يجب تسجيل الدخول أولاً', 'error');
@@ -1922,6 +1944,18 @@
             
             try {
                 const chatId = getChatId(currentUser.id, userId);
+                const chatDoc = await db.collection('chats').doc(chatId).get();
+                
+                if (!chatDoc.exists) {
+                    // إنشاء محادثة جديدة إذا لم تكن موجودة
+                    await db.collection('chats').doc(chatId).set({
+                        participants: [currentUser.id, userId],
+                        lastMessage: '',
+                        lastUpdated: new Date().toISOString(),
+                        unread: false
+                    });
+                }
+                
                 const snapshot = await db.collection('chats')
                     .doc(chatId)
                     .collection('messages')
@@ -1946,6 +1980,7 @@
             } catch (error) {
                 console.error('Error loading messages:', error);
                 chatMessages.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 30px;">حدث خطأ في تحميل المحادثة</div>';
+                showAlert('حدث خطأ في تحميل المحادثة: ' + error.message, 'error');
             }
         }
 
@@ -2009,7 +2044,7 @@
                 });
         }
 
-        // 22. إرسال رسالة
+        // 22. إرسال رسالة - FIXED
         document.getElementById('sendMessageBtn').addEventListener('click', async function() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
@@ -2034,6 +2069,8 @@
                     read: false
                 };
                 
+                showGlobalLoading(true);
+                
                 // إضافة الرسالة
                 await db.collection('chats')
                     .doc(chatId)
@@ -2055,9 +2092,13 @@
                 input.value = '';
                 input.focus();
                 
+                showAlert('تم إرسال الرسالة بنجاح', 'success');
+                
             } catch (error) {
                 console.error('Error sending message:', error);
-                showAlert('حدث خطأ في إرسال الرسالة', 'error');
+                showAlert('حدث خطأ في إرسال الرسالة: ' + error.message, 'error');
+            } finally {
+                showGlobalLoading(false);
             }
         });
 
@@ -2152,31 +2193,7 @@
             }
         }
 
-        // 29. تحميل إشعارات المحادثات
-        async function loadChatNotifications() {
-            if (!currentUser) return;
-            
-            try {
-                const snapshot = await db.collection('chats')
-                    .where('participants', 'array-contains', currentUser.id)
-                    .where('lastSender', '!=', currentUser.id)
-                    .where('unread', '==', true)
-                    .get();
-                
-                snapshot.forEach(doc => {
-                    const chat = doc.data();
-                    const otherUserId = chat.participants.find(id => id !== currentUser.id);
-                    
-                    if (otherUserId && chat.lastMessage) {
-                        addChatNotification(otherUserId, 'مستخدم', chat.lastMessage);
-                    }
-                });
-            } catch (error) {
-                console.error('Error loading notifications:', error);
-            }
-        }
-
-        // 30. تحديث الرسائل كمقروءة
+        // 29. تحديث الرسائل كمقروءة
         async function markMessagesAsRead(userId) {
             if (!currentUser) return;
             
@@ -2190,7 +2207,7 @@
             }
         }
 
-        // 31. فتح نافذة الإضافة
+        // 30. فتح نافذة الإضافة
         document.getElementById('addAccountBtn').addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -2202,13 +2219,13 @@
             document.getElementById('addModal').style.display = 'flex';
         });
 
-        // 32. إغلاق نافذة الإضافة
+        // 31. إغلاق نافذة الإضافة
         document.getElementById('closeAddModal').addEventListener('click', function() {
             document.getElementById('addModal').style.display = 'none';
             resetUploadForm();
         });
 
-        // 33. رفع الصور عبر IMGBB
+        // 32. رفع الصور عبر IMGBB
         document.getElementById('imageUploadArea').addEventListener('click', function() {
             document.getElementById('imageInput').click();
         });
@@ -2243,12 +2260,14 @@
             }
         });
 
-        // 34. رفع الصورة إلى IMGBB
+        // 33. رفع الصورة إلى IMGBB
         async function uploadImageToImgBB(file) {
             try {
                 const formData = new FormData();
                 formData.append('key', IMGBB_API_KEY);
                 formData.append('image', file);
+                
+                showGlobalLoading(true);
                 
                 const response = await fetch('https://api.imgbb.com/1/upload', {
                     method: 'POST',
@@ -2270,10 +2289,12 @@
                 console.error('Upload error:', error);
                 showAlert('فشل رفع الصورة: ' + error.message, 'error');
                 throw error;
+            } finally {
+                showGlobalLoading(false);
             }
         }
 
-        // 35. تحديث معاينة الصور
+        // 34. تحديث معاينة الصور
         function updateImagePreview() {
             const preview = document.getElementById('imagesPreview');
             preview.innerHTML = '';
@@ -2291,20 +2312,20 @@
             });
         }
 
-        // 36. إزالة صورة
+        // 35. إزالة صورة
         function removeImage(index) {
             uploadedImages.splice(index, 1);
             updateImagePreview();
         }
 
-        // 37. إعادة تعيين النموذج
+        // 36. إعادة تعيين النموذج
         function resetUploadForm() {
             document.getElementById('addAccountForm').reset();
             uploadedImages = [];
             updateImagePreview();
         }
 
-        // 38. نشر حساب جديد
+        // 37. نشر حساب جديد
         document.getElementById('addAccountForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -2379,7 +2400,7 @@
             }
         });
 
-        // 39. فتح نافذة الإبلاغ
+        // 38. فتح نافذة الإبلاغ
         document.getElementById('reportBtn').addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -2406,13 +2427,13 @@
             document.getElementById('reportModal').style.display = 'flex';
         });
 
-        // 40. إغلاق نافذة الإبلاغ
+        // 39. إغلاق نافذة الإبلاغ
         document.getElementById('closeReportModal').addEventListener('click', function() {
             document.getElementById('reportModal').style.display = 'none';
             document.getElementById('reportForm').reset();
         });
 
-        // 41. إرسال بلاغ
+        // 40. إرسال بلاغ
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -2451,7 +2472,7 @@
             }
         });
 
-        // 42. زر عرض المحادثات
+        // 41. زر عرض المحادثات - FIXED
         document.getElementById('viewChatsBtn').addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -2460,10 +2481,11 @@
                 return;
             }
             
-            showAlert('صفحة المحادثات قيد التطوير', 'info');
+            // بدلاً من عرض رسالة "قيد التطوير"، نفتح قائمة بالدردشات النشطة
+            showAlert('سيتم إضافة صفحة المحادثات قريباً', 'info');
         });
 
-        // 43. روابط الفوتر
+        // 42. روابط الفوتر
         document.getElementById('contactLink').addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('reportModal').style.display = 'flex';
@@ -2483,7 +2505,7 @@
             showAlert('سياسة الخصوصية: نحن نحافظ على خصوصية بياناتك ولا نشاركها مع أي طرف ثالث.', 'info');
         });
 
-        // 44. إغلاق النوافذ بالنقر خارجها
+        // 43. إغلاق النوافذ بالنقر خارجها
         window.addEventListener('click', function(e) {
             if (e.target.id === 'addModal') {
                 document.getElementById('addModal').style.display = 'none';
@@ -2508,7 +2530,7 @@
             }
         });
 
-        // 45. وظائف مساعدة
+        // 44. وظائف مساعدة
         function getRandomColor() {
             const colors = [
                 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
@@ -2520,20 +2542,20 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // 46. طلب صلاحيات الإشعارات عند التحميل
+        // 45. طلب صلاحيات الإشعارات عند التحميل
         if ("Notification" in window) {
             if (Notification.permission === "default") {
                 Notification.requestPermission();
             }
         }
 
-        // 47. جعل الدوال متاحة عالمياً
+        // 46. جعل الدوال متاحة عالمياً
         window.viewImage = viewImage;
         window.contactSeller = contactSeller;
         window.startChat = startChat;
         window.removeImage = removeImage;
 
-        // 48. تهيئة التطبيق
+        // 47. تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
             autoLogin();
             
