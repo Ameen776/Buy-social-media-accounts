@@ -2045,6 +2045,7 @@
                 document.getElementById('profileCountry').value = currentUser.country || '';
                 document.getElementById('profilePhone').value = currentUser.phone || '';
                 document.getElementById('profileAddress').value = currentUser.address || '';
+                document.getElementById('profileEmail').value = currentUser.email || '';
                 
                 if (currentUser.phone) {
                     const phone = currentUser.phone;
@@ -2165,6 +2166,7 @@
             const countryCode = document.getElementById('profileCountryCode').value;
             const phone = document.getElementById('profilePhone').value.trim();
             const address = document.getElementById('profileAddress').value.trim();
+            const email = document.getElementById('profileEmail').value.trim();
             
             if (!name || !country || !phone || !address) {
                 showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
@@ -2182,6 +2184,7 @@
                     country: country,
                     phone: countryCode + phone,
                     address: address,
+                    email: email,
                     updatedAt: new Date().toISOString()
                 };
                 
