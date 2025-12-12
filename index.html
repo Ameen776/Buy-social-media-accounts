@@ -1790,30 +1790,10 @@
         // FreeImage.host API Key
         const FREEIMAGE_API_KEY = "6d207e02198a847aa98d0a2a901485a5";
 
-        // Initialize Firebase
+        // Global State
         let firebaseApp;
         let db;
         let auth;
-        
-        try {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            console.log('✅ Firebase initialized successfully');
-            
-            db = firebase.firestore();
-            auth = firebase.auth();
-            
-            // Enable offline persistence
-            db.enablePersistence()
-                .catch((err) => {
-                    console.warn('⚠️ Offline persistence not available:', err.code);
-                });
-                
-        } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
-        }
-
-        // Global State
         let currentUser = null;
         let currentChatUser = null;
         let chatListener = null;
@@ -1823,6 +1803,53 @@
         let unreadMessages = 0;
         let chatNotifications = {};
         let profileImageFile = null;
+        let isFirebaseInitialized = false;
+
+        // ========== INITIALIZE FIREBASE ==========
+        async function initializeFirebase() {
+            try {
+                // Initialize Firebase
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                console.log('✅ Firebase initialized successfully');
+                
+                db = firebase.firestore();
+                auth = firebase.auth();
+                
+                // Enable offline persistence
+                try {
+                    await db.enablePersistence();
+                    console.log('✅ Offline persistence enabled');
+                } catch (err) {
+                    console.warn('⚠️ Offline persistence not available:', err.code);
+                }
+                
+                isFirebaseInitialized = true;
+                
+                // Load accounts immediately after Firebase is initialized
+                loadAccountsFromFirebase();
+                
+                // Setup auth state listener
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        // User is signed in
+                        await loadUserData(user.uid);
+                    } else {
+                        // User is signed out - but still show accounts
+                        currentUser = null;
+                        updateUserProfileUI();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Firebase initialization error:', error);
+                showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
+                
+                // Still try to show accounts even if Firebase fails
+                setTimeout(() => {
+                    showNoAccountsMessage(false, 'جاري محاولة الاتصال بالخادم...');
+                }, 1000);
+            }
+        }
 
         // ========== AUTHENTICATION FUNCTIONS ==========
 
@@ -1897,9 +1924,6 @@
                     // إعداد المستمعين في الوقت الحقيقي
                     setupRealTimeListeners();
                     
-                    // تحميل الحسابات
-                    loadAccountsFromFirebase();
-                    
                     // تحديث واجهة الملف الشخصي
                     updateUserProfileUI();
                 }, 2000);
@@ -1912,6 +1936,8 @@
             } finally {
                 // إخفاء شاشة التحميل
                 showGlobalLoading(false);
+                registerBtn.innerHTML = originalText;
+                registerBtn.disabled = false;
             }
         });
 
@@ -1966,6 +1992,33 @@
         function showApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
+        }
+
+        async function loadUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (userDoc.exists) {
+                    currentUser = {
+                        id: userDoc.id,
+                        ...userDoc.data()
+                    };
+                    
+                    // تحميل الثيم
+                    loadTheme();
+                    
+                    // إظهار التطبيق
+                    showApp();
+                    
+                    // إعداد المستمعين
+                    setupRealTimeListeners();
+                    
+                    // تحديث واجهة الملف الشخصي
+                    updateUserProfileUI();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
 
         function updateUserProfileUI() {
@@ -2340,6 +2393,13 @@
 
         async function loadAccountsFromFirebase() {
             try {
+                // التحقق من تهيئة Firebase
+                if (!isFirebaseInitialized || !db) {
+                    console.log('⏳ Firebase not initialized yet, waiting...');
+                    setTimeout(loadAccountsFromFirebase, 1000);
+                    return;
+                }
+                
                 const snapshot = await db.collection('accounts')
                     .where('status', '==', 'active')
                     .orderBy('createdAt', 'desc')
@@ -2363,28 +2423,38 @@
                     if (allAccounts.length > 0) {
                         applyFilters();
                     } else {
-                        showNoAccountsMessage();
+                        showNoAccountsMessage(false, 'لا توجد حسابات للبيع حالياً');
                     }
                 } else {
-                    showNoAccountsMessage();
+                    showNoAccountsMessage(false, 'لا توجد حسابات للبيع حالياً');
                 }
                 
             } catch (error) {
                 console.error('Error loading accounts:', error);
-                showAlert('حدث خطأ في تحميل الحسابات', 'error');
-                showNoAccountsMessage();
+                showNoAccountsMessage(true, 'حدث خطأ في تحميل الحسابات');
             }
         }
 
-        function showNoAccountsMessage() {
+        function showNoAccountsMessage(isError = false, message = '') {
             const accountsList = document.getElementById('accountsList');
-            accountsList.innerHTML = `
-                <div style="text-align:center; padding:60px 20px; grid-column: 1 / -1;">
-                    <i class="fas fa-store fa-3x" style="color:var(--primary); margin-bottom:20px; opacity:0.5;"></i>
-                    <h3 style="color:var(--text); margin-bottom:10px;">لا توجد حسابات للبيع حالياً</h3>
-                    <p style="color:var(--text-secondary); margin-bottom:25px;">استخدم زر "إضافة حساب" في الأعلى لنشر حسابك الأول</p>
-                </div>
-            `;
+            
+            if (isError) {
+                accountsList.innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-triangle fa-3x" style="color:var(--danger); margin-bottom:20px;"></i>
+                        <h3 style="color:var(--text); margin-bottom:10px;">${message}</h3>
+                        <p style="color:var(--text-secondary); margin-bottom:25px;">يرجى المحاولة مرة أخرى</p>
+                    </div>
+                `;
+            } else {
+                accountsList.innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; grid-column: 1 / -1;">
+                        <i class="fas fa-store fa-3x" style="color:var(--primary); margin-bottom:20px; opacity:0.5;"></i>
+                        <h3 style="color:var(--text); margin-bottom:10px;">${message}</h3>
+                        <p style="color:var(--text-secondary); margin-bottom:25px;">استخدم زر "إضافة حساب" في الأعلى لنشر حسابك الأول</p>
+                    </div>
+                `;
+            }
         }
 
         function applyFilters() {
@@ -3108,14 +3178,8 @@
         // ========== INITIALIZATION ==========
 
         document.addEventListener('DOMContentLoaded', function() {
-            // التحقق من تهيئة Firebase
-            if (!firebaseApp) {
-                showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
-                return;
-            }
-            
-            // تحميل الحسابات حتى للمستخدمين غير المسجلين
-            loadAccountsFromFirebase();
+            // تهيئة Firebase
+            initializeFirebase();
             
             // تحميل الثيم
             loadTheme();
