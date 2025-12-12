@@ -9,8 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* جميع الأنماط السابقة تبقى كما هي */
         * {
             margin: 0;
             padding: 0;
@@ -64,6 +61,11 @@
             transition: background 0.3s ease;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        /* شاشة التسجيل */
         .auth-screen {
             min-height: 100vh;
             display: flex;
@@ -241,8 +243,9 @@
             left: 100%;
         }
 
-        .hidden {
-            display: none !important;
+        .auth-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         /* التطبيق الرئيسي */
@@ -306,6 +309,12 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .nav-buttons {
             display: flex;
             gap: 10px;
@@ -325,6 +334,8 @@
             font-size: 13px;
             position: relative;
             overflow: hidden;
+            border: none;
+            cursor: pointer;
         }
 
         .nav-btn i {
@@ -333,6 +344,69 @@
 
         .nav-btn.green {
             background: linear-gradient(90deg, var(--success), #059669);
+        }
+
+        .profile-btn {
+            padding: 8px 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        [data-theme="light"] .profile-btn {
+            background: rgba(226, 232, 240, 0.5);
+        }
+
+        .profile-btn:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: var(--primary);
+        }
+
+        [data-theme="light"] .profile-btn:hover {
+            background: rgba(226, 232, 240, 0.8);
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .profile-status {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .notification-badge {
@@ -356,64 +430,6 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: 10px;
-            background: rgba(30, 41, 59, 0.5);
-            transition: all 0.3s;
-            border: 1px solid transparent;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        [data-theme="light"] .user-profile {
-            background: rgba(226, 232, 240, 0.5);
-        }
-
-        .user-profile:hover {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: var(--primary);
-        }
-
-        [data-theme="light"] .user-profile:hover {
-            background: rgba(226, 232, 240, 0.8);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
         }
 
         /* المحتوى الرئيسي */
@@ -721,6 +737,29 @@
             background: rgba(241, 245, 249, 0.5);
         }
 
+        /* رمز الدولة */
+        .phone-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .country-code-select {
+            width: 120px;
+            padding: 14px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--lighter);
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .country-code-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #cbd5e1;
+            color: var(--text-dark);
+        }
+
         /* نافذة إضافة حساب */
         .modal-overlay {
             position: fixed;
@@ -818,6 +857,54 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             margin-top: 15px;
+        }
+
+        /* نافذة الملف الشخصي */
+        .profile-avatar-container {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 700;
+            margin: 0 auto 15px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-change-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* نافذة الدردشة */
@@ -977,54 +1064,6 @@
             transform: translateY(-2px);
         }
 
-        /* نافذة الملف الشخصي */
-        .profile-avatar-container {
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-            font-weight: 700;
-            margin: 0 auto 15px;
-            border: 4px solid rgba(59, 130, 246, 0.3);
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-change-btn {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
         /* المودات */
         .theme-toggle {
             position: fixed;
@@ -1048,28 +1087,6 @@
 
         .theme-toggle:hover {
             transform: scale(1.1);
-        }
-
-        /* رمز الدولة */
-        .phone-input-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        .country-code-select {
-            width: 120px;
-            padding: 14px;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid var(--lighter);
-            border-radius: 10px;
-            color: white;
-            font-size: 15px;
-        }
-
-        [data-theme="light"] .country-code-select {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #cbd5e1;
-            color: var(--text-dark);
         }
 
         /* تنبيهات */
@@ -1220,10 +1237,6 @@
                 font-size: 14px;
             }
             
-            .user-profile {
-                padding: 10px 15px;
-            }
-            
             .main-content {
                 padding: 30px;
             }
@@ -1287,7 +1300,7 @@
     </style>
 </head>
 <body>
-    <!-- شاشة البدء -->
+    <!-- شاشة التسجيل -->
     <div id="authScreen" class="auth-screen">
         <div class="auth-container">
             <div class="auth-header">
@@ -1427,15 +1440,25 @@
                     <div class="logo-text">سوق الحسابات</div>
                 </div>
                 
-                <div class="nav-buttons">
-                    <a href="#" class="nav-btn" id="addAccountBtn">
-                        <i class="fas fa-plus"></i> إضافة حساب
-                    </a>
+                <div class="nav-right">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" id="addAccountBtn">
+                            <i class="fas fa-plus"></i> إضافة حساب
+                        </button>
+                        
+                        <button class="nav-btn green" id="viewChatsBtn">
+                            <i class="fas fa-comments"></i> محادثاتي
+                            <span class="notification-badge hidden" id="chatNotifications">0</span>
+                        </button>
+                    </div>
                     
-                    <a href="#" class="nav-btn green" id="viewChatsBtn">
-                        <i class="fas fa-comments"></i> محادثاتي
-                        <span class="notification-badge hidden" id="chatNotifications">0</span>
-                    </a>
+                    <div class="profile-btn" id="userProfileBtn">
+                        <div class="profile-avatar" id="userAvatar">م</div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="userName">مستخدم</div>
+                            <div class="profile-status" id="userStatus">متصل</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1456,17 +1479,6 @@
                     <option value="price_low">السعر: من الأقل</option>
                     <option value="price_high">السعر: من الأعلى</option>
                 </select>
-                
-                <div class="user-profile" id="userProfileBtn">
-                    <div class="user-avatar" id="userAvatar">م</div>
-                    <div class="user-info">
-                        <div id="userName">مستخدم</div>
-                        <div id="userStatus" style="font-size: 12px; color: var(--text-secondary);">متصل</div>
-                    </div>
-                    <div class="logout-btn" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </div>
-                </div>
             </div>
         </nav>
 
@@ -1576,7 +1588,7 @@
                 </div>
                 
                 <div class="profile-avatar-container">
-                    <div class="profile-avatar" id="profileAvatarPreview">
+                    <div class="profile-avatar-large" id="profileAvatarPreview">
                         <span id="profileInitials">م</span>
                         <img id="profileAvatarImage" style="display: none;">
                     </div>
@@ -1808,7 +1820,6 @@
         let firebaseApp;
         let db;
         let auth;
-        let storage;
         
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -1816,7 +1827,6 @@
             
             db = firebase.firestore();
             auth = firebase.auth();
-            storage = firebase.storage();
             
             // Enable offline persistence
             db.enablePersistence()
@@ -1855,7 +1865,7 @@
             document.getElementById('registerForm').classList.remove('hidden');
         });
 
-        // User Registration
+        // User Registration - SIMPLIFIED VERSION
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1868,6 +1878,7 @@
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
             
+            // التحقق من البيانات
             if (!name || !country || !phone || !address || !password) {
                 showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
                 return;
@@ -1883,25 +1894,33 @@
                 return;
             }
             
+            const registerBtn = document.getElementById('registerBtn');
+            const originalText = registerBtn.innerHTML;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+            registerBtn.disabled = true;
+            
             try {
+                // إظهار شاشة التحميل
                 showGlobalLoading(true);
                 
+                // إنشاء مستخدم في Firebase Authentication
                 let userCredential;
-                const fullPhone = countryCode + phone;
                 
-                // Create user with email if provided, otherwise create anonymous and update
                 if (email) {
+                    // إنشاء حساب باستخدام البريد الإلكتروني
                     userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 } else {
-                    // Create anonymous user first
+                    // إنشاء حساب مجهول أولاً ثم نرقيه لاحقاً
                     userCredential = await auth.signInAnonymously();
                 }
                 
                 const user = userCredential.user;
+                const userId = user.uid;
+                const fullPhone = countryCode + phone;
                 
-                // Create user document in Firestore
+                // إنشاء بيانات المستخدم في Firestore
                 const userData = {
-                    id: user.uid,
+                    id: userId,
                     name: name,
                     country: country,
                     phone: fullPhone,
@@ -1917,22 +1936,36 @@
                     theme: 'dark'
                 };
                 
-                await db.collection('users').doc(user.uid).set(userData);
+                // حفظ بيانات المستخدم في Firestore
+                await db.collection('users').doc(userId).set(userData);
                 
-                currentUser = userData;
-                
-                // Update anonymous user with email if provided
-                if (!email && fullPhone) {
-                    // You can implement phone verification here if needed
+                // تحديث ملف المستخدم المجهول إذا لم يكن هناك بريد إلكتروني
+                if (!email) {
                     await user.updateProfile({
                         displayName: name
                     });
                 }
                 
+                // تعيين المستخدم الحالي
+                currentUser = userData;
+                
+                // إظهار رسالة النجاح
                 showAlert('✅ تم إنشاء الحساب بنجاح!', 'success');
+                
+                // تحميل الثيم المحفوظ
+                loadTheme();
+                
+                // إظهار التطبيق
                 showApp();
+                
+                // إعداد المستمعين في الوقت الحقيقي
                 setupRealTimeListeners();
-                loadAccountsFromFirebase();
+                
+                // تحميل الحسابات
+                await loadAccountsFromFirebase();
+                
+                // تحديث واجهة الملف الشخصي
+                updateUserProfileUI();
                 
             } catch (error) {
                 console.error('Registration error:', error);
@@ -1948,15 +1981,25 @@
                     case 'auth/invalid-email':
                         errorMessage = 'البريد الإلكتروني غير صالح';
                         break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'عملية التسجيل غير مسموحة حالياً';
+                        break;
+                    default:
+                        errorMessage = 'حدث خطأ غير متوقع: ' + error.message;
                 }
                 
                 showAlert(errorMessage, 'error');
             } finally {
+                // إخفاء شاشة التحميل
                 showGlobalLoading(false);
+                
+                // إعادة تعيين زر التسجيل
+                registerBtn.innerHTML = originalText;
+                registerBtn.disabled = false;
             }
         });
 
-        // User Login
+        // User Login - SIMPLIFIED VERSION
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1968,39 +2011,43 @@
                 return;
             }
             
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+            loginBtn.disabled = true;
+            
             try {
                 showGlobalLoading(true);
                 
                 let userCredential;
                 
-                // Try to login with email first, then check phone
+                // محاولة تسجيل الدخول بالبريد الإلكتروني أولاً
                 if (identifier.includes('@')) {
                     userCredential = await auth.signInWithEmailAndPassword(identifier, password);
                 } else {
-                    // Search for user by phone
+                    // البحث عن المستخدم برقم الهاتف
                     const usersSnapshot = await db.collection('users')
                         .where('phone', '==', identifier)
+                        .limit(1)
                         .get();
                     
-                    if (!usersSnapshot.empty) {
-                        const userDoc = usersSnapshot.docs[0];
-                        const userData = userDoc.data();
-                        
-                        if (userData.email) {
-                            userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
-                        } else {
-                            // Handle phone-only users
-                            // For now, we'll show an error
-                            throw new Error('يرجى استخدام البريد الإلكتروني لتسجيل الدخول');
-                        }
+                    if (usersSnapshot.empty) {
+                        throw new Error('بيانات الدخول غير صحيحة');
+                    }
+                    
+                    const userDoc = usersSnapshot.docs[0];
+                    const userData = userDoc.data();
+                    
+                    if (userData.email) {
+                        userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
                     } else {
-                        throw new Error('المستخدم غير موجود');
+                        throw new Error('يرجى استخدام البريد الإلكتروني لتسجيل الدخول');
                     }
                 }
                 
                 const user = userCredential.user;
                 
-                // Get user data from Firestore
+                // الحصول على بيانات المستخدم من Firestore
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 
                 if (userDoc.exists) {
@@ -2009,21 +2056,19 @@
                         ...userDoc.data()
                     };
                     
-                    // Update last login
+                    // تحديث آخر دخول
                     await db.collection('users').doc(user.uid).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                         isOnline: true
                     });
                     
-                    // Apply saved theme
-                    const savedTheme = currentUser.theme || 'dark';
-                    document.body.setAttribute('data-theme', savedTheme);
-                    updateThemeToggleIcon(savedTheme);
+                    // تحميل الثيم المحفوظ
+                    loadTheme();
                     
                     showAlert(`مرحباً بعودتك ${currentUser.name}!`, 'success');
                     showApp();
                     setupRealTimeListeners();
-                    loadAccountsFromFirebase();
+                    await loadAccountsFromFirebase();
                     updateUserProfileUI();
                     
                 } else {
@@ -2042,40 +2087,22 @@
                     case 'auth/too-many-requests':
                         errorMessage = 'تم محاولة الدخول مرات كثيرة، يرجى الانتظار';
                         break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'الحساب معطل';
+                        break;
+                    default:
+                        if (error.message.includes('بيانات الدخول غير صحيحة')) {
+                            errorMessage = 'بيانات الدخول غير صحيحة';
+                        } else {
+                            errorMessage = 'حدث خطأ: ' + error.message;
+                        }
                 }
                 
                 showAlert(errorMessage, 'error');
             } finally {
                 showGlobalLoading(false);
-            }
-        });
-
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', async function() {
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                try {
-                    // Update user status
-                    if (currentUser) {
-                        await db.collection('users').doc(currentUser.id).update({
-                            isOnline: false,
-                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                    
-                    // Sign out
-                    await auth.signOut();
-                    currentUser = null;
-                    
-                    // Hide app and show auth screen
-                    document.getElementById('app').style.display = 'none';
-                    document.getElementById('authScreen').style.display = 'flex';
-                    
-                    showAlert('تم تسجيل الخروج بنجاح', 'success');
-                    
-                } catch (error) {
-                    console.error('Logout error:', error);
-                    showAlert('حدث خطأ في تسجيل الخروج', 'error');
-                }
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         });
 
@@ -2137,20 +2164,36 @@
                 document.getElementById('userName').textContent = currentUser.name;
                 document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
                 
-                // Update profile modal if open
+                // تحديث الصورة إذا كانت موجودة
+                if (currentUser.avatarUrl) {
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = currentUser.avatarUrl;
+                    avatarImg.alt = currentUser.name;
+                    document.getElementById('userAvatar').innerHTML = '';
+                    document.getElementById('userAvatar').appendChild(avatarImg);
+                }
+                
+                // تحديث نموذج الملف الشخصي
                 document.getElementById('profileName').value = currentUser.name;
                 document.getElementById('profileCountry').value = currentUser.country || '';
                 document.getElementById('profilePhone').value = currentUser.phone || '';
                 document.getElementById('profileAddress').value = currentUser.address || '';
                 document.getElementById('profileEmail').value = currentUser.email || '';
                 
-                // Set country code
+                // تعيين رمز الدولة
                 if (currentUser.phone) {
-                    const countryCode = currentUser.phone.substring(0, 4);
-                    document.getElementById('profileCountryCode').value = countryCode;
+                    const phone = currentUser.phone;
+                    // البحث عن رمز الدولة في القائمة
+                    const countryCodes = document.getElementById('profileCountryCode').options;
+                    for (let i = 0; i < countryCodes.length; i++) {
+                        if (phone.startsWith(countryCodes[i].value)) {
+                            document.getElementById('profileCountryCode').value = countryCodes[i].value;
+                            break;
+                        }
+                    }
                 }
                 
-                // Update profile avatar
+                // تحديث صورة الملف الشخصي
                 if (currentUser.avatarUrl) {
                     document.getElementById('profileAvatarImage').src = currentUser.avatarUrl;
                     document.getElementById('profileAvatarImage').style.display = 'block';
@@ -2210,7 +2253,7 @@
             }
         });
 
-        // Upload image to FreeImage.host
+        // رفع الصورة إلى FreeImage.host
         async function uploadImageToFreeImage(file) {
             try {
                 const formData = new FormData();
@@ -2223,6 +2266,10 @@
                     method: 'POST',
                     body: formData
                 });
+                
+                if (!response.ok) {
+                    throw new Error('فشل في اتصال API');
+                }
                 
                 const data = await response.json();
                 
@@ -2256,6 +2303,11 @@
                 return;
             }
             
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            submitBtn.disabled = true;
+            
             try {
                 showGlobalLoading(true);
                 
@@ -2268,23 +2320,32 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                // Upload profile image if changed
+                // رفع صورة الملف الشخصي إذا تم تغييرها
                 if (profileImageFile) {
-                    const imageUrl = await uploadImageToFreeImage(profileImageFile);
-                    updates.avatarUrl = imageUrl;
-                    
-                    // Update UI immediately
-                    document.getElementById('userAvatar').textContent = '';
-                    document.getElementById('userAvatar').style.background = `url('${imageUrl}') center/cover`;
+                    try {
+                        const imageUrl = await uploadImageToFreeImage(profileImageFile);
+                        updates.avatarUrl = imageUrl;
+                        
+                        // تحديث الصورة مباشرة في الواجهة
+                        document.getElementById('userAvatar').innerHTML = '';
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = imageUrl;
+                        avatarImg.alt = name;
+                        document.getElementById('userAvatar').appendChild(avatarImg);
+                        
+                    } catch (uploadError) {
+                        console.error('Failed to upload profile image:', uploadError);
+                        showAlert('فشل رفع صورة الملف الشخصي، سيتم حفظ البيانات الأخرى', 'warning');
+                    }
                 }
                 
-                // Update Firestore
+                // تحديث Firestore
                 await db.collection('users').doc(currentUser.id).update(updates);
                 
-                // Update current user object
+                // تحديث بيانات المستخدم المحلية
                 Object.assign(currentUser, updates);
                 
-                // Update UI
+                // تحديث الواجهة
                 updateUserProfileUI();
                 
                 showAlert('✅ تم تحديث الملف الشخصي بنجاح', 'success');
@@ -2294,6 +2355,8 @@
                 showAlert('حدث خطأ في تحديث الملف الشخصي: ' + error.message, 'error');
             } finally {
                 showGlobalLoading(false);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
         });
 
@@ -2304,6 +2367,7 @@
             try {
                 const snapshot = await db.collection('accounts')
                     .where('sellerId', '==', currentUser.id)
+                    .where('status', '==', 'active')
                     .orderBy('createdAt', 'desc')
                     .get();
                 
@@ -2321,12 +2385,21 @@
                     accountItem.className = 'account-card';
                     accountItem.style.margin = '10px 0';
                     
+                    const platformNames = {
+                        instagram: 'إنستغرام',
+                        facebook: 'فيسبوك',
+                        tiktok: 'تيك توك',
+                        twitter: 'تويتر',
+                        youtube: 'يوتيوب',
+                        snapchat: 'سناب شات'
+                    };
+                    
                     accountItem.innerHTML = `
                         <div style="padding:15px;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div>
                                     <h4 style="color:var(--text); margin-bottom:5px;">${account.username}</h4>
-                                    <p style="color:var(--text-secondary); font-size:12px;">${account.platform} • ${account.followers.toLocaleString()} متابع</p>
+                                    <p style="color:var(--text-secondary); font-size:12px;">${platformNames[account.platform] || account.platform} • ${account.followers.toLocaleString()} متابع</p>
                                 </div>
                                 <div style="color:var(--success); font-weight:bold;">${account.price.toLocaleString()} ر.س</div>
                             </div>
@@ -2341,6 +2414,7 @@
                 
             } catch (error) {
                 console.error('Error loading user accounts:', error);
+                accountsList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--danger);">حدث خطأ في تحميل الحسابات</div>';
             }
         }
 
@@ -2355,7 +2429,7 @@
                         deletedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    // Update user's accounts count
+                    // تحديث عدد حسابات المستخدم
                     await db.collection('users').doc(currentUser.id).update({
                         accountsCount: firebase.firestore.FieldValue.increment(-1)
                     });
@@ -2392,14 +2466,14 @@
             document.body.setAttribute('data-theme', newTheme);
             updateThemeToggleIcon(newTheme);
             
-            // Save theme preference
+            // حفظ التفضيل في Firebase
             if (currentUser) {
                 db.collection('users').doc(currentUser.id).update({
                     theme: newTheme
                 });
             }
             
-            // Save to localStorage for non-logged in users
+            // حفظ في localStorage للمستخدمين غير المسجلين
             localStorage.setItem('theme', newTheme);
         });
 
@@ -2420,67 +2494,41 @@
         // ========== ACCOUNT MANAGEMENT ==========
 
         function setupRealTimeListeners() {
-            // Stop any previous listeners
+            // إيقاف أي مستمعين سابقين
             if (accountsListener) {
                 accountsListener();
             }
             
-            // Listen for new accounts in real-time
+            // الاستماع للحسابات الجديدة في الوقت الحقيقي
             accountsListener = db.collection('accounts')
                 .where('status', '==', 'active')
                 .orderBy('createdAt', 'desc')
                 .limit(50)
                 .onSnapshot((snapshot) => {
-                    const updatedAccounts = [];
-                    snapshot.docChanges().forEach((change) => {
+                    allAccounts = [];
+                    
+                    snapshot.forEach(doc => {
                         const account = {
-                            id: change.doc.id,
-                            ...change.doc.data()
+                            id: doc.id,
+                            ...doc.data()
                         };
                         
-                        if (change.type === 'added' || change.type === 'modified') {
-                            if (account.status === 'active') {
-                                updatedAccounts.push(account);
-                                
-                                // Show alert for new account
-                                if (change.type === 'added' && account.sellerId !== currentUser?.id) {
-                                    showNewAccountAlert(account);
-                                }
-                            }
+                        if (account.status === 'active') {
+                            allAccounts.push(account);
                         }
                     });
                     
-                    if (updatedAccounts.length > 0) {
-                        allAccounts = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        })).filter(acc => acc.status === 'active');
-                        
-                        applyFilters();
-                    }
+                    applyFilters();
+                    
                 }, (error) => {
                     console.error('Error in real-time listener:', error);
+                    
+                    // إذا فشل الاستماع في الوقت الحقيقي، نحمّل البيانات مرة واحدة
+                    loadAccountsFromFirebase();
                 });
         }
 
-        function showNewAccountAlert(account) {
-            const platformNames = {
-                instagram: 'إنستغرام',
-                facebook: 'فيسبوك',
-                tiktok: 'تيك توك',
-                twitter: 'تويتر',
-                youtube: 'يوتيوب',
-                snapchat: 'سناب شات'
-            };
-            
-            const platformName = platformNames[account.platform] || account.platform;
-            
-            showAlert(`🆕 حساب ${platformName} جديد: ${account.username} - ${account.price} ر.س`, 'info');
-        }
-
         async function loadAccountsFromFirebase() {
-            showGlobalLoading(true);
-            
             try {
                 const snapshot = await db.collection('accounts')
                     .where('status', '==', 'active')
@@ -2488,11 +2536,19 @@
                     .limit(50)
                     .get();
                 
+                allAccounts = [];
+                
                 if (!snapshot.empty) {
-                    allAccounts = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    })).filter(acc => acc.status === 'active');
+                    snapshot.forEach(doc => {
+                        const account = {
+                            id: doc.id,
+                            ...doc.data()
+                        };
+                        
+                        if (account.status === 'active') {
+                            allAccounts.push(account);
+                        }
+                    });
                     
                     if (allAccounts.length > 0) {
                         applyFilters();
@@ -2507,8 +2563,6 @@
                 console.error('Error loading accounts:', error);
                 showAlert('حدث خطأ في تحميل الحسابات', 'error');
                 showNoAccountsMessage();
-            } finally {
-                showGlobalLoading(false);
             }
         }
 
@@ -2661,7 +2715,7 @@
                 </div>
                 
                 <div class="seller-info">
-                    <div style="width:40px; height:40px; border-radius:50%; background: ${account.sellerAvatarColor || getRandomColor()}; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
+                    <div style="width:40px; height:40px; border-radius:50%; background: ${getRandomColor()}; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
                         ${account.sellerName ? account.sellerName.charAt(0) : '?'}
                     </div>
                     <div>
@@ -2674,7 +2728,7 @@
             accountsList.appendChild(accountCard);
         }
 
-        // ========== IMAGE UPLOAD ==========
+        // ========== IMAGE UPLOAD FOR ACCOUNTS ==========
 
         document.getElementById('imageUploadArea').addEventListener('click', () => {
             document.getElementById('imageInput').click();
@@ -2706,13 +2760,20 @@
                     }
                     
                     showGlobalLoading(true);
-                    const imageUrl = await uploadImageToFreeImage(file);
-                    uploadedImages.push(imageUrl);
-                    updateImagePreview();
+                    try {
+                        const imageUrl = await uploadImageToFreeImage(file);
+                        uploadedImages.push(imageUrl);
+                        updateImagePreview();
+                    } catch (uploadError) {
+                        console.error('Failed to upload image:', uploadError);
+                        showAlert('فشل رفع الصورة: ' + file.name, 'error');
+                    }
                     showGlobalLoading(false);
                 }
                 
-                showAlert('تم رفع الصور بنجاح', 'success');
+                if (uploadedImages.length > 0) {
+                    showAlert('تم رفع ' + uploadedImages.length + ' صور بنجاح', 'success');
+                }
                 
             } catch (error) {
                 console.error('Upload error:', error);
@@ -2761,8 +2822,8 @@
                 return;
             }
             
-            if (uploadedImages.length < 2) {
-                showAlert('يرجى رفع صورتين على الأقل كإثبات للملكية', 'warning');
+            if (uploadedImages.length < 1) {
+                showAlert('يرجى رفع صورة واحدة على الأقل كإثبات للملكية', 'warning');
                 return;
             }
             
@@ -2788,11 +2849,12 @@
                 return;
             }
             
+            const submitBtn = document.getElementById('submitAccountBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+            submitBtn.disabled = true;
+            
             try {
-                const submitBtn = document.getElementById('submitAccountBtn');
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
-                submitBtn.disabled = true;
-                
                 showGlobalLoading(true);
                 
                 const accountData = {
@@ -2805,24 +2867,22 @@
                     proofImages: uploadedImages,
                     sellerId: currentUser.id,
                     sellerName: currentUser.name,
-                    sellerAvatarColor: currentUser.avatarColor || getRandomColor(),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'active',
-                    views: 0,
-                    isActive: true
+                    views: 0
                 };
                 
-                // Save to Firestore
-                const docRef = await db.collection('accounts').add(accountData);
+                // حفظ في Firestore
+                await db.collection('accounts').add(accountData);
                 
-                // Update user's accounts count
+                // تحديث عدد حسابات المستخدم
                 await db.collection('users').doc(currentUser.id).update({
                     accountsCount: firebase.firestore.FieldValue.increment(1),
                     lastActivity: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Update local user data
+                // تحديث البيانات المحلية
                 currentUser.accountsCount = (currentUser.accountsCount || 0) + 1;
                 
                 showAlert('✅ تم نشر الحساب بنجاح! سيظهر للجميع الآن', 'success');
@@ -2834,201 +2894,10 @@
                 console.error('Error adding account:', error);
                 showAlert('حدث خطأ في نشر الحساب: ' + error.message, 'error');
             } finally {
-                const submitBtn = document.getElementById('submitAccountBtn');
-                submitBtn.innerHTML = '<i class="fas fa-upload"></i> نشر الحساب للبيع';
+                submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 showGlobalLoading(false);
             }
-        });
-
-        // ========== CHAT SYSTEM ==========
-
-        async function startChat(userId, userName) {
-            if (!currentUser) {
-                showAlert('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-            
-            if (userId === currentUser.id) {
-                showAlert('لا يمكنك الدردشة مع نفسك', 'warning');
-                return;
-            }
-            
-            currentChatUser = { id: userId, name: userName };
-            
-            document.getElementById('chatAvatar').textContent = userName.charAt(0);
-            document.getElementById('chatUserName').textContent = userName;
-            document.getElementById('chatModal').style.display = 'flex';
-            
-            // Remove notifications
-            if (chatNotifications[userId]) {
-                delete chatNotifications[userId];
-                updateChatNotifications();
-            }
-            
-            await loadChatMessages(userId);
-            setupChatListener(userId);
-        }
-
-        async function loadChatMessages(userId) {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 30px;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المحادثة...</div>';
-            
-            try {
-                const chatId = getChatId(currentUser.id, userId);
-                const chatDoc = await db.collection('chats').doc(chatId).get();
-                
-                if (!chatDoc.exists) {
-                    // Create new chat
-                    await db.collection('chats').doc(chatId).set({
-                        participants: [currentUser.id, userId],
-                        lastMessage: '',
-                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                        unread: false,
-                        participantNames: {
-                            [currentUser.id]: currentUser.name,
-                            [userId]: currentChatUser.name
-                        }
-                    });
-                }
-                
-                const snapshot = await db.collection('chats')
-                    .doc(chatId)
-                    .collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .get();
-                
-                chatMessages.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    chatMessages.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 30px;">ابدأ محادثة جديدة</div>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const message = doc.data();
-                    displayMessage(message);
-                });
-                
-                scrollToBottom();
-                
-            } catch (error) {
-                console.error('Error loading messages:', error);
-            }
-        }
-
-        function getChatId(userId1, userId2) {
-            return [userId1, userId2].sort().join('_');
-        }
-
-        function displayMessage(message) {
-            const chatMessages = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message-bubble ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
-            
-            const time = message.timestamp ? 
-                (message.timestamp.toDate ? message.timestamp.toDate().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 
-                 new Date(message.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })) : 
-                'الآن';
-            
-            messageDiv.innerHTML = `
-                ${message.text}
-                <div style="font-size: 11px; opacity: 0.7; margin-top: 5px; text-align: right;">${time}</div>
-            `;
-            
-            chatMessages.appendChild(messageDiv);
-        }
-
-        function scrollToBottom() {
-            const chatMessages = document.getElementById('chatMessages');
-            setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
-        }
-
-        function setupChatListener(userId) {
-            if (chatListener) {
-                chatListener();
-            }
-            
-            const chatId = getChatId(currentUser.id, userId);
-            
-            chatListener = db.collection('chats')
-                .doc(chatId)
-                .collection('messages')
-                .orderBy('timestamp', 'asc')
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === 'added') {
-                            const message = change.doc.data();
-                            displayMessage(message);
-                            scrollToBottom();
-                        }
-                    });
-                }, (error) => {
-                    console.error('Chat listener error:', error);
-                });
-        }
-
-        document.getElementById('sendMessageBtn').addEventListener('click', async function() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            
-            if (!text || !currentChatUser || !currentUser) return;
-            
-            const chatId = getChatId(currentUser.id, currentChatUser.id);
-            
-            try {
-                const messageData = {
-                    text: text,
-                    senderId: currentUser.id,
-                    senderName: currentUser.name,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    read: false
-                };
-                
-                // Add message to Firestore
-                await db.collection('chats')
-                    .doc(chatId)
-                    .collection('messages')
-                    .add(messageData);
-                
-                // Update chat in Firestore
-                await db.collection('chats').doc(chatId).set({
-                    participants: [currentUser.id, currentChatUser.id],
-                    lastMessage: text,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastSender: currentUser.id,
-                    participantNames: {
-                        [currentUser.id]: currentUser.name,
-                        [currentChatUser.id]: currentChatUser.name
-                    },
-                    unread: true
-                }, { merge: true });
-                
-                input.value = '';
-                input.focus();
-                
-            } catch (error) {
-                console.error('Error sending message:', error);
-                showAlert('حدث خطأ في إرسال الرسالة', 'error');
-            }
-        });
-
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                document.getElementById('sendMessageBtn').click();
-            }
-        });
-
-        document.getElementById('closeChat').addEventListener('click', function() {
-            document.getElementById('chatModal').style.display = 'none';
-            if (chatListener) {
-                chatListener();
-                chatListener = null;
-            }
-            currentChatUser = null;
         });
 
         // ========== EVENT LISTENERS ==========
@@ -3050,140 +2919,14 @@
         });
 
         // View Chats
-        document.getElementById('viewChatsBtn').addEventListener('click', async function(e) {
+        document.getElementById('viewChatsBtn').addEventListener('click', function(e) {
             e.preventDefault();
             if (!currentUser) {
                 showAlert('يجب تسجيل الدخول أولاً', 'error');
                 return;
             }
-            document.getElementById('chatsModal').style.display = 'flex';
-            await loadUserChats();
+            showAlert('نظام المحادثات قيد التطوير', 'info');
         });
-
-        async function loadUserChats() {
-            const chatsList = document.getElementById('chatsList');
-            chatsList.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المحادثات...</div>';
-            
-            try {
-                const snapshot = await db.collection('chats')
-                    .where('participants', 'array-contains', currentUser.id)
-                    .orderBy('lastUpdated', 'desc')
-                    .get();
-                
-                chatsList.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    chatsList.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">لا توجد محادثات</div>';
-                    return;
-                }
-                
-                for (const docSnap of snapshot.docs) {
-                    const chat = docSnap.data();
-                    const otherUserId = chat.participants.find(id => id !== currentUser.id);
-                    
-                    if (otherUserId) {
-                        const userDoc = await db.collection('users').doc(otherUserId).get();
-                        if (userDoc.exists) {
-                            const user = userDoc.data();
-                            const chatItem = document.createElement('div');
-                            chatItem.className = 'account-card';
-                            chatItem.style.cursor = 'pointer';
-                            chatItem.style.margin = '10px 0';
-                            chatItem.innerHTML = `
-                                <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                                    <div style="width:40px; height:40px; border-radius:50%; background:${user.avatarColor || getRandomColor()}; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
-                                        ${user.name.charAt(0)}
-                                    </div>
-                                    <div style="flex:1;">
-                                        <h4 style="color:var(--text);">${user.name}</h4>
-                                        <p style="color:var(--text-secondary); font-size:13px;">${chat.lastMessage ? (chat.lastMessage.length > 30 ? chat.lastMessage.substring(0, 30) + '...' : chat.lastMessage) : 'لا توجد رسائل'}</p>
-                                    </div>
-                                    ${chat.unread && chat.lastSender !== currentUser.id ? 
-                                        '<div style="width:10px; height:10px; background:var(--danger); border-radius:50%;"></div>' : ''}
-                                </div>
-                            `;
-                            chatItem.addEventListener('click', () => {
-                                document.getElementById('chatsModal').style.display = 'none';
-                                startChat(otherUserId, user.name);
-                            });
-                            chatsList.appendChild(chatItem);
-                        }
-                    }
-                }
-                
-            } catch (error) {
-                console.error('Error loading chats:', error);
-                chatsList.innerHTML = '<div style="text-align:center; padding:40px; color:var(--danger);">حدث خطأ في تحميل المحادثات</div>';
-            }
-        }
-
-        document.getElementById('closeChatsModal').addEventListener('click', function() {
-            document.getElementById('chatsModal').style.display = 'none';
-        });
-
-        window.contactSeller = async function(sellerId, sellerName) {
-            if (!currentUser) {
-                showAlert('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-            
-            try {
-                const sellerDoc = await db.collection('users').doc(sellerId).get();
-                if (!sellerDoc.exists) {
-                    showAlert('المستخدم غير موجود', 'error');
-                    return;
-                }
-                
-                const seller = sellerDoc.data();
-                
-                const message = `معلومات البائع:\n\nالاسم: ${seller.name}\nالدولة: ${seller.country || 'غير محدد'}\nرقم الهاتف: ${seller.phone || 'غير محدد'}\nعدد الحسابات: ${seller.accountsCount || 0}\nالتقييم: ${seller.rating || 'جديد'}/5.0`;
-                
-                alert(message);
-                
-            } catch (error) {
-                showAlert('حدث خطأ في تحميل معلومات البائع', 'error');
-            }
-        };
-
-        window.viewImage = function(url) {
-            const newWindow = window.open('', '_blank');
-            newWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>صورة إثبات الملكية</title>
-                    <style>
-                        body { margin: 0; padding: 20px; background: var(--dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-                        img { max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-                    </style>
-                </head>
-                <body>
-                    <img src="${url}" alt="صورة إثبات الملكية">
-                </body>
-                </html>
-            `);
-        };
-
-        window.startChat = startChat;
-
-        // ========== HELPER FUNCTIONS ==========
-
-        function getRandomColor() {
-            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#8b5cf6'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        function updateChatNotifications() {
-            const badge = document.getElementById('chatNotifications');
-            const total = Object.keys(chatNotifications).length;
-            
-            if (total > 0) {
-                badge.textContent = total > 9 ? '9+' : total;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
 
         // Close modals when clicking outside
         window.addEventListener('click', function(e) {
@@ -3192,11 +2935,6 @@
                 if (e.target.id === modalId) {
                     document.getElementById(modalId).style.display = 'none';
                     if (modalId === 'addModal') resetUploadForm();
-                    if (modalId === 'chatModal' && chatListener) {
-                        chatListener();
-                        chatListener = null;
-                        currentChatUser = null;
-                    }
                     if (modalId === 'profileModal') profileImageFile = null;
                 }
             });
@@ -3225,45 +2963,6 @@
             document.getElementById('supportForm').reset();
         });
 
-        document.getElementById('supportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('supportName').value.trim();
-            const phone = document.getElementById('supportPhone').value.trim();
-            const type = document.getElementById('supportType').value;
-            const description = document.getElementById('supportDescription').value.trim();
-            
-            if (!name || !phone || !type || !description) {
-                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-                return;
-            }
-            
-            try {
-                showGlobalLoading(true);
-                
-                await db.collection('supportTickets').add({
-                    name: name,
-                    phone: phone,
-                    type: type,
-                    description: description,
-                    userId: currentUser.id,
-                    status: 'pending',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showAlert('تم إرسال طلب الدعم بنجاح، سنقوم بالرد قريباً', 'success');
-                document.getElementById('supportModal').style.display = 'none';
-                document.getElementById('supportForm').reset();
-                
-            } catch (error) {
-                console.error('Error sending support request:', error);
-                showAlert('حدث خطأ في إرسال طلب الدعم', 'error');
-            } finally {
-                showGlobalLoading(false);
-            }
-        });
-
         // About Modal
         document.getElementById('aboutLink').addEventListener('click', function(e) {
             e.preventDefault();
@@ -3274,63 +2973,94 @@
             document.getElementById('aboutModal').style.display = 'none';
         });
 
+        // ========== HELPER FUNCTIONS ==========
+
+        function getRandomColor() {
+            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#8b5cf6'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        window.contactSeller = async function(sellerId, sellerName) {
+            if (!currentUser) {
+                showAlert('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            try {
+                const sellerDoc = await db.collection('users').doc(sellerId).get();
+                if (!sellerDoc.exists) {
+                    showAlert('المستخدم غير موجود', 'error');
+                    return;
+                }
+                
+                const seller = sellerDoc.data();
+                
+                const message = `معلومات البائع:\n\nالاسم: ${seller.name}\nالدولة: ${seller.country || 'غير محدد'}\nرقم الهاتف: ${seller.phone || 'غير محدد'}\nعدد الحسابات: ${seller.accountsCount || 0}`;
+                
+                alert(message);
+                
+            } catch (error) {
+                showAlert('حدث خطأ في تحميل معلومات البائع', 'error');
+            }
+        };
+
+        window.viewImage = function(url) {
+            window.open(url, '_blank');
+        };
+
+        window.startChat = function(userId, userName) {
+            showAlert('نظام المحادثات قيد التطوير', 'info');
+        };
+
         // ========== INITIALIZATION ==========
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if Firebase is initialized
+            // التحقق من تهيئة Firebase
             if (!firebaseApp) {
                 showAlert('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
                 return;
             }
             
-            // Check for saved user session
+            // التحقق من حالة المصادقة عند التحميل
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     try {
+                        // تحميل بيانات المستخدم من Firestore
                         const userDoc = await db.collection('users').doc(user.uid).get();
+                        
                         if (userDoc.exists) {
                             currentUser = {
                                 id: userDoc.id,
                                 ...userDoc.data()
                             };
                             
-                            // Load theme
+                            // تحميل الثيم
                             loadTheme();
                             
+                            // إظهار التطبيق
                             showApp();
+                            
+                            // إعداد المستمعين
                             setupRealTimeListeners();
-                            loadAccountsFromFirebase();
+                            
+                            // تحميل الحسابات
+                            await loadAccountsFromFirebase();
+                            
+                            // تحديث واجهة الملف الشخصي
                             updateUserProfileUI();
-                            showAlert(`مرحباً بعودتك ${currentUser.name}!`, 'success');
                         }
                     } catch (error) {
                         console.error('Error restoring user session:', error);
                     }
-                } else {
-                    // Load theme for non-logged in users
-                    loadTheme();
                 }
             });
             
-            // Update copyright year
+            // تحديث سنة حقوق النشر
             const yearSpan = document.querySelector('.copyright');
             if (yearSpan) {
                 const currentYear = new Date().getFullYear();
                 yearSpan.textContent = `© 2024-${currentYear} سوق الحسابات. جميع الحقوق محفوظة`;
             }
-        });
-
-        // Online/Offline status
-        window.addEventListener('online', () => {
-            if (currentUser) {
-                showAlert('تم استعادة الاتصال بالإنترنت', 'success');
-                setupRealTimeListeners();
-                loadAccountsFromFirebase();
-            }
-        });
-
-        window.addEventListener('offline', () => {
-            showAlert('فقد الاتصال بالإنترنت، يرجى المحاولة مرة أخرى لاحقاً', 'warning');
         });
 
     </script>
