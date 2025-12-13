@@ -2537,7 +2537,6 @@
                 .where('status', '==', 'active')
                 .orderBy('createdAt', 'desc')
                 .limit(50)
-                .onSnapshot((snapshot) => {
                     allAccounts = [];
                     
                     snapshot.forEach(doc => {
@@ -3042,7 +3041,6 @@
             chatListener = messagesRef
                 .orderBy('timestamp', 'asc')
                 .limit(100)
-                .onSnapshot((snapshot) => {
                     snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             const message = change.doc.data();
