@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة حسابات - بيع وشراء حسابات التواصل الاجتماعي</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/FkWK9cgZ/Gemini-Generated-Image-mrc1c2mrc1c2mrc1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS Reset وإعدادات عامة */
@@ -45,16 +46,6 @@
         body.dark-mode {
             background-color: #121212;
             color: #f0f0f0;
-        }
-        
-        body.english {
-            direction: ltr;
-            font-family: Arial, sans-serif;
-        }
-        
-        body.english .rtl-text {
-            direction: rtl;
-            text-align: right;
         }
         
         a {
@@ -139,11 +130,86 @@
             color: white;
         }
         
+        /* أزرار ثابتة في الأسفل - مقلوبة حسب الطلب */
+        .fixed-bottom-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--gradient-primary);
+            padding: 10px 20px;
+            z-index: 999;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+            border-top: 3px solid var(--highlight-color);
+        }
+        
+        .fixed-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* زر الدعم الآن على اليسار (المكان السابق لزر عن التطبيق) */
+        .support-btn {
+            background: linear-gradient(135deg, #e94560 0%, #c2185b 100%);
+            color: white;
+        }
+        
+        /* زر عن التطبيق الآن على اليمين (المكان السابق لزر الدعم) */
+        .about-btn {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            color: white;
+        }
+        
+        .fixed-btn:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .middle-bar {
+            flex: 1;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            padding: 0 15px;
+            line-height: 1.4;
+        }
+        
+        .rights-text {
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .developer-name {
+            font-family: 'Arial', sans-serif;
+            color: #00ccff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* تعديل المحتوى الرئيسي ليكون أعلى من الأزرار الثابتة */
+        main {
+            margin-bottom: 90px;
+        }
+        
         /* التذييل */
         footer {
             background: var(--gradient-primary);
             color: white;
-            padding: 50px 0 25px;
+            padding: 40px 0 20px;
             margin-top: auto;
             text-align: center;
         }
@@ -152,13 +218,13 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
         .footer-section {
             flex: 1;
             min-width: 250px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding: 0 15px;
         }
         
@@ -227,19 +293,12 @@
         
         .footer-bottom {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 25px;
-            font-size: 15px;
+            padding-top: 20px;
+            font-size: 14px;
             color: #9ca3af;
         }
         
-        .developer-name {
-            color: #e94560;
-            font-weight: bold;
-            font-size: 16px;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        /* الشريط العلوي */
+        /* الشريط العلوي - معدل حسب الطلب */
         header {
             background-color: white;
             box-shadow: var(--shadow);
@@ -267,6 +326,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            position: absolute;
+            right: 50%;
+            transform: translateX(50%);
         }
         
         .logo-icon {
@@ -281,6 +343,14 @@
             font-size: 22px;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(15, 52, 96, 0.3);
+            position: relative;
+        }
+        
+        .logo-icon .app-icon-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
         }
         
         .logo-text {
@@ -298,45 +368,77 @@
             -webkit-text-fill-color: transparent;
         }
         
-        nav ul {
-            display: flex;
+        /* قائمة الهامبورجر - على اليسار */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
         }
         
-        nav ul li {
-            margin-left: 8px;
-        }
-        
-        nav ul li a {
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: var(--border-radius-sm);
+        .hamburger-menu span {
+            width: 28px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
             transition: all 0.3s;
+        }
+        
+        body.dark-mode .hamburger-menu span {
+            background-color: #f0f0f0;
+        }
+        
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+        
+        /* زر الإشعارات في الشريط العلوي */
+        .notification-btn {
+            position: relative;
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        
+        body.dark-mode .notification-btn {
+            color: #f0f0f0;
+        }
+        
+        /* قسم المستخدم والإشعارات في الزاوية اليمنى العليا */
+        .user-notification-section {
             display: flex;
             align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
+            gap: 15px;
+            margin-right: 10px;
         }
         
-        nav ul li a::before {
-            content: '';
+        .notification-badge {
             position: absolute;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-secondary);
-            transition: all 0.3s;
-            z-index: -1;
-        }
-        
-        nav ul li a:hover, nav ul li a.active {
+            top: -5px;
+            left: -5px;
+            background-color: #e94560;
             color: white;
-            transform: translateY(-2px);
-        }
-        
-        nav ul li a:hover::before, nav ul li a.active::before {
-            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
         
         .user-menu {
@@ -376,40 +478,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        
-        /* قائمة الهامبورجر */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            padding: 10px;
-            z-index: 1001;
-        }
-        
-        .hamburger-menu span {
-            width: 28px;
-            height: 3px;
-            background-color: var(--primary-color);
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-        
-        body.dark-mode .hamburger-menu span {
-            background-color: #f0f0f0;
-        }
-        
-        .hamburger-menu.active span:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-        
-        .hamburger-menu.active span:nth-child(2) {
-            opacity: 0;
-        }
-        
-        .hamburger-menu.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
         }
         
         /* القائمة الجانبية */
@@ -583,12 +651,39 @@
             line-height: 1.8;
         }
         
+        /* شريط المنصات المتحرك أفقيًا - معدل لحركة سلسة */
+        .platforms-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            margin: 50px 0;
+            padding: 20px 0;
+        }
+        
+        .platforms-track {
+            display: flex;
+            width: max-content;
+            animation: scrollHorizontal 30s linear infinite;
+            gap: 18px;
+        }
+        
+        @keyframes scrollHorizontal {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .platforms-container:hover .platforms-track {
+            animation-play-state: paused;
+        }
+        
         .platforms {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
             gap: 18px;
-            margin: 50px 0;
         }
         
         .platform {
@@ -604,6 +699,9 @@
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            min-width: 150px;
         }
         
         .platform:hover {
@@ -675,13 +773,15 @@
             color: #ccc;
         }
         
+        /* تعديل الحاوية الرئيسية لعرض الحسابات بشكل أفقي على الجوال */
         .accounts-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            gap: 20px;
             margin-bottom: 60px;
         }
         
+        /* تصميم البطاقات بحجم أصغر للجوال */
         .account-card {
             background-color: white;
             border-radius: var(--border-radius);
@@ -691,6 +791,9 @@
             position: relative;
             border: 1px solid #eef2f7;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         body.dark-mode .account-card {
@@ -699,27 +802,27 @@
         }
         
         .account-card:hover {
-            transform: translateY(-12px);
+            transform: translateY(-8px);
             box-shadow: var(--shadow-lg);
             border-color: #e94560;
         }
         
         .account-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             background: linear-gradient(135deg, #e94560 0%, #c2185b 100%);
             color: white;
-            padding: 6px 15px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             z-index: 2;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         
         .account-images {
-            height: 230px;
+            height: 180px;
             overflow: hidden;
             position: relative;
         }
@@ -737,16 +840,17 @@
         
         .account-platform {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
+            bottom: 10px;
+            right: 10px;
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 10px 18px;
+            padding: 8px 15px;
             border-radius: 30px;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
         }
         
         body.dark-mode .account-platform {
@@ -755,21 +859,25 @@
         }
         
         .account-info {
-            padding: 25px;
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .account-info h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 8px;
             color: #e94560;
             font-weight: 800;
+            line-height: 1.3;
         }
         
         .account-stats {
             display: flex;
             justify-content: space-between;
-            margin: 15px 0;
-            padding: 15px 0;
+            margin: 12px 0;
+            padding: 12px 0;
             border-top: 1px solid #f0f0f0;
             border-bottom: 1px solid #f0f0f0;
         }
@@ -780,10 +888,11 @@
         
         .stat {
             text-align: center;
+            flex: 1;
         }
         
         .stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--primary-color);
         }
@@ -793,8 +902,9 @@
         }
         
         .stat-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #777;
+            margin-top: 3px;
         }
         
         body.dark-mode .stat-label {
@@ -803,16 +913,16 @@
         
         .account-price {
             color: #28a745;
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 800;
-            margin: 15px 0;
+            margin: 10px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .account-price .currency {
-            font-size: 18px;
+            font-size: 16px;
             color: #666;
         }
         
@@ -822,9 +932,14 @@
         
         .account-description {
             color: #666;
-            margin: 15px 0;
-            font-size: 15px;
-            line-height: 1.6;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            flex: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         
         body.dark-mode .account-description {
@@ -834,9 +949,9 @@
         .account-seller {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 15px;
-            padding-top: 15px;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid #f0f0f0;
         }
         
@@ -845,8 +960,8 @@
         }
         
         .seller-avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: var(--gradient-secondary);
             color: white;
@@ -854,8 +969,9 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             overflow: hidden;
+            flex-shrink: 0;
         }
         
         .seller-avatar img {
@@ -867,6 +983,7 @@
         .seller-name {
             font-weight: 600;
             color: var(--dark-color);
+            font-size: 14px;
         }
         
         body.dark-mode .seller-name {
@@ -876,14 +993,15 @@
         .account-actions {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            gap: 10px;
+            margin-top: 15px;
+            gap: 8px;
         }
         
         .account-actions .btn {
             flex: 1;
-            padding: 10px 15px;
-            font-size: 14px;
+            padding: 8px 12px;
+            font-size: 13px;
+            min-height: 40px;
         }
         
         /* تصفية الحسابات حسب المنصة */
@@ -891,14 +1009,14 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 40px;
+            gap: 10px;
+            margin-bottom: 30px;
         }
         
         .filter-btn {
             background-color: white;
             color: var(--dark-color);
-            padding: 14px 28px;
+            padding: 10px 20px;
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
@@ -906,7 +1024,9 @@
             border: 2px solid #e0e0e0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 14px;
+            position: relative;
         }
         
         body.dark-mode .filter-btn {
@@ -926,6 +1046,37 @@
         .view-all-container {
             text-align: center;
             margin-bottom: 50px;
+        }
+        
+        /* زر الرجوع في كل قسم */
+        .back-to-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+        }
+        
+        body.dark-mode .back-to-home {
+            border: 2px solid var(--dark-color);
+        }
+        
+        .back-to-home:hover {
+            background-color: #e94560;
+            transform: scale(1.1);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
         }
         
         /* نافذة عرض الحساب */
@@ -1073,6 +1224,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid #eef2f7;
+            position: relative;
         }
         
         body.dark-mode .form-container {
@@ -1166,6 +1318,7 @@
             cursor: pointer;
             transition: all 0.3s;
             background-color: #fafafa;
+            position: relative;
         }
         
         body.dark-mode .platform-option {
@@ -1187,6 +1340,24 @@
             display: block;
         }
         
+        /* مؤشر الاختيار للمنصة */
+        .platform-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #28a745;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
         .currency-selector {
             display: flex;
             gap: 15px;
@@ -1202,6 +1373,7 @@
             cursor: pointer;
             transition: all 0.3s;
             background-color: #fafafa;
+            position: relative;
         }
         
         body.dark-mode .currency-option {
@@ -1214,6 +1386,24 @@
             border-color: #28a745;
             background-color: rgba(40, 167, 69, 0.05);
             transform: translateY(-3px);
+        }
+        
+        /* مؤشر الاختيار للعملة */
+        .currency-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #28a745;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
         }
         
         /* تحسين عرض الصور المرفوعة */
@@ -1308,6 +1498,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid #eef2f7;
+            position: relative;
         }
         
         body.dark-mode .auth-container {
@@ -1355,6 +1546,28 @@
             color: white;
             text-align: center;
             position: relative;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
         }
         
         .profile-avatar-container {
@@ -1485,6 +1698,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid #eef2f7;
+            position: relative;
         }
         
         body.dark-mode .support-container {
@@ -1507,6 +1721,7 @@
             cursor: pointer;
             transition: all 0.3s;
             background-color: #fafafa;
+            position: relative;
         }
         
         body.dark-mode .report-type {
@@ -1519,6 +1734,23 @@
             border-color: #e94560;
             background-color: rgba(233, 69, 96, 0.05);
             transform: translateY(-5px);
+        }
+        
+        .report-type.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #28a745;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
         }
         
         .report-type i {
@@ -1547,7 +1779,7 @@
             background-color: rgba(233, 69, 96, 0.05);
         }
         
-        /* صفحة حول الموقع */
+        /* صفحة عن الموقع */
         .about-container {
             max-width: 1000px;
             margin: 40px auto 60px;
@@ -1556,6 +1788,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid #eef2f7;
+            position: relative;
         }
         
         body.dark-mode .about-container {
@@ -1704,6 +1937,105 @@
             outline: none;
         }
         
+        /* نظام الإشعارات */
+        .notifications-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 2003;
+            display: none;
+            flex-direction: column;
+            border: 1px solid #eef2f7;
+        }
+        
+        body.dark-mode .notifications-container {
+            background-color: #1e1e2e;
+            border-color: #2d2d44;
+        }
+        
+        .notifications-header {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+        
+        .notifications-body {
+            padding: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius-sm);
+            border-right: 4px solid #e94560;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .notification-item {
+            background-color: #2d2d44;
+        }
+        
+        .notification-item:hover {
+            background-color: #eef2f7;
+            transform: translateX(-5px);
+        }
+        
+        body.dark-mode .notification-item:hover {
+            background-color: #3d3d5c;
+        }
+        
+        .notification-item.unread {
+            background-color: rgba(233, 69, 96, 0.1);
+            border-right-color: #e94560;
+        }
+        
+        body.dark-mode .notification-item.unread {
+            background-color: rgba(233, 69, 96, 0.2);
+        }
+        
+        .notification-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        body.dark-mode .notification-title {
+            color: #f0f0f0;
+        }
+        
+        .notification-message {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        body.dark-mode .notification-message {
+            color: #ccc;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
         /* تأثير التحميل */
         .loader {
             display: none;
@@ -1741,7 +2073,7 @@
         }
         
         /* إشعارات */
-        .notification {
+        .notification-toast {
             position: fixed;
             top: 100px;
             right: 20px;
@@ -1758,15 +2090,15 @@
             max-width: 400px;
         }
         
-        .notification.success {
+        .notification-toast.success {
             background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
         }
         
-        .notification.error {
+        .notification-toast.error {
             background: linear-gradient(135deg, #e94560 0%, #c2185b 100%);
         }
         
-        .notification.info {
+        .notification-toast.info {
             background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
         }
         
@@ -1779,58 +2111,6 @@
                 transform: translateX(0);
                 opacity: 1;
             }
-        }
-        
-        /* أزرار ثابتة في الأسفل */
-        .fixed-bottom-buttons {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            border-top: 1px solid #e0e0e0;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 999;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        body.dark-mode .fixed-bottom-buttons {
-            background: rgba(26, 26, 46, 0.95);
-            border-color: #2d2d44;
-        }
-        
-        .fixed-bottom-buttons .btn {
-            flex: 1;
-            margin: 0 5px;
-            padding: 12px;
-            font-size: 14px;
-        }
-        
-        /* زر الرجوع في الملف الشخصي */
-        .back-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(233, 69, 96, 0.9);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            z-index: 10;
-            transition: all 0.3s;
-        }
-        
-        .back-button:hover {
-            background: rgba(233, 69, 96, 1);
-            transform: scale(1.1);
         }
         
         /* تصميم متجاوب */
@@ -1850,36 +2130,26 @@
                 flex-wrap: wrap;
             }
             
-            nav {
-                order: 3;
+            .logo {
+                position: static;
+                transform: none;
+                margin-right: auto;
+                margin-left: auto;
+                order: 2;
                 width: 100%;
-                margin-top: 15px;
-                display: none;
-            }
-            
-            nav.active {
-                display: block;
-            }
-            
-            nav ul {
-                flex-direction: column;
-                background-color: white;
-                border-radius: var(--border-radius);
-                padding: 15px;
-                box-shadow: var(--shadow);
-            }
-            
-            body.dark-mode nav ul {
-                background-color: #1e1e2e;
-            }
-            
-            nav ul li {
-                margin-left: 0;
-                margin-bottom: 10px;
+                justify-content: center;
+                margin-top: 10px;
             }
             
             .hamburger-menu {
                 display: flex;
+                order: 1;
+            }
+            
+            .user-notification-section {
+                order: 3;
+                margin-right: auto;
+                margin-left: 0;
             }
             
             .hero h1 {
@@ -1889,15 +2159,6 @@
             .hero p {
                 font-size: 18px;
                 padding: 0 15px;
-            }
-            
-            .platforms {
-                gap: 12px;
-            }
-            
-            .platform {
-                padding: 15px 25px;
-                font-size: 15px;
             }
             
             .footer-content {
@@ -1917,21 +2178,83 @@
             .modal-body {
                 max-height: calc(90vh - 300px);
             }
+            
+            .chat-modal {
+                width: 350px;
+                height: 500px;
+            }
         }
         
         @media (max-width: 768px) {
+            /* عرض الحسابات بشكل أفقي (2 في كل صف) على الجوال */
             .accounts-container {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 20px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .account-card {
+                height: auto;
+                min-height: 380px;
+            }
+            
+            .account-images {
+                height: 150px;
+            }
+            
+            .account-info {
+                padding: 12px;
+            }
+            
+            .account-info h3 {
+                font-size: 16px;
+            }
+            
+            .account-stats {
+                margin: 8px 0;
+                padding: 8px 0;
+            }
+            
+            .stat-value {
+                font-size: 16px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .account-price {
+                font-size: 18px;
+                margin: 8px 0;
+            }
+            
+            .account-description {
+                font-size: 13px;
+                margin: 8px 0;
+            }
+            
+            .account-actions .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-height: 35px;
+            }
+            
+            .seller-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+            
+            .seller-name {
+                font-size: 13px;
             }
             
             .platform-filter {
-                gap: 10px;
+                gap: 8px;
             }
             
             .filter-btn {
-                padding: 12px 20px;
-                font-size: 14px;
+                padding: 8px 15px;
+                font-size: 13px;
             }
             
             .form-container, .auth-container, .support-container, .about-container, .profile-container {
@@ -1993,6 +2316,40 @@
             .modal-actions .btn {
                 width: 100%;
             }
+            
+            /* تعديل الأزرار الثابتة للجوال */
+            .fixed-bottom-buttons {
+                padding: 10px 15px;
+            }
+            
+            .fixed-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            
+            .middle-bar {
+                font-size: 12px;
+                padding: 0 10px;
+                line-height: 1.3;
+            }
+            
+            .rights-text {
+                font-size: 11px;
+            }
+            
+            .developer-name {
+                font-size: 14px;
+            }
+            
+            .notifications-container {
+                width: 300px;
+                right: 10px;
+            }
+            
+            .platforms-track {
+                animation: scrollHorizontal 20s linear infinite;
+            }
         }
         
         @media (max-width: 576px) {
@@ -2012,13 +2369,18 @@
                 font-size: 28px;
             }
             
-            .platforms {
-                gap: 10px;
+            /* على الشاشات الصغيرة جداً، نعرض الحسابات بعمودين لكن بحجم أصغر */
+            .accounts-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
             
-            .platform {
-                padding: 12px 18px;
-                font-size: 14px;
+            .account-card {
+                min-height: 350px;
+            }
+            
+            .account-images {
+                height: 130px;
             }
             
             .account-actions {
@@ -2047,7 +2409,7 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .notification {
+            .notification-toast {
                 right: 10px;
                 left: 10px;
                 max-width: calc(100% - 20px);
@@ -2075,11 +2437,52 @@
                 height: 40px;
                 font-size: 18px;
             }
+            
+            /* تعديل الأزرار الثابتة للشاشات الصغيرة */
+            .fixed-bottom-buttons {
+                padding: 8px 12px;
+            }
+            
+            .fixed-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .middle-bar {
+                font-size: 11px;
+                padding: 0 8px;
+            }
+            
+            .rights-text {
+                font-size: 10px;
+            }
+            
+            .developer-name {
+                font-size: 12px;
+            }
+            
+            .notifications-container {
+                width: 280px;
+            }
+            
+            .platforms-track {
+                animation: scrollHorizontal 15s linear infinite;
+            }
         }
         
         @media (max-width: 380px) {
             .accounts-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .account-card {
+                min-height: 320px;
+            }
+            
+            .account-images {
+                height: 120px;
             }
             
             .platform-selector {
@@ -2096,6 +2499,13 @@
             
             .modal-body {
                 max-height: calc(90vh - 180px);
+            }
+            
+            /* على الشاشات الصغيرة جداً، يمكن عرض عمود واحد إذا لزم الأمر */
+            @media (max-width: 320px) {
+                .accounts-container {
+                    grid-template-columns: 1fr;
+                }
             }
         }
     </style>
@@ -2138,6 +2548,17 @@
         </div>
     </div>
 
+    <!-- نافذة الإشعارات -->
+    <div class="notifications-container" id="notificationsContainer">
+        <div class="notifications-header">
+            <h3>الإشعارات</h3>
+            <button class="btn btn-danger btn-small" id="closeNotifications">إغلاق</button>
+        </div>
+        <div class="notifications-body" id="notificationsBody">
+            <!-- سيتم تعبئة الإشعارات هنا -->
+        </div>
+    </div>
+
     <!-- الشريط العلوي -->
     <header>
         <div class="container header-container">
@@ -2147,33 +2568,33 @@
                 <span></span>
             </div>
             
-            <div class="logo">
-                <div class="logo-icon"><i class="fas fa-user-circle"></i></div>
-                <div class="logo-text">منصة حسابات</div>
+            <!-- قسم المستخدم والإشعارات في الزاوية اليمنى العليا -->
+            <div class="user-notification-section">
+                <button class="notification-btn" id="notificationBtn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                <div class="user-menu">
+                    <a href="#" class="btn" id="loginBtn" onclick="showSection('login')"><i class="fas fa-user-plus"></i> إنشاء حساب</a>
+                    <div class="user-avatar" id="userAvatar" style="display: none;" onclick="showSection('profile')">
+                        <!-- سيتم تعبئتها بواسطة JavaScript -->
+                    </div>
+                </div>
             </div>
             
-            <nav id="mainNav">
-                <ul>
-                    <li><a href="#home" class="active" onclick="showSection('home'); closeNav();"><i class="fas fa-home"></i> الرئيسية</a></li>
-                    <li><a href="#accounts" onclick="showSection('accounts'); closeNav();"><i class="fas fa-th-list"></i> جميع الحسابات</a></li>
-                    <li><a href="#add-account" onclick="showSection('add-account'); closeNav();"><i class="fas fa-plus-circle"></i> بيع حساب</a></li>
-                    <li><a href="#support" onclick="showSection('support'); closeNav();"><i class="fas fa-headset"></i> الدعم والبلاغات</a></li>
-                    <li><a href="#about" onclick="showSection('about'); closeNav();"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
-                </ul>
-            </nav>
-            
-            <div class="user-menu">
-                <a href="#" class="btn" id="loginBtn" onclick="showSection('login')"><i class="fas fa-user-plus"></i> إنشاء حساب</a>
-                <div class="user-avatar" id="userAvatar" style="display: none;" onclick="showSection('profile')">
-                    <!-- سيتم تعبئتها بواسطة JavaScript -->
+            <!-- الشعار في الوسط -->
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="https://i.ibb.co/FkWK9cgZ/Gemini-Generated-Image-mrc1c2mrc1c2mrc1.png" alt="أيقونة التطبيق" class="app-icon-mini">
                 </div>
+                <div class="logo-text">منصة حسابات</div>
             </div>
         </div>
     </header>
 
     <!-- القائمة الجانبية (الاعدادات) -->
     <div class="sidebar" id="sidebar">
-        <button class="close-sidebar" id="closeSidebar">&times;</button>
+        <button class="close-sidebar" id="closeSidebar">×</button>
         <h3><i class="fas fa-cog"></i> الإعدادات</h3>
         
         <div class="sidebar-item">
@@ -2188,8 +2609,8 @@
             <label><i class="fas fa-palette"></i> المظهر</label>
             <div class="theme-switcher">
                 <div>
-                    <i class="fas fa-sun theme-icon"></i>
-                    <span id="themeLabel">الوضع النهاري</span>
+                    <i class="fas fa-moon theme-icon" id="themeIcon"></i>
+                    <span id="themeText">الوضع الليلي</span>
                 </div>
                 <label class="theme-switch">
                     <input type="checkbox" id="themeToggle">
@@ -2200,24 +2621,34 @@
         
         <div class="sidebar-item">
             <label><i class="fas fa-bell"></i> الإشعارات</label>
-            <p id="notificationsText">تفعيل إشعارات جديدة للحسابات</p>
-            <label class="theme-switch">
-                <input type="checkbox" id="notificationsToggle" checked>
-                <span class="slider"></span>
-            </label>
+            <div class="theme-switcher">
+                <div>
+                    <i class="fas fa-bell theme-icon"></i>
+                    <span>تفعيل الإشعارات</span>
+                </div>
+                <label class="theme-switch">
+                    <input type="checkbox" id="notificationsToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
         
         <div class="sidebar-item">
             <label><i class="fas fa-volume-up"></i> الصوت</label>
-            <p id="soundText">تشغيل صوت الإشعارات</p>
-            <label class="theme-switch">
-                <input type="checkbox" id="soundToggle" checked>
-                <span class="slider"></span>
-            </label>
+            <div class="theme-switcher">
+                <div>
+                    <i class="fas fa-volume-up theme-icon"></i>
+                    <span>تشغيل الأصوات</span>
+                </div>
+                <label class="theme-switch">
+                    <input type="checkbox" id="soundToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
         
         <button class="btn" style="width: 100%; margin-top: 30px;" onclick="saveSettings()">
-            <i class="fas fa-save"></i> <span id="saveSettingsText">حفظ الإعدادات</span>
+            <i class="fas fa-save"></i> حفظ الإعدادات
         </button>
     </div>
 
@@ -2226,44 +2657,67 @@
         <section id="home" class="section">
             <div class="hero">
                 <div class="container">
-                    <h1 id="heroTitle">منصة بيع وشراء حسابات التواصل الاجتماعي</h1>
-                    <p id="heroSubtitle">المنصة الأولى عربياً لبيع وشراء حسابات فيسبوك، إنستقرام، تيك توك، يوتيوب، تليجرام، سناب شات، تويتر، JACO وجميع منصات التواصل الاجتماعي بأمان وموثوقية</p>
-                    <div class="platforms">
-                        <div class="platform facebook" onclick="filterAccounts('facebook')"><i class="fab fa-facebook"></i> <span class="platform-name">فيسبوك</span></div>
-                        <div class="platform instagram" onclick="filterAccounts('instagram')"><i class="fab fa-instagram"></i> <span class="platform-name">إنستقرام</span></div>
-                        <div class="platform tiktok" onclick="filterAccounts('tiktok')"><i class="fab fa-tiktok"></i> <span class="platform-name">تيك توك</span></div>
-                        <div class="platform youtube" onclick="filterAccounts('youtube')"><i class="fab fa-youtube"></i> <span class="platform-name">يوتيوب</span></div>
-                        <div class="platform telegram" onclick="filterAccounts('telegram')"><i class="fab fa-telegram"></i> <span class="platform-name">تليجرام</span></div>
-                        <div class="platform snapchat" onclick="filterAccounts('snapchat')"><i class="fab fa-snapchat"></i> <span class="platform-name">سناب شات</span></div>
-                        <div class="platform twitter" onclick="filterAccounts('twitter')"><i class="fab fa-twitter"></i> <span class="platform-name">تويتر</span></div>
-                        <div class="platform jaco" onclick="filterAccounts('jaco')"><i class="fas fa-comment-dots"></i> <span class="platform-name">JACO</span></div>
+                    <h1>منصة بيع وشراء حسابات التواصل الاجتماعي</h1>
+                    <p>المنصة الأولى عربياً لبيع وشراء حسابات فيسبوك، إنستقرام، تيك توك، يوتيوب، تليجرام، سناب شات، تويتر، JACO وجميع منصات التواصل الاجتماعي بأمان وموثوقية</p>
+                    
+                    <!-- شريط المنصات المتحرك أفقيًا - تم التعديل -->
+                    <div class="platforms-container">
+                        <div class="platforms-track">
+                            <div class="platforms">
+                                <div class="platform facebook" onclick="filterAccounts('facebook')">
+                                    <i class="fab fa-facebook"></i> فيسبوك
+                                </div>
+                                <div class="platform instagram" onclick="filterAccounts('instagram')">
+                                    <i class="fab fa-instagram"></i> إنستقرام
+                                </div>
+                                <div class="platform tiktok" onclick="filterAccounts('tiktok')">
+                                    <i class="fab fa-tiktok"></i> تيك توك
+                                </div>
+                                <div class="platform youtube" onclick="filterAccounts('youtube')">
+                                    <i class="fab fa-youtube"></i> يوتيوب
+                                </div>
+                                <div class="platform telegram" onclick="filterAccounts('telegram')">
+                                    <i class="fab fa-telegram"></i> تليجرام
+                                </div>
+                                <div class="platform snapchat" onclick="filterAccounts('snapchat')">
+                                    <i class="fab fa-snapchat"></i> سناب شات
+                                </div>
+                                <div class="platform twitter" onclick="filterAccounts('twitter')">
+                                    <i class="fab fa-twitter"></i> تويتر
+                                </div>
+                                <div class="platform jaco" onclick="filterAccounts('jaco')">
+                                    <i class="fas fa-comment-dots"></i> JACO
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <a href="#add-account" class="btn btn-success" style="font-size: 20px; padding: 18px 40px;" onclick="showSection('add-account')"><i class="fas fa-bullhorn"></i> <span id="sellAccountBtn">بيع حسابك الآن</span></a>
+                    
+                    <a href="#add-account" class="btn btn-success" style="font-size: 20px; padding: 18px 40px;" onclick="showSection('add-account')"><i class="fas fa-bullhorn"></i> بيع حسابك الآن</a>
                 </div>
             </div>
 
             <div class="container">
-                <h2 class="section-title" id="latestAccountsTitle">أحدث الحسابات المضافة</h2>
-                <p class="section-subtitle" id="latestAccountsSubtitle">تصفح أحدث الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي</p>
+                <h2 class="section-title">أحدث الحسابات المضافة</h2>
+                <p class="section-subtitle">تصفح أحدث الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي</p>
                 
                 <div class="platform-filter" id="platformFilter">
                     <div class="filter-btn active" data-platform="all" onclick="filterAccounts('all')">
-                        <i class="fas fa-globe"></i> <span id="allPlatformsText">جميع المنصات</span>
+                        <i class="fas fa-globe"></i> جميع المنصات
                     </div>
                     <div class="filter-btn" data-platform="facebook" onclick="filterAccounts('facebook')">
-                        <i class="fab fa-facebook"></i> <span>فيسبوك</span>
+                        <i class="fab fa-facebook"></i> فيسبوك
                     </div>
                     <div class="filter-btn" data-platform="instagram" onclick="filterAccounts('instagram')">
-                        <i class="fab fa-instagram"></i> <span>إنستقرام</span>
+                        <i class="fab fa-instagram"></i> إنستقرام
                     </div>
                     <div class="filter-btn" data-platform="tiktok" onclick="filterAccounts('tiktok')">
-                        <i class="fab fa-tiktok"></i> <span>تيك توك</span>
+                        <i class="fab fa-tiktok"></i> تيك توك
                     </div>
                     <div class="filter-btn" data-platform="youtube" onclick="filterAccounts('youtube')">
-                        <i class="fab fa-youtube"></i> <span>يوتيوب</span>
+                        <i class="fab fa-youtube"></i> يوتيوب
                     </div>
                     <div class="filter-btn" data-platform="telegram" onclick="filterAccounts('telegram')">
-                        <i class="fab fa-telegram"></i> <span>تليجرام</span>
+                        <i class="fab fa-telegram"></i> تليجرام
                     </div>
                 </div>
                 
@@ -2273,7 +2727,7 @@
                 
                 <div class="view-all-container">
                     <a href="#accounts" class="btn btn-outline" onclick="showSection('accounts')">
-                        <i class="fas fa-eye"></i> <span id="viewAllAccountsText">عرض جميع الحسابات</span>
+                        <i class="fas fa-eye"></i> عرض جميع الحسابات
                     </a>
                 </div>
             </div>
@@ -2281,37 +2735,40 @@
 
         <!-- صفحة جميع الحسابات -->
         <section id="accounts" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
-                <h2 class="section-title" id="allAccountsTitle">جميع الحسابات المتاحة</h2>
-                <p class="section-subtitle" id="allAccountsSubtitle">تصفح جميع الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي</p>
+                <h2 class="section-title">جميع الحسابات المتاحة</h2>
+                <p class="section-subtitle">تصفح جميع الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي</p>
                 
                 <div class="platform-filter" id="allPlatformFilter">
                     <div class="filter-btn active" data-platform="all" onclick="filterAllAccounts('all')">
-                        <i class="fas fa-globe"></i> <span>جميع المنصات</span>
+                        <i class="fas fa-globe"></i> جميع المنصات
                     </div>
                     <div class="filter-btn" data-platform="facebook" onclick="filterAllAccounts('facebook')">
-                        <i class="fab fa-facebook"></i> <span>فيسبوك</span>
+                        <i class="fab fa-facebook"></i> فيسبوك
                     </div>
                     <div class="filter-btn" data-platform="instagram" onclick="filterAllAccounts('instagram')">
-                        <i class="fab fa-instagram"></i> <span>إنستقرام</span>
+                        <i class="fab fa-instagram"></i> إنستقرام
                     </div>
                     <div class="filter-btn" data-platform="tiktok" onclick="filterAllAccounts('tiktok')">
-                        <i class="fab fa-tiktok"></i> <span>تيك توك</span>
+                        <i class="fab fa-tiktok"></i> تيك توك
                     </div>
                     <div class="filter-btn" data-platform="youtube" onclick="filterAllAccounts('youtube')">
-                        <i class="fab fa-youtube"></i> <span>يوتيوب</span>
+                        <i class="fab fa-youtube"></i> يوتيوب
                     </div>
                     <div class="filter-btn" data-platform="telegram" onclick="filterAllAccounts('telegram')">
-                        <i class="fab fa-telegram"></i> <span>تليجرام</span>
+                        <i class="fab fa-telegram"></i> تليجرام
                     </div>
                     <div class="filter-btn" data-platform="snapchat" onclick="filterAllAccounts('snapchat')">
-                        <i class="fab fa-snapchat"></i> <span>سناب شات</span>
+                        <i class="fab fa-snapchat"></i> سناب شات
                     </div>
                     <div class="filter-btn" data-platform="twitter" onclick="filterAllAccounts('twitter')">
-                        <i class="fab fa-twitter"></i> <span>تويتر</span>
+                        <i class="fab fa-twitter"></i> تويتر
                     </div>
                     <div class="filter-btn" data-platform="jaco" onclick="filterAllAccounts('jaco')">
-                        <i class="fas fa-comment-dots"></i> <span>JACO</span>
+                        <i class="fas fa-comment-dots"></i> JACO
                     </div>
                 </div>
                 
@@ -2323,67 +2780,70 @@
 
         <!-- صفحة إضافة حساب -->
         <section id="add-account" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
                 <div class="form-container">
-                    <h2 class="form-title" id="sellAccountTitle">بيع حسابك</h2>
+                    <h2 class="form-title">بيع حسابك</h2>
                     <form id="addAccountForm">
                         <div class="form-group">
-                            <label><i class="fas fa-share-alt"></i> <span id="selectPlatformText">اختر منصة التواصل الاجتماعي</span></label>
+                            <label><i class="fas fa-share-alt"></i> اختر منصة التواصل الاجتماعي</label>
                             <div class="platform-selector">
                                 <div class="platform-option" data-platform="facebook" onclick="selectPlatform(this)">
-                                    <i class="fab fa-facebook facebook"></i> <span>فيسبوك</span>
+                                    <i class="fab fa-facebook facebook"></i> فيسبوك
                                 </div>
                                 <div class="platform-option" data-platform="instagram" onclick="selectPlatform(this)">
-                                    <i class="fab fa-instagram instagram"></i> <span>إنستقرام</span>
+                                    <i class="fab fa-instagram instagram"></i> إنستقرام
                                 </div>
                                 <div class="platform-option" data-platform="tiktok" onclick="selectPlatform(this)">
-                                    <i class="fab fa-tiktok tiktok"></i> <span>تيك توك</span>
+                                    <i class="fab fa-tiktok tiktok"></i> تيك توك
                                 </div>
                                 <div class="platform-option" data-platform="youtube" onclick="selectPlatform(this)">
-                                    <i class="fab fa-youtube youtube"></i> <span>يوتيوب</span>
+                                    <i class="fab fa-youtube youtube"></i> يوتيوب
                                 </div>
                                 <div class="platform-option" data-platform="telegram" onclick="selectPlatform(this)">
-                                    <i class="fab fa-telegram telegram"></i> <span>تليجرام</span>
+                                    <i class="fab fa-telegram telegram"></i> تليجرام
                                 </div>
                                 <div class="platform-option" data-platform="snapchat" onclick="selectPlatform(this)">
-                                    <i class="fab fa-snapchat snapchat"></i> <span>سناب شات</span>
+                                    <i class="fab fa-snapchat snapchat"></i> سناب شات
                                 </div>
                                 <div class="platform-option" data-platform="twitter" onclick="selectPlatform(this)">
-                                    <i class="fab fa-twitter twitter"></i> <span>تويتر</span>
+                                    <i class="fab fa-twitter twitter"></i> تويتر
                                 </div>
                                 <div class="platform-option" data-platform="jaco" onclick="selectPlatform(this)">
-                                    <i class="fas fa-comment-dots"></i> <span>JACO</span>
+                                    <i class="fas fa-comment-dots"></i> JACO
                                 </div>
                             </div>
                             <input type="hidden" id="selectedPlatform" name="platform" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="accountName"><i class="fas fa-user"></i> <span id="accountNameLabel">اسم الحساب</span></label>
+                            <label for="accountName"><i class="fas fa-user"></i> اسم الحساب</label>
                             <input type="text" id="accountName" class="form-control" placeholder="أدخل اسم الحساب" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="accountUrl"><i class="fas fa-link"></i> <span id="accountUrlLabel">رابط الحساب</span></label>
+                            <label for="accountUrl"><i class="fas fa-link"></i> رابط الحساب</label>
                             <input type="url" id="accountUrl" class="form-control" placeholder="https://www.example.com/username" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="followersCount"><i class="fas fa-users"></i> <span id="followersLabel">عدد المتابعين</span></label>
+                            <label for="followersCount"><i class="fas fa-users"></i> عدد المتابعين</label>
                             <input type="number" id="followersCount" class="form-control" placeholder="أدخل عدد المتابعين" min="1" required>
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-money-bill-wave"></i> <span id="priceCurrencyLabel">السعر والعملة</span></label>
+                            <label><i class="fas fa-money-bill-wave"></i> السعر والعملة</label>
                             <div class="currency-selector">
                                 <div class="currency-option" data-currency="USD" onclick="selectCurrency(this)">
-                                    <i class="fas fa-dollar-sign"></i> <span id="usdCurrency">دولار أمريكي</span>
+                                    <i class="fas fa-dollar-sign"></i> دولار أمريكي
                                 </div>
                                 <div class="currency-option" data-currency="SAR" onclick="selectCurrency(this)">
-                                    <i class="fas fa-riyal-sign"></i> <span id="sarCurrency">ريال سعودي</span>
+                                    <i class="fas fa-riyal-sign"></i> ريال سعودي
                                 </div>
                                 <div class="currency-option" data-currency="YER" onclick="selectCurrency(this)">
-                                    <i class="fas fa-riyal-sign"></i> <span id="yerCurrency">ريال يمني</span>
+                                    <i class="fas fa-riyal-sign"></i> ريال يمني
                                 </div>
                             </div>
                             <input type="hidden" id="selectedCurrency" name="currency" value="USD" required>
@@ -2391,26 +2851,26 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="accountDescription"><i class="fas fa-align-left"></i> <span id="accountDescLabel">وصف الحساب</span></label>
+                            <label for="accountDescription"><i class="fas fa-align-left"></i> وصف الحساب</label>
                             <textarea id="accountDescription" class="form-control" rows="5" placeholder="أدخل وصفاً مفصلاً للحساب..." required></textarea>
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-images"></i> <span id="uploadImagesLabel">رفع صور للحساب (2-3 صور)</span></label>
+                            <label><i class="fas fa-images"></i> رفع صور للحساب (2-3 صور)</label>
                             <div class="image-upload" onclick="document.getElementById('imageUpload').click()">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
-                                <p id="uploadClickText">انقر لرفع الصور</p>
-                                <p style="color: #666; font-size: 14px;" id="uploadInfoText">يمكنك رفع 2-3 صور - اختر صورة واحدة في كل مرة</p>
-                                <p style="color: #e94560; font-size: 14px; margin-top: 5px;" id="uploadMinText">يجب رفع 2 صور على الأقل</p>
+                                <p>انقر لرفع الصور</p>
+                                <p style="color: #666; font-size: 14px;">يمكنك رفع 2-3 صور - اختر صورة واحدة في كل مرة</p>
+                                <p style="color: #e94560; font-size: 14px; margin-top: 5px;">يجب رفع 2 صور على الأقل</p>
                             </div>
-                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;" multiple>
                             <div class="uploaded-images" id="uploadedImages"></div>
                         </div>
                         
                         <button type="submit" class="btn btn-success" style="width: 100%; padding: 18px; font-size: 20px;">
-                            <i class="fas fa-paper-plane"></i> <span id="publishAccountBtn">نشر الحساب للبيع</span>
+                            <i class="fas fa-paper-plane"></i> نشر الحساب للبيع
                         </button>
                     </form>
                 </div>
@@ -2419,17 +2879,20 @@
 
         <!-- صفحة تسجيل الدخول -->
         <section id="login" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
                 <div class="auth-container">
-                    <h2 class="form-title" id="createAccountTitle">إنشاء حساب جديد</h2>
+                    <h2 class="form-title">إنشاء حساب جديد</h2>
                     <form id="registerForm">
                         <div class="form-group">
-                            <label for="fullName"><i class="fas fa-user"></i> <span id="fullNameLabel">الاسم الكامل</span></label>
+                            <label for="fullName"><i class="fas fa-user"></i> الاسم الكامل</label>
                             <input type="text" id="fullName" class="form-control" placeholder="أدخل اسمك الكامل" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="country"><i class="fas fa-globe"></i> <span id="countryLabel">الدولة</span></label>
+                            <label for="country"><i class="fas fa-globe"></i> الدولة</label>
                             <select id="country" class="form-control" required>
                                 <option value="">اختر دولتك</option>
                                 <option value="SA">السعودية</option>
@@ -2448,7 +2911,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="phone"><i class="fas fa-phone"></i> <span id="phoneLabel">رقم الهاتف</span></label>
+                            <label for="phone"><i class="fas fa-phone"></i> رقم الهاتف</label>
                             <div class="country-select">
                                 <select id="countryCode" class="form-control" style="width: 30%;">
                                     <option value="+966">+966 السعودية</option>
@@ -2463,22 +2926,22 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="address"><i class="fas fa-map-marker-alt"></i> <span id="addressLabel">العنوان</span></label>
+                            <label for="address"><i class="fas fa-map-marker-alt"></i> العنوان</label>
                             <input type="text" id="address" class="form-control" placeholder="أدخل عنوانك" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="profilePicture"><i class="fas fa-camera"></i> <span id="profilePicLabel">صورة الملف الشخصي (اختياري)</span></label>
-                            <input type="file" id="profilePicture" class="form-control" accept="image/*">
-                            <small style="color: #666;" id="profilePicInfo">يمكنك إضافة صورة شخصية لملفك الشخصي</small>
+                            <label for="profilePicture"><i class="fas fa-camera"></i> صورة الملف الشخصي (اختياري)</label>
+                            <input type="file" id="profilePicture" class="form-control" accept="image/*" onchange="handleProfilePictureChange(event)">
+                            <small style="color: #666;">يمكنك إضافة صورة شخصية لملفك الشخصي</small>
                         </div>
                         
                         <button type="submit" class="btn btn-success" style="width: 100%; padding: 18px; font-size: 20px;">
-                            <i class="fas fa-user-plus"></i> <span id="createAccountBtn">إنشاء حساب</span>
+                            <i class="fas fa-user-plus"></i> إنشاء حساب
                         </button>
                         
                         <p style="text-align: center; margin-top: 25px; color: #666;">
-                            <span id="agreeTermsText">بالتسجيل فإنك توافق على</span> <a href="#" style="color: #e94560; font-weight: 600;" id="termsLink">شروط الاستخدام</a> <span id="andText">و</span> <a href="#" style="color: #e94560; font-weight: 600;" id="privacyLink">سياسة الخصوصية</a>
+                            بالتسجيل فإنك توافق على <a href="#" style="color: #e94560; font-weight: 600;">شروط الاستخدام</a> و <a href="#" style="color: #e94560; font-weight: 600;">سياسة الخصوصية</a>
                         </p>
                     </form>
                 </div>
@@ -2487,13 +2950,15 @@
 
         <!-- صفحة الملف الشخصي -->
         <section id="profile" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
                 <div class="profile-container">
-                    <button class="back-button" onclick="showSection('home')">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    
                     <div class="profile-header">
+                        <button class="back-btn" onclick="showSection('home')">
+                            <i class="fas fa-arrow-right"></i> رجوع
+                        </button>
                         <div class="profile-avatar-container">
                             <div class="profile-avatar" id="profileAvatar">
                                 <!-- سيتم تعبئتها بواسطة JavaScript -->
@@ -2501,56 +2966,56 @@
                             <div class="change-avatar" onclick="document.getElementById('changeAvatarInput').click()">
                                 <i class="fas fa-camera"></i>
                             </div>
-                            <input type="file" id="changeAvatarInput" accept="image/*" style="display: none;">
+                            <input type="file" id="changeAvatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
                         </div>
                         <h1 class="profile-name" id="profileName">أمين الزواحي</h1>
                         <div class="profile-id" id="profileId">ID: 000000000</div>
                         <p id="profileCountry">السعودية</p>
                     </div>
                     <div class="profile-body">
-                        <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 24px; font-weight: 800;" id="accountInfoTitle">معلومات الحساب</h2>
+                        <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 24px; font-weight: 800;">معلومات الحساب</h2>
                         
                         <div class="info-grid">
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-user"></i> <span id="fullNameInfoLabel">الاسم الكامل</span></div>
-                                <div class="info-value" id="infoFullName">أمين الزواحي</div>
+                                <div class="info-label"><i class="fas fa-user"></i> الاسم الكامل</div>
+                                <div class="info-value" id="infoFullName">المطور: أمين الزواحي</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-phone"></i> <span id="phoneInfoLabel">رقم الهاتف</span></div>
+                                <div class="info-label"><i class="fas fa-phone"></i> رقم الهاتف</div>
                                 <div class="info-value" id="infoPhone">+966 500 000 000</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-globe"></i> <span id="countryInfoLabel">الدولة</span></div>
+                                <div class="info-label"><i class="fas fa-globe"></i> الدولة</div>
                                 <div class="info-value" id="infoCountry">السعودية</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-map-marker-alt"></i> <span id="addressInfoLabel">العنوان</span></div>
+                                <div class="info-label"><i class="fas fa-map-marker-alt"></i> العنوان</div>
                                 <div class="info-value" id="infoAddress">الرياض، حي الملز</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-id-card"></i> <span id="userIdLabel">معرف المستخدم</span></div>
+                                <div class="info-label"><i class="fas fa-id-card"></i> معرف المستخدم</div>
                                 <div class="info-value" id="infoUserId">000000000</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label"><i class="fas fa-calendar-alt"></i> <span id="registerDateLabel">تاريخ التسجيل</span></div>
+                                <div class="info-label"><i class="fas fa-calendar-alt"></i> تاريخ التسجيل</div>
                                 <div class="info-value" id="infoRegisterDate">١٠ نوفمبر ٢٠٢٣</div>
                             </div>
                         </div>
                         
-                        <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 24px; font-weight: 800;" id="soldAccountsTitle">الحسابات التي بعتها</h2>
+                        <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 24px; font-weight: 800;">الحسابات التي بعتها</h2>
                         <div class="accounts-container" id="userAccountsContainer">
                             <!-- سيتم تعبئة حسابات المستخدم هنا -->
                         </div>
                         
                         <div class="profile-actions">
                             <button class="btn" onclick="showSection('add-account')">
-                                <i class="fas fa-plus-circle"></i> <span id="addNewAccountBtn">إضافة حساب جديد</span>
+                                <i class="fas fa-plus-circle"></i> إضافة حساب جديد
                             </button>
                             <button class="btn btn-outline" onclick="openSettings()">
-                                <i class="fas fa-cog"></i> <span id="settingsBtn">الإعدادات</span>
+                                <i class="fas fa-cog"></i> الإعدادات
                             </button>
                             <button class="btn btn-danger" id="logoutBtn">
-                                <i class="fas fa-sign-out-alt"></i> <span id="logoutBtnText">تسجيل الخروج</span>
+                                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                             </button>
                         </div>
                     </div>
@@ -2560,60 +3025,63 @@
 
         <!-- صفحة الدعم والبلاغات -->
         <section id="support" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
                 <div class="support-container">
-                    <h2 class="form-title" id="supportCenterTitle">مركز الدعم والبلاغات</h2>
+                    <h2 class="form-title">مركز الدعم والبلاغات</h2>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-exclamation-triangle"></i> <span id="reportTypeLabel">نوع البلاغ</span></label>
+                        <label><i class="fas fa-exclamation-triangle"></i> نوع البلاغ</label>
                         <div class="report-types">
                             <div class="report-type" onclick="selectReportType(this)" data-type="account">
                                 <i class="fas fa-user-slash"></i>
-                                <h3 id="accountProblemTitle">مشكلة في الحساب</h3>
-                                <p id="accountProblemDesc">مشكلة في حساب المستخدم أو بياناته</p>
+                                <h3>مشكلة في الحساب</h3>
+                                <p>مشكلة في حساب المستخدم أو بياناته</p>
                             </div>
                             <div class="report-type" onclick="selectReportType(this)" data-type="publish">
                                 <i class="fas fa-upload"></i>
-                                <h3 id="publishProblemTitle">مشكلة في النشر</h3>
-                                <p id="publishProblemDesc">مشكلة في نشر الحسابات أو تعديلها</p>
+                                <h3>مشكلة في النشر</h3>
+                                <p>مشكلة في نشر الحسابات أو تعديلها</p>
                             </div>
                             <div class="report-type" onclick="selectReportType(this)" data-type="payment">
                                 <i class="fas fa-credit-card"></i>
-                                <h3 id="paymentProblemTitle">مشكلة في الدفع</h3>
-                                <p id="paymentProblemDesc">مشكلة في عمليات الدفع أو التحويل</p>
+                                <h3>مشكلة في الدفع</h3>
+                                <p>مشكلة في عمليات الدفع أو التحويل</p>
                             </div>
                             <div class="report-type" onclick="selectReportType(this)" data-type="other">
                                 <i class="fas fa-question-circle"></i>
-                                <h3 id="otherProblemTitle">مشكلة أخرى</h3>
-                                <p id="otherProblemDesc">أي مشكلة أخرى تحتاج إلى دعم</p>
+                                <h3>مشكلة أخرى</h3>
+                                <p>أي مشكلة أخرى تحتاج إلى دعم</p>
                             </div>
                         </div>
                         <input type="hidden" id="selectedReportType" name="reportType" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="reportDescription"><i class="fas fa-align-left"></i> <span id="problemDescLabel">وصف المشكلة</span></label>
+                        <label for="reportDescription"><i class="fas fa-align-left"></i> وصف المشكلة</label>
                         <textarea id="reportDescription" class="form-control" rows="5" placeholder="اشرح مشكلتك بالتفصيل..." required></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-camera"></i> <span id="screenshotLabel">لقطة شاشة للمشكلة (اختياري)</span></label>
+                        <label><i class="fas fa-camera"></i> لقطة شاشة للمشكلة (اختياري)</label>
                         <div class="screenshot-upload" onclick="document.getElementById('screenshotUpload').click()">
                             <i class="fas fa-cloud-upload-alt" style="font-size: 40px; color: #e94560; margin-bottom: 10px;"></i>
-                            <p id="screenshotClickText">انقر لرفع لقطة الشاشة</p>
-                            <p style="color: #666; font-size: 14px;" id="screenshotInfoText">يمكنك رفع صورة توضح المشكلة</p>
+                            <p>انقر لرفع لقطة الشاشة</p>
+                            <p style="color: #666; font-size: 14px;">يمكنك رفع صورة توضح المشكلة</p>
                         </div>
                         <input type="file" id="screenshotUpload" accept="image/*" style="display: none;">
                         <div id="screenshotPreview" style="margin-top: 15px;"></div>
                     </div>
                     
                     <button type="button" class="btn btn-success" style="width: 100%; padding: 18px; font-size: 20px;" onclick="submitReport()">
-                        <i class="fas fa-paper-plane"></i> <span id="sendReportBtn">إرسال البلاغ</span>
+                        <i class="fas fa-paper-plane"></i> إرسال البلاغ
                     </button>
                     
                     <div style="margin-top: 40px;">
-                        <h3><i class="fas fa-headset"></i> <span id="contactInfoTitle">معلومات الاتصال</span></h3>
-                        <p id="contactInfoText">يمكنك التواصل معنا عبر البريد الإلكتروني: support@hisabat.com أو عبر الهاتف: +966 123 456 789</p>
+                        <h3><i class="fas fa-headset"></i> معلومات الاتصال</h3>
+                        <p>يمكنك التواصل معنا عبر البريد الإلكتروني: support@hisabat.com أو عبر الهاتف: +966 123 456 789</p>
                     </div>
                 </div>
             </div>
@@ -2621,53 +3089,46 @@
 
         <!-- صفحة عن الموقع -->
         <section id="about" class="section" style="display: none;">
+            <div class="back-to-home" onclick="showSection('home')">
+                <i class="fas fa-arrow-right"></i>
+            </div>
             <div class="container">
                 <div class="about-container">
-                    <h2 class="form-title" id="aboutPlatformTitle">عن منصة حسابات</h2>
+                    <h2 class="form-title">عن منصة حسابات</h2>
                     
                     <div class="about-section">
-                        <h2 id="aboutIdeaTitle">فكرة الموقع</h2>
-                        <p id="aboutIdeaText1">منصة "حسابات" هي أول منصة عربية متخصصة في بيع وشراء حسابات مواقع التواصل الاجتماعي، تهدف إلى توفير بيئة آمنة وموثوقة للراغبين في بيع حساباتهم أو شراء حسابات جاهزة.</p>
-                        <p id="aboutIdeaText2">نحن نؤمن بأن لكل حساب قيمة، سواء كان حساباً شخصياً أو حساباً تجارياً، وهذه القيمة تستحق أن يتم تداولها بطريقة آمنة ومنظمة.</p>
+                        <h2>فكرة الموقع</h2>
+                        <p>منصة "حسابات" هي أول منصة عربية متخصصة في بيع وشراء حسابات مواقع التواصل الاجتماعي، تهدف إلى توفير بيئة آمنة وموثوقة للراغبين في بيع حساباتهم أو شراء حسابات جاهزة.</p>
+                        <p>نحن نؤمن بأن لكل حساب قيمة، سواء كان حساباً شخصياً أو حساباً تجارياً، وهذه القيمة تستحق أن يتم تداولها بطريقة آمنة ومنظمة.</p>
                     </div>
                     
                     <div class="about-section">
-                        <h2 id="howItWorksTitle">كيف يعمل الموقع؟</h2>
-                        <p id="howItWorks1">1. يقوم المستخدم بتسجيل حساب جديد في المنصة.</p>
-                        <p id="howItWorks2">2. يمكن للمستخدم نشر حسابه للبيع بتفاصيل كاملة.</p>
-                        <p id="howItWorks3">3. يمكن للمستخدمين الآخرين تصفح الحسابات المعروضة والاتصال بالبائع.</p>
-                        <p id="howItWorks4">4. يتم التواصل بين البائع والمشتري عبر نظام المراسلة الآمن في المنصة.</p>
-                        <p id="howItWorks5">5. يتم الاتفاق على تفاصيل الصفقة وإتمامها بأمان.</p>
+                        <h2>كيف يعمل الموقع؟</h2>
+                        <p>1. يقوم المستخدم بتسجيل حساب جديد في المنصة.</p>
+                        <p>2. يمكن للمستخدم نشر حسابه للبيع بتفاصيل كاملة.</p>
+                        <p>3. يمكن للمستخدمين الآخرين تصفح الحسابات المعروضة والاتصال بالبائع.</p>
+                        <p>4. يتم التواصل بين البائع والمشتري عبر نظام المراسلة الآمن في المنصة.</p>
+                        <p>5. يتم الاتفاق على تفاصيل الصفقة وإتمامها بأمان.</p>
                     </div>
                     
                     <div class="about-section">
-                        <h2 id="featuresTitle">مميزات المنصة</h2>
-                        <p id="feature1">• واجهة عربية كاملة وسهلة الاستخدام</p>
-                        <p id="feature2">• تصميم متجاوب يعمل على جميع الأجهزة</p>
-                        <p id="feature3">• نظام مراسلة آمن داخل المنصة</p>
-                        <p id="feature4">• عرض جميع الحسابات بشكل منظم</p>
-                        <p id="feature5">• نظام مستخدمين آمن مع ملف شخصي لكل مستخدم</p>
-                        <p id="feature6">• إمكانية الاتصال المباشر بين البائع والمشتري</p>
+                        <h2>مميزات المنصة</h2>
+                        <p>• واجهة عربية كاملة وسهلة الاستخدام</p>
+                        <p>• تصميم متجاوب يعمل على جميع الأجهزة</p>
+                        <p>• نظام مراسلة آمن داخل المنصة</p>
+                        <p>• عرض جميع الحسابات بشكل منظم</p>
+                        <p>• نظام مستخدمين آمن مع ملف شخصي لكل مستخدم</p>
+                        <p>• إمكانية الاتصال المباشر بين البائع والمشتري</p>
                     </div>
                     
                     <div class="about-section">
-                        <h2 id="visionTitle">رؤيتنا</h2>
-                        <p id="visionText">نسعى لأن نكون المنصة الأولى عربياً في مجال بيع وشراء حسابات التواصل الاجتماعي، وأن نوفر بيئة تجارية آمنة وموثوقة لجميع المستخدمين.</p>
+                        <h2>رؤيتنا</h2>
+                        <p>نسعى لأن نكون المنصة الأولى عربياً في مجال بيع وشراء حسابات التواصل الاجتماعي، وأن نوفر بيئة تجارية آمنة وموثوقة لجميع المستخدمين.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- أزرار ثابتة في الأسفل -->
-    <div class="fixed-bottom-buttons">
-        <button class="btn btn-outline" onclick="showSection('about')">
-            <i class="fas fa-info-circle"></i> <span id="aboutAppBtn">عن التطبيق</span>
-        </button>
-        <button class="btn btn-outline" onclick="showSection('support')">
-            <i class="fas fa-headset"></i> <span id="supportBtn">الدعم</span>
-        </button>
-    </div>
 
     <!-- التذييل -->
     <footer>
@@ -2675,24 +3136,24 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3 style="color: #ffcc00;">منصة حسابات</h3>
-                    <p id="footerDesc">المنصة الأولى عربياً لبيع وشراء حسابات التواصل الاجتماعي بأمان وموثوقية.</p>
-                    <p id="footerMission">نحن نعمل على توفير أفضل تجربة للمستخدمين مع الحفاظ على أمن وسرية البيانات.</p>
+                    <p>المنصة الأولى عربياً لبيع وشراء حسابات التواصل الاجتماعي بأمان وموثوقية.</p>
+                    <p>نحن نعمل على توفير أفضل تجربة للمستخدمين مع الحفاظ على أمن وسرية البيانات.</p>
                 </div>
                 
                 <div class="footer-section">
                     <h3 style="color: #00ccff;">روابط سريعة</h3>
-                    <p><a href="#home" onclick="showSection('home')"><i class="fas fa-chevron-left"></i> <span id="homeLink">الرئيسية</span></a></p>
-                    <p><a href="#accounts" onclick="showSection('accounts')"><i class="fas fa-chevron-left"></i> <span id="accountsLink">الحسابات</span></a></p>
-                    <p><a href="#add-account" onclick="showSection('add-account')"><i class="fas fa-chevron-left"></i> <span id="sellAccountLink">بيع حساب</span></a></p>
-                    <p><a href="#support" onclick="showSection('support')"><i class="fas fa-chevron-left"></i> <span id="supportLink">الدعم</span></a></p>
-                    <p><a href="#about" onclick="showSection('about')"><i class="fas fa-chevron-left"></i> <span id="aboutLink">عن الموقع</span></a></p>
+                    <p><a href="#home" onclick="showSection('home')"><i class="fas fa-chevron-left"></i> الرئيسية</a></p>
+                    <p><a href="#accounts" onclick="showSection('accounts')"><i class="fas fa-chevron-left"></i> الحسابات</a></p>
+                    <p><a href="#add-account" onclick="showSection('add-account')"><i class="fas fa-chevron-left"></i> بيع حساب</a></p>
+                    <p><a href="#support" onclick="showSection('support')"><i class="fas fa-chevron-left"></i> الدعم</a></p>
+                    <p><a href="#about" onclick="showSection('about')"><i class="fas fa-chevron-left"></i> عن الموقع</a></p>
                 </div>
                 
                 <div class="footer-section">
                     <h3 style="color: #ff66cc;">معلومات الاتصال</h3>
-                    <p><i class="fas fa-envelope"></i> <span id="emailText">البريد الإلكتروني: info@hisabat.com</span></p>
-                    <p><i class="fas fa-phone"></i> <span id="phoneText">الهاتف: +966 123 456 789</span></p>
-                    <p><i class="fas fa-headset"></i> <span id="supportText">الدعم الفني: support@hisabat.com</span></p>
+                    <p><i class="fas fa-envelope"></i> البريد الإلكتروني: info@hisabat.com</p>
+                    <p><i class="fas fa-phone"></i> الهاتف: +966 123 456 789</p>
+                    <p><i class="fas fa-headset"></i> الدعم الفني: support@hisabat.com</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-twitter"></i></a>
                         <a href="#"><i class="fab fa-facebook"></i></a>
@@ -2703,11 +3164,27 @@
             </div>
             
             <div class="footer-bottom">
-                <p id="copyrightText">جميع الحقوق محفوظة &copy; 2026 <span class="developer-name">༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻</span></p>
-                <p id="developerText">تم التطوير بواسطة: <span class="developer-name" style="color: #ffcc00;">༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻</span> | <a href="#support" onclick="showSection('support')" id="supportFooterLink">الدعم</a> | <a href="#about" onclick="showSection('about')" id="aboutFooterLink">عن الموقع</a></p>
+                <p>جميع الحقوق محفوظة © 2026 <span class="developer-name">المطور: ༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻</span></p>
+                <p>تم التطوير بواسطة: <span class="developer-name" style="color: #ffcc00;">المطور: ༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻</span> | <a href="#support" onclick="showSection('support')">الدعم</a> | <a href="#about" onclick="showSection('about')">عن الموقع</a></p>
             </div>
         </div>
     </footer>
+
+    <!-- الأزرار الثابتة في الأسفل - معدلة حسب الطلب -->
+    <div class="fixed-bottom-buttons">
+        <!-- زر الدعم الآن على اليسار (المكان السابق لزر عن التطبيق) -->
+        <button class="fixed-btn support-btn" onclick="showSection('support')">
+            <i class="fas fa-headset"></i>
+        </button>
+        <div class="middle-bar">
+            <div class="rights-text">جميع الحقوق محفوظة © 2026</div>
+            <div class="developer-name">المطور: ༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻</div>
+        </div>
+        <!-- زر عن التطبيق الآن على اليمين (المكان السابق لزر الدعم) -->
+        <button class="fixed-btn about-btn" onclick="showSection('about')">
+            <i class="fas fa-info-circle"></i>
+        </button>
+    </div>
 
     <script>
         // توليد ID عشوائي مكون من 9 أرقام
@@ -2715,113 +3192,9 @@
             return Math.floor(100000000 + Math.random() * 900000000).toString();
         }
         
-        // بيانات تجريبية للحسابات
-        const sampleAccounts = [
-            {
-                id: 1,
-                userId: "123456789",
-                platform: "facebook",
-                name: "حساب فيسبوك مميز",
-                url: "https://facebook.com/sample",
-                followers: 15000,
-                price: 150,
-                currency: "USD",
-                description: "حساب فيسبوك قديم مع أصدقاء كثر ونشاط عالي، مثالي للأعمال التجارية. يحتوي على صور ومقاطع فيديو مميزة، مع تفاعل عالي من المتابعين.",
-                images: [
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80",
-                    "https://images.unsplash.com/photo-1611605698323-b1e99cfd37ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
-                ],
-                sellerName: "أحمد محمد",
-                date: "2023-11-05"
-            },
-            {
-                id: 2,
-                userId: "987654321",
-                platform: "instagram",
-                name: "إنستقرام 10K متابع",
-                url: "https://instagram.com/sample",
-                followers: 10000,
-                price: 250,
-                currency: "SAR",
-                description: "حساب إنستقرام مع 10,000 متابع حقيقي، نشط في مجال الموضة والأزياء. يحتوي على صور احترافية وتفاعل عالي من المتابعين.",
-                images: [
-                    "https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
-                ],
-                sellerName: "سارة علي",
-                date: "2023-11-08"
-            },
-            {
-                id: 3,
-                userId: "456123789",
-                platform: "tiktok",
-                name: "تيك توك 50K متابع",
-                url: "https://tiktok.com/@sample",
-                followers: 50000,
-                price: 350,
-                currency: "USD",
-                description: "حساب تيك توك ناشط في مجال الترفيه، يحتوي على محتوى viral ومتابعين نشطين. مناسب للترويج للمنتجات والخدمات.",
-                images: [
-                    "https://images.unsplash.com/photo-1611605698323-b1e99cfd37ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
-                ],
-                sellerName: "خالد سعود",
-                date: "2023-11-10"
-            },
-            {
-                id: 4,
-                userId: "789456123",
-                platform: "youtube",
-                name: "يوتيوب 5K مشترك",
-                url: "https://youtube.com/c/sample",
-                followers: 5000,
-                price: 500,
-                currency: "USD",
-                description: "قناة يوتيوب متخصصة في الألعاب، مع 5,000 مشترك ومحتوى منتظم. تحتوي على فيديوهات عالية الجودة ومتابعين متفاعلين.",
-                images: [
-                    "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
-                ],
-                sellerName: "فاطمة حسن",
-                date: "2023-11-12"
-            },
-            {
-                id: 5,
-                userId: "321654987",
-                platform: "telegram",
-                name: "قناة تليجرام 20K عضو",
-                url: "https://t.me/sample",
-                followers: 20000,
-                price: 300,
-                currency: "YER",
-                description: "قناة تليجرام نشطة في مجال التقنية، مع 20,000 عضو ومحتوى حصري. تنشر محتوى تقني يومياً وتتفاعل مع الأعضاء.",
-                images: [
-                    "https://images.unsplash.com/photo-1611605698323-b1e99cfd37ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
-                ],
-                sellerName: "نورا عبدالله",
-                date: "2023-11-15"
-            },
-            {
-                id: 6,
-                userId: "654987321",
-                platform: "snapchat",
-                name: "سناب شات 15K متابع",
-                url: "https://snapchat.com/add/sample",
-                followers: 15000,
-                price: 200,
-                currency: "USD",
-                description: "حساب سناب شات نشط مع 15,000 متابع، نشاط يومي ومحتوى مميز في مجال السفر والمغامرات.",
-                images: [
-                    "https://images.unsplash.com/photo-1611605698323-b1e99cfd37ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-                    "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
-                ],
-                sellerName: "محمود رضا",
-                date: "2023-11-18"
-            }
-        ];
-
+        // بيانات تجريبية للحسابات - فارغة حسب الطلب
+        const sampleAccounts = [];
+        
         // متغيرات حالة التطبيق
         let currentUser = null;
         let accounts = [...sampleAccounts];
@@ -2829,11 +3202,7 @@
         let uploadedImages = [];
         let userProfileImage = null;
         let currentLanguage = 'ar';
-        let currencyNames = {
-            'USD': {ar: 'دولار أمريكي', en: 'US Dollar'},
-            'SAR': {ar: 'ريال سعودي', en: 'Saudi Riyal'},
-            'YER': {ar: 'ريال يمني', en: 'Yemeni Riyal'}
-        };
+        let notifications = [];
         
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
@@ -2851,18 +3220,47 @@
             loadSettings();
             
             // تحميل اللغة
-            const savedLanguage = localStorage.getItem('siteLanguage');
-            if (savedLanguage) {
-                currentLanguage = savedLanguage;
-                changeLanguage(savedLanguage, false);
-            }
+            loadLanguage();
             
             // تهيئة القائمة الجانبية
             setupSidebar();
             
             // جعل بطاقات الحساب قابلة للنقر
             setupAccountCardClicks();
+            
+            // تحميل الإشعارات
+            loadNotifications();
+            
+            // إعداد شريط المنصات المتحرك
+            setupMovingPlatforms();
         });
+        
+        // إعداد شريط المنصات المتحرك - تم التعديل
+        function setupMovingPlatforms() {
+            const platformsContainer = document.querySelector('.platforms-container');
+            const platformsTrack = document.querySelector('.platforms-track');
+            const platforms = document.querySelector('.platforms');
+            
+            if (!platformsContainer || !platformsTrack || !platforms) return;
+            
+            // تكرار المنصات لضمان الحركة المستمرة
+            const platformsClone = platforms.cloneNode(true);
+            platformsTrack.appendChild(platformsClone);
+            
+            // إعادة تعيين الحركة عند التكرار
+            platformsTrack.addEventListener('animationiteration', () => {
+                // لا حاجة لفعل أي شيء، الحركة ستستمر بسلاسة
+            });
+            
+            // إيقاف الحركة عند التمرير فوقها
+            platformsContainer.addEventListener('mouseenter', () => {
+                platformsTrack.style.animationPlayState = 'paused';
+            });
+            
+            platformsContainer.addEventListener('mouseleave', () => {
+                platformsTrack.style.animationPlayState = 'running';
+            });
+        }
         
         // جعل بطاقات الحساب قابلة للنقر
         function setupAccountCardClicks() {
@@ -2900,6 +3298,28 @@
                     sidebar.classList.remove('active');
                 }
             });
+            
+            // تغيير أيقونة الوضع الليلي حسب الحالة
+            document.getElementById('themeToggle').addEventListener('change', function() {
+                const themeIcon = document.getElementById('themeIcon');
+                const themeText = document.getElementById('themeText');
+                
+                if (this.checked) {
+                    themeIcon.className = 'fas fa-moon theme-icon';
+                    if (currentLanguage === 'ar') {
+                        themeText.textContent = 'الوضع الليلي';
+                    } else {
+                        themeText.textContent = 'Night Mode';
+                    }
+                } else {
+                    themeIcon.className = 'fas fa-sun theme-icon';
+                    if (currentLanguage === 'ar') {
+                        themeText.textContent = 'الوضع النهاري';
+                    } else {
+                        themeText.textContent = 'Day Mode';
+                    }
+                }
+            });
         }
         
         // فتح الإعدادات
@@ -2909,7 +3329,7 @@
         }
         
         // تغيير اللغة
-        function changeLanguage(lang, showNotification = true) {
+        function changeLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('siteLanguage', lang);
             
@@ -2917,348 +3337,225 @@
             document.getElementById('arabicBtn').classList.toggle('active', lang === 'ar');
             document.getElementById('englishBtn').classList.toggle('active', lang === 'en');
             
-            // تغيير اتجاه النص
+            // تغيير اتجاه الصفحة
             if (lang === 'en') {
-                document.body.classList.add('english');
-                document.documentElement.setAttribute('dir', 'ltr');
-                document.documentElement.setAttribute('lang', 'en');
+                document.documentElement.dir = 'ltr';
+                document.documentElement.lang = 'en';
+                translateToEnglish();
             } else {
-                document.body.classList.remove('english');
-                document.documentElement.setAttribute('dir', 'rtl');
-                document.documentElement.setAttribute('lang', 'ar');
+                document.documentElement.dir = 'rtl';
+                document.documentElement.lang = 'ar';
+                translateToArabic();
             }
             
-            // تحديث النصوص
-            updateLanguageTexts();
+            // تحديث نص الإشعارات
+            updateSettingsTexts();
             
-            // إعادة عرض الحسابات
-            renderAccounts(currentFilter);
-            
-            if (showNotification) {
-                showNotification(lang === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English', 'success');
-            }
+            showNotificationToast(lang === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English', 'success');
         }
         
-        // تحديث النصوص حسب اللغة
-        function updateLanguageTexts() {
-            const texts = {
-                ar: {
-                    // القائمة الجانبية
-                    themeLabel: 'الوضع النهاري',
-                    notificationsText: 'تفعيل إشعارات جديدة للحسابات',
-                    soundText: 'تشغيل صوت الإشعارات',
-                    saveSettingsText: 'حفظ الإعدادات',
-                    
-                    // الصفحة الرئيسية
-                    heroTitle: 'منصة بيع وشراء حسابات التواصل الاجتماعي',
-                    heroSubtitle: 'المنصة الأولى عربياً لبيع وشراء حسابات فيسبوك، إنستقرام، تيك توك، يوتيوب، تليجرام، سناب شات، تويتر، JACO وجميع منصات التواصل الاجتماعي بأمان وموثوقية',
-                    sellAccountBtn: 'بيع حسابك الآن',
-                    latestAccountsTitle: 'أحدث الحسابات المضافة',
-                    latestAccountsSubtitle: 'تصفح أحدث الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي',
-                    allPlatformsText: 'جميع المنصات',
-                    viewAllAccountsText: 'عرض جميع الحسابات',
-                    
-                    // جميع الحسابات
-                    allAccountsTitle: 'جميع الحسابات المتاحة',
-                    allAccountsSubtitle: 'تصفح جميع الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي',
-                    
-                    // إضافة حساب
-                    sellAccountTitle: 'بيع حسابك',
-                    selectPlatformText: 'اختر منصة التواصل الاجتماعي',
-                    accountNameLabel: 'اسم الحساب',
-                    accountUrlLabel: 'رابط الحساب',
-                    followersLabel: 'عدد المتابعين',
-                    priceCurrencyLabel: 'السعر والعملة',
-                    usdCurrency: 'دولار أمريكي',
-                    sarCurrency: 'ريال سعودي',
-                    yerCurrency: 'ريال يمني',
-                    accountDescLabel: 'وصف الحساب',
-                    uploadImagesLabel: 'رفع صور للحساب (2-3 صور)',
-                    uploadClickText: 'انقر لرفع الصور',
-                    uploadInfoText: 'يمكنك رفع 2-3 صور - اختر صورة واحدة في كل مرة',
-                    uploadMinText: 'يجب رفع 2 صور على الأقل',
-                    publishAccountBtn: 'نشر الحساب للبيع',
-                    
-                    // تسجيل الدخول
-                    createAccountTitle: 'إنشاء حساب جديد',
-                    fullNameLabel: 'الاسم الكامل',
-                    countryLabel: 'الدولة',
-                    phoneLabel: 'رقم الهاتف',
-                    addressLabel: 'العنوان',
-                    profilePicLabel: 'صورة الملف الشخصي (اختياري)',
-                    profilePicInfo: 'يمكنك إضافة صورة شخصية لملفك الشخصي',
-                    createAccountBtn: 'إنشاء حساب',
-                    agreeTermsText: 'بالتسجيل فإنك توافق على',
-                    andText: 'و',
-                    
-                    // الملف الشخصي
-                    accountInfoTitle: 'معلومات الحساب',
-                    fullNameInfoLabel: 'الاسم الكامل',
-                    phoneInfoLabel: 'رقم الهاتف',
-                    countryInfoLabel: 'الدولة',
-                    addressInfoLabel: 'العنوان',
-                    userIdLabel: 'معرف المستخدم',
-                    registerDateLabel: 'تاريخ التسجيل',
-                    soldAccountsTitle: 'الحسابات التي بعتها',
-                    addNewAccountBtn: 'إضافة حساب جديد',
-                    settingsBtn: 'الإعدادات',
-                    logoutBtnText: 'تسجيل الخروج',
-                    
-                    // الدعم
-                    supportCenterTitle: 'مركز الدعم والبلاغات',
-                    reportTypeLabel: 'نوع البلاغ',
-                    accountProblemTitle: 'مشكلة في الحساب',
-                    accountProblemDesc: 'مشكلة في حساب المستخدم أو بياناته',
-                    publishProblemTitle: 'مشكلة في النشر',
-                    publishProblemDesc: 'مشكلة في نشر الحسابات أو تعديلها',
-                    paymentProblemTitle: 'مشكلة في الدفع',
-                    paymentProblemDesc: 'مشكلة في عمليات الدفع أو التحويل',
-                    otherProblemTitle: 'مشكلة أخرى',
-                    otherProblemDesc: 'أي مشكلة أخرى تحتاج إلى دعم',
-                    problemDescLabel: 'وصف المشكلة',
-                    screenshotLabel: 'لقطة شاشة للمشكلة (اختياري)',
-                    screenshotClickText: 'انقر لرفع لقطة الشاشة',
-                    screenshotInfoText: 'يمكنك رفع صورة توضح المشكلة',
-                    sendReportBtn: 'إرسال البلاغ',
-                    contactInfoTitle: 'معلومات الاتصال',
-                    contactInfoText: 'يمكنك التواصل معنا عبر البريد الإلكتروني: support@hisabat.com أو عبر الهاتف: +966 123 456 789',
-                    
-                    // عن الموقع
-                    aboutPlatformTitle: 'عن منصة حسابات',
-                    aboutIdeaTitle: 'فكرة الموقع',
-                    aboutIdeaText1: 'منصة "حسابات" هي أول منصة عربية متخصصة في بيع وشراء حسابات مواقع التواصل الاجتماعي، تهدف إلى توفير بيئة آمنة وموثوقة للراغبين في بيع حساباتهم أو شراء حسابات جاهزة.',
-                    aboutIdeaText2: 'نحن نؤمن بأن لكل حساب قيمة، سواء كان حساباً شخصياً أو حساباً تجارياً، وهذه القيمة تستحق أن يتم تداولها بطريقة آمنة ومنظمة.',
-                    howItWorksTitle: 'كيف يعمل الموقع؟',
-                    howItWorks1: '1. يقوم المستخدم بتسجيل حساب جديد في المنصة.',
-                    howItWorks2: '2. يمكن للمستخدم نشر حسابه للبيع بتفاصيل كاملة.',
-                    howItWorks3: '3. يمكن للمستخدمين الآخرين تصفح الحسابات المعروضة والاتصال بالبائع.',
-                    howItWorks4: '4. يتم التواصل بين البائع والمشتري عبر نظام المراسلة الآمن في المنصة.',
-                    howItWorks5: '5. يتم الاتفاق على تفاصيل الصفقة وإتمامها بأمان.',
-                    featuresTitle: 'مميزات المنصة',
-                    feature1: '• واجهة عربية كاملة وسهلة الاستخدام',
-                    feature2: '• تصميم متجاوب يعمل على جميع الأجهزة',
-                    feature3: '• نظام مراسلة آمن داخل المنصة',
-                    feature4: '• عرض جميع الحسابات بشكل منظم',
-                    feature5: '• نظام مستخدمين آمن مع ملف شخصي لكل مستخدم',
-                    feature6: '• إمكانية الاتصال المباشر بين البائع والمشتري',
-                    visionTitle: 'رؤيتنا',
-                    visionText: 'نسعى لأن نكون المنصة الأولى عربياً في مجال بيع وشراء حسابات التواصل الاجتماعي، وأن نوفر بيئة تجارية آمنة وموثوقة لجميع المستخدمين.',
-                    
-                    // التذييل
-                    footerDesc: 'المنصة الأولى عربياً لبيع وشراء حسابات التواصل الاجتماعي بأمان وموثوقية.',
-                    footerMission: 'نحن نعمل على توفير أفضل تجربة للمستخدمين مع الحفاظ على أمن وسرية البيانات.',
-                    homeLink: 'الرئيسية',
-                    accountsLink: 'الحسابات',
-                    sellAccountLink: 'بيع حساب',
-                    supportLink: 'الدعم',
-                    aboutLink: 'عن الموقع',
-                    emailText: 'البريد الإلكتروني: info@hisabat.com',
-                    phoneText: 'الهاتف: +966 123 456 789',
-                    supportText: 'الدعم الفني: support@hisabat.com',
-                    copyrightText: 'جميع الحقوق محفوظة &copy; 2026',
-                    developerText: 'تم التطوير بواسطة:',
-                    
-                    // الأزرار الثابتة
-                    aboutAppBtn: 'عن التطبيق',
-                    supportBtn: 'الدعم'
-                },
-                en: {
-                    // القائمة الجانبية
-                    themeLabel: 'Day Mode',
-                    notificationsText: 'Enable notifications for new accounts',
-                    soundText: 'Enable notification sounds',
-                    saveSettingsText: 'Save Settings',
-                    
-                    // الصفحة الرئيسية
-                    heroTitle: 'Social Media Accounts Marketplace',
-                    heroSubtitle: 'The first Arabic platform for buying and selling Facebook, Instagram, TikTok, YouTube, Telegram, Snapchat, Twitter, JACO and all social media accounts with safety and reliability',
-                    sellAccountBtn: 'Sell Your Account Now',
-                    latestAccountsTitle: 'Latest Added Accounts',
-                    latestAccountsSubtitle: 'Browse the latest accounts available for purchase on various social media platforms',
-                    allPlatformsText: 'All Platforms',
-                    viewAllAccountsText: 'View All Accounts',
-                    
-                    // جميع الحسابات
-                    allAccountsTitle: 'All Available Accounts',
-                    allAccountsSubtitle: 'Browse all accounts available for purchase on various social media platforms',
-                    
-                    // إضافة حساب
-                    sellAccountTitle: 'Sell Your Account',
-                    selectPlatformText: 'Choose Social Media Platform',
-                    accountNameLabel: 'Account Name',
-                    accountUrlLabel: 'Account URL',
-                    followersLabel: 'Followers Count',
-                    priceCurrencyLabel: 'Price and Currency',
-                    usdCurrency: 'US Dollar',
-                    sarCurrency: 'Saudi Riyal',
-                    yerCurrency: 'Yemeni Riyal',
-                    accountDescLabel: 'Account Description',
-                    uploadImagesLabel: 'Upload Account Images (2-3 images)',
-                    uploadClickText: 'Click to upload images',
-                    uploadInfoText: 'You can upload 2-3 images - select one image at a time',
-                    uploadMinText: 'Minimum 2 images required',
-                    publishAccountBtn: 'Publish Account for Sale',
-                    
-                    // تسجيل الدخول
-                    createAccountTitle: 'Create New Account',
-                    fullNameLabel: 'Full Name',
-                    countryLabel: 'Country',
-                    phoneLabel: 'Phone Number',
-                    addressLabel: 'Address',
-                    profilePicLabel: 'Profile Picture (Optional)',
-                    profilePicInfo: 'You can add a personal picture to your profile',
-                    createAccountBtn: 'Create Account',
-                    agreeTermsText: 'By registering, you agree to the',
-                    andText: 'and',
-                    
-                    // الملف الشخصي
-                    accountInfoTitle: 'Account Information',
-                    fullNameInfoLabel: 'Full Name',
-                    phoneInfoLabel: 'Phone Number',
-                    countryInfoLabel: 'Country',
-                    addressInfoLabel: 'Address',
-                    userIdLabel: 'User ID',
-                    registerDateLabel: 'Registration Date',
-                    soldAccountsTitle: 'Accounts You Sold',
-                    addNewAccountBtn: 'Add New Account',
-                    settingsBtn: 'Settings',
-                    logoutBtnText: 'Logout',
-                    
-                    // الدعم
-                    supportCenterTitle: 'Support and Reports Center',
-                    reportTypeLabel: 'Report Type',
-                    accountProblemTitle: 'Account Problem',
-                    accountProblemDesc: 'Problem with user account or data',
-                    publishProblemTitle: 'Publishing Problem',
-                    publishProblemDesc: 'Problem with publishing or editing accounts',
-                    paymentProblemTitle: 'Payment Problem',
-                    paymentProblemDesc: 'Problem with payment or transfer operations',
-                    otherProblemTitle: 'Other Problem',
-                    otherProblemDesc: 'Any other problem that needs support',
-                    problemDescLabel: 'Problem Description',
-                    screenshotLabel: 'Screenshot of the Problem (Optional)',
-                    screenshotClickText: 'Click to upload screenshot',
-                    screenshotInfoText: 'You can upload an image that shows the problem',
-                    sendReportBtn: 'Send Report',
-                    contactInfoTitle: 'Contact Information',
-                    contactInfoText: 'You can contact us via email: support@hisabat.com or by phone: +966 123 456 789',
-                    
-                    // عن الموقع
-                    aboutPlatformTitle: 'About Accounts Platform',
-                    aboutIdeaTitle: 'Website Idea',
-                    aboutIdeaText1: '"Accounts" platform is the first Arabic platform specialized in buying and selling social media accounts, aiming to provide a safe and reliable environment for those who want to sell their accounts or buy ready accounts.',
-                    aboutIdeaText2: 'We believe that every account has value, whether it is a personal or commercial account, and this value deserves to be traded in a safe and organized way.',
-                    howItWorksTitle: 'How does the website work?',
-                    howItWorks1: '1. The user registers a new account on the platform.',
-                    howItWorks2: '2. The user can publish their account for sale with full details.',
-                    howItWorks3: '3. Other users can browse the displayed accounts and contact the seller.',
-                    howItWorks4: '4. Communication between seller and buyer takes place through the secure messaging system on the platform.',
-                    howItWorks5: '5. The deal details are agreed upon and completed safely.',
-                    featuresTitle: 'Platform Features',
-                    feature1: '• Full Arabic interface easy to use',
-                    feature2: '• Responsive design works on all devices',
-                    feature3: '• Secure messaging system within the platform',
-                    feature4: '• Display all accounts in an organized manner',
-                    feature5: '• Secure user system with profile for each user',
-                    feature6: '• Ability for direct contact between seller and buyer',
-                    visionTitle: 'Our Vision',
-                    visionText: 'We strive to be the first Arabic platform in the field of buying and selling social media accounts, and to provide a safe and reliable business environment for all users.',
-                    
-                    // التذييل
-                    footerDesc: 'The first Arabic platform for buying and selling social media accounts with safety and reliability.',
-                    footerMission: 'We work to provide the best user experience while maintaining security and confidentiality of data.',
-                    homeLink: 'Home',
-                    accountsLink: 'Accounts',
-                    sellAccountLink: 'Sell Account',
-                    supportLink: 'Support',
-                    aboutLink: 'About',
-                    emailText: 'Email: info@hisabat.com',
-                    phoneText: 'Phone: +966 123 456 789',
-                    supportText: 'Technical Support: support@hisabat.com',
-                    copyrightText: 'All rights reserved &copy; 2026',
-                    developerText: 'Developed by:',
-                    
-                    // الأزرار الثابتة
-                    aboutAppBtn: 'About App',
-                    supportBtn: 'Support'
-                }
-            };
+        // تحديث نصوص الإعدادات بناءً على اللغة
+        function updateSettingsTexts() {
+            const themeText = document.getElementById('themeText');
+            const themeToggle = document.getElementById('themeToggle');
             
-            // تحديث جميع النصوص
-            Object.keys(texts[currentLanguage]).forEach(key => {
-                const elements = document.querySelectorAll(`[id="${key}"]`);
-                elements.forEach(element => {
-                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.placeholder = texts[currentLanguage][key];
-                    } else {
-                        element.textContent = texts[currentLanguage][key];
+            if (currentLanguage === 'ar') {
+                themeText.textContent = themeToggle.checked ? 'الوضع الليلي' : 'الوضع النهاري';
+                
+                // تحديث نصوص الإشعارات
+                document.querySelectorAll('.sidebar-item label').forEach(label => {
+                    if (label.querySelector('.fa-bell')) {
+                        label.textContent = 'الإشعارات';
+                    }
+                    if (label.querySelector('.fa-volume-up')) {
+                        label.textContent = 'الصوت';
                     }
                 });
-            });
-            
-            // تحديث أسماء المنصات
-            const platformNames = {
-                ar: {
-                    facebook: 'فيسبوك',
-                    instagram: 'إنستقرام',
-                    tiktok: 'تيك توك',
-                    youtube: 'يوتيوب',
-                    telegram: 'تليجرام',
-                    snapchat: 'سناب شات',
-                    twitter: 'تويتر',
-                    jaco: 'JACO'
-                },
-                en: {
-                    facebook: 'Facebook',
-                    instagram: 'Instagram',
-                    tiktok: 'TikTok',
-                    youtube: 'YouTube',
-                    telegram: 'Telegram',
-                    snapchat: 'Snapchat',
-                    twitter: 'Twitter',
-                    jaco: 'JACO'
-                }
-            };
-            
-            // تحديث أسماء المنصات في الصفحة
-            document.querySelectorAll('.platform-name').forEach(el => {
-                const platformClass = el.closest('.platform').classList[1];
-                el.textContent = platformNames[currentLanguage][platformClass] || platformClass;
-            });
-            
-            // تحديث أسماء المنصات في أزرار التصفية
-            document.querySelectorAll('#platformFilter span, #allPlatformFilter span').forEach(el => {
-                const platform = el.textContent.trim();
-                const platformKey = Object.keys(platformNames.ar).find(key => platformNames.ar[key] === platform);
-                if (platformKey) {
-                    el.textContent = platformNames[currentLanguage][platformKey];
-                }
-            });
-            
-            // تحديث أزرار اللغة
-            document.getElementById('arabicBtn').textContent = currentLanguage === 'ar' ? 'العربية' : 'Arabic';
-            document.getElementById('englishBtn').textContent = currentLanguage === 'en' ? 'English' : 'الإنجليزية';
-            
-            // تحديث عنوان الصفحة
-            document.title = currentLanguage === 'ar' ? 'منصة حسابات - بيع وشراء حسابات التواصل الاجتماعي' : 'Accounts Platform - Buy & Sell Social Media Accounts';
-            
-            // تحديث أسماء العملات
-            updateCurrencyDisplay();
+                
+                // تحديث نص زر الحفظ
+                document.querySelector('.sidebar .btn').innerHTML = '<i class="fas fa-save"></i> حفظ الإعدادات';
+            } else {
+                themeText.textContent = themeToggle.checked ? 'Night Mode' : 'Day Mode';
+                
+                // تحديث نصوص الإشعارات
+                document.querySelectorAll('.sidebar-item label').forEach(label => {
+                    if (label.querySelector('.fa-bell')) {
+                        label.textContent = 'Notifications';
+                    }
+                    if (label.querySelector('.fa-volume-up')) {
+                        label.textContent = 'Sound';
+                    }
+                });
+                
+                // تحديث نص زر الحفظ
+                document.querySelector('.sidebar .btn').innerHTML = '<i class="fas fa-save"></i> Save Settings';
+            }
         }
         
-        // تحديث عرض العملات
-        function updateCurrencyDisplay() {
-            const currencyElements = document.querySelectorAll('[id*="Currency"]');
-            currencyElements.forEach(el => {
-                const id = el.id;
-                if (id === 'usdCurrency') {
-                    el.textContent = currencyNames['USD'][currentLanguage];
-                } else if (id === 'sarCurrency') {
-                    el.textContent = currencyNames['SAR'][currentLanguage];
-                } else if (id === 'yerCurrency') {
-                    el.textContent = currencyNames['YER'][currentLanguage];
-                }
+        // تحميل اللغة المحفوظة
+        function loadLanguage() {
+            const savedLang = localStorage.getItem('siteLanguage') || 'ar';
+            changeLanguage(savedLang);
+        }
+        
+        // ترجمة النصوص إلى الإنجليزية
+        function translateToEnglish() {
+            // تحديث النصوص الرئيسية
+            document.title = "Accounts Platform - Buy & Sell Social Media Accounts";
+            
+            // تحديث زر إنشاء حساب
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) loginBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            
+            // تحديث الصفحة الرئيسية
+            const heroH1 = document.querySelector('.hero h1');
+            if (heroH1) heroH1.textContent = "Platform for Buying and Selling Social Media Accounts";
+            
+            const heroP = document.querySelector('.hero p');
+            if (heroP) heroP.textContent = "The first Arab platform for buying and selling Facebook, Instagram, TikTok, YouTube, Telegram, Snapchat, Twitter, JACO and all social media accounts with security and reliability";
+            
+            const sellBtn = document.querySelector('.btn-success');
+            if (sellBtn) sellBtn.innerHTML = '<i class="fas fa-bullhorn"></i> Sell Your Account Now';
+            
+            // تحديث عناوين الأقسام
+            const sectionTitle = document.querySelector('.section-title');
+            if (sectionTitle) sectionTitle.textContent = "Latest Added Accounts";
+            
+            const sectionSubtitle = document.querySelector('.section-subtitle');
+            if (sectionSubtitle) sectionSubtitle.textContent = "Browse the latest accounts available for purchase on various social media platforms";
+            
+            // تحديث أزرار التصفية
+            const filterBtns = document.querySelectorAll('#platformFilter .filter-btn');
+            if (filterBtns.length >= 6) {
+                filterBtns[0].innerHTML = '<i class="fas fa-globe"></i> All Platforms';
+                filterBtns[1].innerHTML = '<i class="fab fa-facebook"></i> Facebook';
+                filterBtns[2].innerHTML = '<i class="fab fa-instagram"></i> Instagram';
+                filterBtns[3].innerHTML = '<i class="fab fa-tiktok"></i> TikTok';
+                filterBtns[4].innerHTML = '<i class="fab fa-youtube"></i> YouTube';
+                filterBtns[5].innerHTML = '<i class="fab fa-telegram"></i> Telegram';
+            }
+            
+            // تحديث زر عرض جميع الحسابات
+            const viewAllBtn = document.querySelector('.view-all-container .btn');
+            if (viewAllBtn) viewAllBtn.innerHTML = '<i class="fas fa-eye"></i> View All Accounts';
+            
+            // تحديث النص في الوسط
+            const rightsText = document.querySelector('.rights-text');
+            if (rightsText) rightsText.textContent = "All rights reserved © 2026";
+            
+            // تحديث اسم المطور
+            const developerNames = document.querySelectorAll('.developer-name');
+            developerNames.forEach(el => {
+                el.textContent = "Developer: ༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻";
             });
+            
+            // تحديث التذييل
+            const footerSection1 = document.querySelector('.footer-section:nth-child(1) h3');
+            if (footerSection1) footerSection1.textContent = "Accounts Platform";
+            
+            const footerSection1P = document.querySelector('.footer-section:nth-child(1) p');
+            if (footerSection1P) footerSection1P.textContent = "The first Arab platform for buying and selling social media accounts with security and reliability.";
+            
+            const footerSection2 = document.querySelector('.footer-section:nth-child(2) h3');
+            if (footerSection2) footerSection2.textContent = "Quick Links";
+            
+            // تحديث أسماء المنصات في شريط المنصات المتحرك
+            const platforms = document.querySelectorAll('.platform');
+            platforms.forEach((platform, index) => {
+                const icon = platform.querySelector('i');
+                if (index % 8 === 0) platform.innerHTML = '<i class="fab fa-facebook"></i> Facebook';
+                else if (index % 8 === 1) platform.innerHTML = '<i class="fab fa-instagram"></i> Instagram';
+                else if (index % 8 === 2) platform.innerHTML = '<i class="fab fa-tiktok"></i> TikTok';
+                else if (index % 8 === 3) platform.innerHTML = '<i class="fab fa-youtube"></i> YouTube';
+                else if (index % 8 === 4) platform.innerHTML = '<i class="fab fa-telegram"></i> Telegram';
+                else if (index % 8 === 5) platform.innerHTML = '<i class="fab fa-snapchat"></i> Snapchat';
+                else if (index % 8 === 6) platform.innerHTML = '<i class="fab fa-twitter"></i> Twitter';
+                else if (index % 8 === 7) platform.innerHTML = '<i class="fas fa-comment-dots"></i> JACO';
+            });
+            
+            // تحديث اسم المطور في الملف الشخصي
+            const infoFullName = document.getElementById('infoFullName');
+            if (infoFullName) infoFullName.textContent = "Developer: Amine Al Zawahi";
+        }
+        
+        // ترجمة النصوص إلى العربية
+        function translateToArabic() {
+            // تحديث النصوص الرئيسية
+            document.title = "منصة حسابات - بيع وشراء حسابات التواصل الاجتماعي";
+            
+            // تحديث زر إنشاء حساب
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) loginBtn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+            
+            // تحديث الصفحة الرئيسية
+            const heroH1 = document.querySelector('.hero h1');
+            if (heroH1) heroH1.textContent = "منصة بيع وشراء حسابات التواصل الاجتماعي";
+            
+            const heroP = document.querySelector('.hero p');
+            if (heroP) heroP.textContent = "المنصة الأولى عربياً لبيع وشراء حسابات فيسبوك، إنستقرام، تيك توك، يوتيوب، تليجرام، سناب شات، تويتر، JACO وجميع منصات التواصل الاجتماعي بأمان وموثوقية";
+            
+            const sellBtn = document.querySelector('.btn-success');
+            if (sellBtn) sellBtn.innerHTML = '<i class="fas fa-bullhorn"></i> بيع حسابك الآن';
+            
+            // تحديث عناوين الأقسام
+            const sectionTitle = document.querySelector('.section-title');
+            if (sectionTitle) sectionTitle.textContent = "أحدث الحسابات المضافة";
+            
+            const sectionSubtitle = document.querySelector('.section-subtitle');
+            if (sectionSubtitle) sectionSubtitle.textContent = "تصفح أحدث الحسابات المتاحة للشراء في مختلف منصات التواصل الاجتماعي";
+            
+            // تحديث أزرار التصفية
+            const filterBtns = document.querySelectorAll('#platformFilter .filter-btn');
+            if (filterBtns.length >= 6) {
+                filterBtns[0].innerHTML = '<i class="fas fa-globe"></i> جميع المنصات';
+                filterBtns[1].innerHTML = '<i class="fab fa-facebook"></i> فيسبوك';
+                filterBtns[2].innerHTML = '<i class="fab fa-instagram"></i> إنستقرام';
+                filterBtns[3].innerHTML = '<i class="fab fa-tiktok"></i> تيك توك';
+                filterBtns[4].innerHTML = '<i class="fab fa-youtube"></i> يوتيوب';
+                filterBtns[5].innerHTML = '<i class="fab fa-telegram"></i> تليجرام';
+            }
+            
+            // تحديث زر عرض جميع الحسابات
+            const viewAllBtn = document.querySelector('.view-all-container .btn');
+            if (viewAllBtn) viewAllBtn.innerHTML = '<i class="fas fa-eye"></i> عرض جميع الحسابات';
+            
+            // تحديث النص في الوسط
+            const rightsText = document.querySelector('.rights-text');
+            if (rightsText) rightsText.textContent = "جميع الحقوق محفوظة © 2026";
+            
+            // تحديث اسم المطور
+            const developerNames = document.querySelectorAll('.developer-name');
+            developerNames.forEach(el => {
+                el.textContent = "المطور: ༺ 𝑨𝑴𝑰𝑵  𝑨𝑳  𝒁𝑨𝑾𝑨𝑯𝑰 ༻";
+            });
+            
+            // تحديث التذييل
+            const footerSection1 = document.querySelector('.footer-section:nth-child(1) h3');
+            if (footerSection1) footerSection1.textContent = "منصة حسابات";
+            
+            const footerSection1P = document.querySelector('.footer-section:nth-child(1) p');
+            if (footerSection1P) footerSection1P.textContent = "المنصة الأولى عربياً لبيع وشراء حسابات التواصل الاجتماعي بأمان وموثوقية.";
+            
+            const footerSection2 = document.querySelector('.footer-section:nth-child(2) h3');
+            if (footerSection2) footerSection2.textContent = "روابط سريعة";
+            
+            // تحديث أسماء المنصات في شريط المنصات المتحرك
+            const platforms = document.querySelectorAll('.platform');
+            platforms.forEach((platform, index) => {
+                const icon = platform.querySelector('i');
+                if (index % 8 === 0) platform.innerHTML = '<i class="fab fa-facebook"></i> فيسبوك';
+                else if (index % 8 === 1) platform.innerHTML = '<i class="fab fa-instagram"></i> إنستقرام';
+                else if (index % 8 === 2) platform.innerHTML = '<i class="fab fa-tiktok"></i> تيك توك';
+                else if (index % 8 === 3) platform.innerHTML = '<i class="fab fa-youtube"></i> يوتيوب';
+                else if (index % 8 === 4) platform.innerHTML = '<i class="fab fa-telegram"></i> تليجرام';
+                else if (index % 8 === 5) platform.innerHTML = '<i class="fab fa-snapchat"></i> سناب شات';
+                else if (index % 8 === 6) platform.innerHTML = '<i class="fab fa-twitter"></i> تويتر';
+                else if (index % 8 === 7) platform.innerHTML = '<i class="fas fa-comment-dots"></i> JACO';
+            });
+            
+            // تحديث اسم المطور في الملف الشخصي
+            const infoFullName = document.getElementById('infoFullName');
+            if (infoFullName) infoFullName.textContent = "المطور: أمين الزواحي";
         }
         
         // حفظ الإعدادات
@@ -3270,7 +3567,8 @@
             const settings = {
                 darkMode: themeToggle,
                 notifications: notificationsToggle,
-                sound: soundToggle
+                sound: soundToggle,
+                language: currentLanguage
             };
             
             localStorage.setItem('siteSettings', JSON.stringify(settings));
@@ -3282,7 +3580,7 @@
                 document.body.classList.remove('dark-mode');
             }
             
-            showNotification(currentLanguage === 'ar' ? 'تم حفظ الإعدادات بنجاح' : 'Settings saved successfully', 'success');
+            showNotificationToast(currentLanguage === 'ar' ? 'تم حفظ الإعدادات بنجاح' : 'Settings saved successfully', 'success');
             
             // إغلاق القائمة الجانبية
             document.getElementById('hamburgerMenu').classList.remove('active');
@@ -3295,15 +3593,171 @@
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
                 
-                document.getElementById('themeToggle').checked = settings.darkMode;
-                document.getElementById('notificationsToggle').checked = settings.notifications;
-                document.getElementById('soundToggle').checked = settings.sound;
+                document.getElementById('themeToggle').checked = settings.darkMode || false;
+                document.getElementById('notificationsToggle').checked = settings.notifications || true;
+                document.getElementById('soundToggle').checked = settings.sound || true;
                 
                 // تطبيق الوضع الداكن
                 if (settings.darkMode) {
                     document.body.classList.add('dark-mode');
                 }
+                
+                // تحديث أيقونة الوضع الليلي
+                const themeIcon = document.getElementById('themeIcon');
+                const themeText = document.getElementById('themeText');
+                
+                if (settings.darkMode) {
+                    themeIcon.className = 'fas fa-moon theme-icon';
+                    if (currentLanguage === 'ar') {
+                        themeText.textContent = 'الوضع الليلي';
+                    } else {
+                        themeText.textContent = 'Night Mode';
+                    }
+                } else {
+                    themeIcon.className = 'fas fa-sun theme-icon';
+                    if (currentLanguage === 'ar') {
+                        themeText.textContent = 'الوضع النهاري';
+                    } else {
+                        themeText.textContent = 'Day Mode';
+                    }
+                }
             }
+        }
+        
+        // تحميل الإشعارات
+        function loadNotifications() {
+            const savedNotifications = localStorage.getItem('notifications');
+            if (savedNotifications) {
+                notifications = JSON.parse(savedNotifications);
+            }
+            updateNotificationBadge();
+        }
+        
+        // حفظ الإشعارات
+        function saveNotifications() {
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            updateNotificationBadge();
+        }
+        
+        // إضافة إشعار جديد
+        function addNotification(title, message, type = 'info') {
+            const newNotification = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                type: type,
+                time: getCurrentTimeArabic(),
+                date: getCurrentDateArabic(),
+                read: false
+            };
+            
+            notifications.unshift(newNotification);
+            saveNotifications();
+            
+            // عرض تنبيه إذا كانت الإشعارات مفعلة
+            const notificationsToggle = document.getElementById('notificationsToggle');
+            if (notificationsToggle && notificationsToggle.checked) {
+                showNotificationToast(message, type);
+            }
+            
+            return newNotification.id;
+        }
+        
+        // تحديث علامة الإشعارات
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('notificationBadge');
+            
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        // عرض الإشعارات
+        function renderNotifications() {
+            const notificationsBody = document.getElementById('notificationsBody');
+            if (!notificationsBody) return;
+            
+            notificationsBody.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationsBody.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-bell-slash" style="font-size: 50px; color: #e94560; margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">${currentLanguage === 'ar' ? 'لا توجد إشعارات' : 'No notifications'}</h3>
+                        <p>${currentLanguage === 'ar' ? 'لم تتلق أي إشعارات بعد.' : 'You have not received any notifications yet.'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                notificationItem.setAttribute('data-id', notification.id);
+                notificationItem.innerHTML = `
+                    <div class="notification-title">
+                        <span>${notification.title}</span>
+                        ${!notification.read ? '<span style="color: #e94560; font-size: 12px;">جديد</span>' : ''}
+                    </div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${notification.time} - ${notification.date}</div>
+                `;
+                
+                notificationItem.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    markNotificationAsRead(id);
+                    
+                    // إذا كان الإشعار متعلقاً بالدردشة، افتح نافذة الدردشة
+                    if (notification.title.includes('دردشة') || notification.title.includes('Chat')) {
+                        openChatFromNotification();
+                    }
+                });
+                
+                notificationsBody.appendChild(notificationItem);
+            });
+        }
+        
+        // تمييز الإشعار كمقروء
+        function markNotificationAsRead(id) {
+            const index = notifications.findIndex(n => n.id === id);
+            if (index !== -1) {
+                notifications[index].read = true;
+                saveNotifications();
+                renderNotifications();
+            }
+        }
+        
+        // تمييز جميع الإشعارات كمقروءة
+        function markAllNotificationsAsRead() {
+            notifications.forEach(notification => {
+                notification.read = true;
+            });
+            saveNotifications();
+            renderNotifications();
+        }
+        
+        // فتح نافذة الإشعارات
+        function toggleNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            if (container.style.display === 'flex') {
+                container.style.display = 'none';
+            } else {
+                container.style.display = 'flex';
+                renderNotifications();
+            }
+        }
+        
+        // فتح الدردشة من الإشعار
+        function openChatFromNotification() {
+            document.getElementById('chatModal').style.display = 'flex';
+            document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+            document.getElementById('notificationsContainer').style.display = 'none';
         }
         
         // عرض الحسابات مع التصفية
@@ -3331,31 +3785,40 @@
                 const accountCard = createAccountCard(account);
                 allAccountsContainer.appendChild(accountCard.cloneNode(true));
             });
+            
+            // إذا لم توجد حسابات
+            if (filteredAccounts.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.padding = '50px';
+                emptyMessage.style.color = '#666';
+                emptyMessage.style.gridColumn = '1 / -1';
+                emptyMessage.innerHTML = `
+                    <i class="fas fa-search" style="font-size: 60px; color: #e94560; margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">${currentLanguage === 'ar' ? 'لا توجد حسابات متاحة' : 'No accounts available'}</h3>
+                    <p>${currentLanguage === 'ar' ? 'لم يتم نشر أي حسابات للبيع بعد. كن أول من ينشر حساباً!' : 'No accounts have been posted for sale yet. Be the first to post an account!'}</p>
+                    <button class="btn btn-success" style="margin-top: 20px;" onclick="showSection('add-account')">
+                        <i class="fas fa-plus-circle"></i> ${currentLanguage === 'ar' ? 'نشر حساب للبيع' : 'Post Account for Sale'}
+                    </button>
+                `;
+                
+                accountsContainer.appendChild(emptyMessage);
+                allAccountsContainer.appendChild(emptyMessage.cloneNode(true));
+            }
         }
         
         // إنشاء بطاقة حساب
         function createAccountCard(account) {
             const platformNames = {
-                ar: {
-                    facebook: 'فيسبوك',
-                    instagram: 'إنستقرام',
-                    tiktok: 'تيك توك',
-                    youtube: 'يوتيوب',
-                    telegram: 'تليجرام',
-                    snapchat: 'سناب شات',
-                    twitter: 'تويتر',
-                    jaco: 'JACO'
-                },
-                en: {
-                    facebook: 'Facebook',
-                    instagram: 'Instagram',
-                    tiktok: 'TikTok',
-                    youtube: 'YouTube',
-                    telegram: 'Telegram',
-                    snapchat: 'Snapchat',
-                    twitter: 'Twitter',
-                    jaco: 'JACO'
-                }
+                facebook: currentLanguage === 'ar' ? 'فيسبوك' : 'Facebook',
+                instagram: currentLanguage === 'ar' ? 'إنستقرام' : 'Instagram',
+                tiktok: currentLanguage === 'ar' ? 'تيك توك' : 'TikTok',
+                youtube: currentLanguage === 'ar' ? 'يوتيوب' : 'YouTube',
+                telegram: currentLanguage === 'ar' ? 'تليجرام' : 'Telegram',
+                snapchat: currentLanguage === 'ar' ? 'سناب شات' : 'Snapchat',
+                twitter: currentLanguage === 'ar' ? 'تويتر' : 'Twitter',
+                jaco: 'JACO'
             };
             
             const platformIcons = {
@@ -3386,26 +3849,16 @@
                 YER: '﷼'
             };
             
-            const currencyNames = {
-                USD: {ar: 'دولار أمريكي', en: 'USD'},
-                SAR: {ar: 'ريال سعودي', en: 'SAR'},
-                YER: {ar: 'ريال يمني', en: 'YER'}
-            };
-            
-            // تنسيق السعر حسب اللغة
-            let priceDisplay = account.price + ' ' + currencySymbols[account.currency];
-            let currencyName = currencyNames[account.currency][currentLanguage];
-            
             const card = document.createElement('div');
             card.className = 'account-card';
             card.setAttribute('data-platform', account.platform);
             card.setAttribute('data-account-id', account.id);
             card.innerHTML = `
-                <div class="account-badge">${platformNames[currentLanguage][account.platform]}</div>
+                <div class="account-badge">${platformNames[account.platform]}</div>
                 <div class="account-images">
                     <img src="${account.images[0]}" alt="${account.name}">
                     <div class="account-platform ${platformColors[account.platform]}">
-                        <i class="${platformIcons[account.platform]}"></i> ${platformNames[currentLanguage][account.platform]}
+                        <i class="${platformIcons[account.platform]}"></i> ${platformNames[account.platform]}
                     </div>
                 </div>
                 <div class="account-info">
@@ -3416,7 +3869,7 @@
                             <div class="stat-label">${currentLanguage === 'ar' ? 'متابع' : 'Followers'}</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-value">${priceDisplay}</div>
+                            <div class="stat-value">${account.price} ${currencySymbols[account.currency]}</div>
                             <div class="stat-label">${currentLanguage === 'ar' ? 'السعر' : 'Price'}</div>
                         </div>
                     </div>
@@ -3431,7 +3884,7 @@
                         <button class="btn" onclick="openAccountModal(${account.id})">
                             <i class="fas fa-eye"></i> ${currentLanguage === 'ar' ? 'عرض التفاصيل' : 'View Details'}
                         </button>
-                        <button class="btn btn-success" onclick="openChat(${account.id})">
+                        <button class="btn btn-success" onclick="openChatWithSeller(${account.id}, '${account.name}', '${account.sellerName}')">
                             <i class="fas fa-comment"></i> ${currentLanguage === 'ar' ? 'دردشة' : 'Chat'}
                         </button>
                     </div>
@@ -3448,26 +3901,14 @@
             
             // الحصول على أسماء المنصات
             const platformNames = {
-                ar: {
-                    facebook: 'فيسبوك',
-                    instagram: 'إنستقرام',
-                    tiktok: 'تيك توك',
-                    youtube: 'يوتيوب',
-                    telegram: 'تليجرام',
-                    snapchat: 'سناب شات',
-                    twitter: 'تويتر',
-                    jaco: 'JACO'
-                },
-                en: {
-                    facebook: 'Facebook',
-                    instagram: 'Instagram',
-                    tiktok: 'TikTok',
-                    youtube: 'YouTube',
-                    telegram: 'Telegram',
-                    snapchat: 'Snapchat',
-                    twitter: 'Twitter',
-                    jaco: 'JACO'
-                }
+                facebook: currentLanguage === 'ar' ? 'فيسبوك' : 'Facebook',
+                instagram: currentLanguage === 'ar' ? 'إنستقرام' : 'Instagram',
+                tiktok: currentLanguage === 'ar' ? 'تيك توك' : 'TikTok',
+                youtube: currentLanguage === 'ar' ? 'يوتيوب' : 'YouTube',
+                telegram: currentLanguage === 'ar' ? 'تليجرام' : 'Telegram',
+                snapchat: currentLanguage === 'ar' ? 'سناب شات' : 'Snapchat',
+                twitter: currentLanguage === 'ar' ? 'تويتر' : 'Twitter',
+                jaco: 'JACO'
             };
             
             const platformIcons = {
@@ -3498,26 +3939,11 @@
                 YER: '﷼'
             };
             
-            const currencyNames = {
-                USD: {ar: 'دولار أمريكي', en: 'US Dollar'},
-                SAR: {ar: 'ريال سعودي', en: 'Saudi Riyal'},
-                YER: {ar: 'ريال يمني', en: 'Yemeni Riyal'}
-            };
-            
-            // تنسيق التاريخ حسب اللغة
-            let dateDisplay = account.date;
-            if (currentLanguage === 'ar') {
-                // تحويل التاريخ إلى العربية
-                const date = new Date(account.date);
-                const arabicMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-                dateDisplay = `${date.getDate()} ${arabicMonths[date.getMonth()]} ${date.getFullYear()}`;
-            }
-            
             // إنشاء محتوى المودال
             const modal = document.getElementById('accountModal');
             modal.innerHTML = `
                 <div class="modal-content">
-                    <button class="close-modal" id="closeAccountModal">&times;</button>
+                    <button class="close-modal" id="closeAccountModal">×</button>
                     
                     <div class="account-images-modal">
                         <img src="${account.images[0]}" alt="${account.name}" id="modalMainImage">
@@ -3536,7 +3962,7 @@
                         <h2 style="color: #e94560; margin-bottom: 15px; font-size: 28px;">${account.name}</h2>
                         
                         <div class="account-platform ${platformColors[account.platform]}" style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 10px 20px; border-radius: 30px; background-color: rgba(255,255,255,0.1);">
-                            <i class="${platformIcons[account.platform]}"></i> ${platformNames[currentLanguage][account.platform]}
+                            <i class="${platformIcons[account.platform]}"></i> ${platformNames[account.platform]}
                         </div>
                         
                         <div class="account-stats" style="display: flex; gap: 30px; margin: 20px 0; padding: 20px; background-color: #f8fafc; border-radius: var(--border-radius);">
@@ -3546,10 +3972,10 @@
                             </div>
                             <div class="stat">
                                 <div class="stat-value">${account.price} ${currencySymbols[account.currency]}</div>
-                                <div class="stat-label">${currentLanguage === 'ar' ? 'السعر' : 'Price'} (${currencyNames[account.currency][currentLanguage]})</div>
+                                <div class="stat-label">${currentLanguage === 'ar' ? 'السعر' : 'Price'}</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-value">${dateDisplay}</div>
+                                <div class="stat-value">${account.date}</div>
                                 <div class="stat-label">${currentLanguage === 'ar' ? 'تاريخ النشر' : 'Publish Date'}</div>
                             </div>
                         </div>
@@ -3567,7 +3993,7 @@
                                 </div>
                                 <div>
                                     <div class="seller-name">${account.sellerName}</div>
-                                    <div style="color: #666; font-size: 14px;">${currentLanguage === 'ar' ? 'مستخدم في المنصة منذ' : 'Platform user since'} ${dateDisplay}</div>
+                                    <div style="color: #666; font-size: 14px;">${currentLanguage === 'ar' ? 'مستخدم في المنصة منذ' : 'User on the platform since'} ${account.date}</div>
                                 </div>
                             </div>
                         </div>
@@ -3576,17 +4002,17 @@
                             <h3 style="color: var(--primary-color); margin-bottom: 10px;">${currentLanguage === 'ar' ? 'روابط الحساب' : 'Account Links'}</h3>
                             <p>
                                 <a href="${account.url}" target="_blank" style="color: #e94560; font-weight: 600;">
-                                    <i class="fas fa-external-link-alt"></i> ${currentLanguage === 'ar' ? 'زيارة الحساب على' : 'Visit account on'} ${platformNames[currentLanguage][account.platform]}
+                                    <i class="fas fa-external-link-alt"></i> ${currentLanguage === 'ar' ? 'زيارة الحساب على' : 'Visit account on'} ${platformNames[account.platform]}
                                 </a>
                             </p>
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="btn" onclick="openChat(${account.id}); closeAccountModal();">
+                            <button class="btn" onclick="openChatWithSeller(${account.id}, '${account.name}', '${account.sellerName}'); closeAccountModal();">
                                 <i class="fas fa-comment"></i> ${currentLanguage === 'ar' ? 'دردشة مع البائع' : 'Chat with Seller'}
                             </button>
                             <button class="btn btn-success" onclick="callSeller(${account.id}); closeAccountModal();">
-                                <i class="fas fa-phone"></i> ${currentLanguage === 'ar' ? 'اتصل بالبائع' : 'Contact Seller'}
+                                <i class="fas fa-phone"></i> ${currentLanguage === 'ar' ? 'اتصل بالبائع' : 'Call Seller'}
                             </button>
                             <button class="btn btn-outline" onclick="closeAccountModal()">
                                 <i class="fas fa-times"></i> ${currentLanguage === 'ar' ? 'إغلاق' : 'Close'}
@@ -3690,6 +4116,26 @@
                     btn.classList.add('active');
                 }
             });
+            
+            // إذا لم توجد حسابات
+            if (filteredAccounts.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.padding = '50px';
+                emptyMessage.style.color = '#666';
+                emptyMessage.style.gridColumn = '1 / -1';
+                emptyMessage.innerHTML = `
+                    <i class="fas fa-search" style="font-size: 60px; color: #e94560; margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">${currentLanguage === 'ar' ? 'لا توجد حسابات متاحة' : 'No accounts available'}</h3>
+                    <p>${currentLanguage === 'ar' ? 'لم يتم نشر أي حسابات للبيع بعد. كن أول من ينشر حساباً!' : 'No accounts have been posted for sale yet. Be the first to post an account!'}</p>
+                    <button class="btn btn-success" style="margin-top: 20px;" onclick="showSection('add-account')">
+                        <i class="fas fa-plus-circle"></i> ${currentLanguage === 'ar' ? 'نشر حساب للبيع' : 'Post Account for Sale'}
+                    </button>
+                `;
+                
+                allAccountsContainer.appendChild(emptyMessage);
+            }
         }
         
         // تحديث واجهة المستخدم بعد تسجيل الدخول
@@ -3717,7 +4163,7 @@
                 document.getElementById('profileId').textContent = `ID: ${currentUser.id}`;
                 document.getElementById('profileCountry').textContent = currentUser.countryName;
                 
-                document.getElementById('infoFullName').textContent = currentUser.name;
+                document.getElementById('infoFullName').textContent = currentLanguage === 'ar' ? `المطور: ${currentUser.name}` : `Developer: ${currentUser.name}`;
                 document.getElementById('infoPhone').textContent = currentUser.phone;
                 document.getElementById('infoCountry').textContent = currentUser.countryName;
                 document.getElementById('infoAddress').textContent = currentUser.address;
@@ -3739,14 +4185,13 @@
                         <div style="text-align: center; padding: 40px; color: #666; background-color: #f8fafc; border-radius: var(--border-radius); border: 2px dashed #e0e0e0; width: 100%;">
                             <i class="fas fa-info-circle" style="font-size: 50px; color: #e94560; margin-bottom: 20px;"></i>
                             <h3 style="color: var(--primary-color); margin-bottom: 15px;">${currentLanguage === 'ar' ? 'لا توجد حسابات مباعة' : 'No Accounts Sold'}</h3>
-                            <p>${currentLanguage === 'ar' ? 'لم تقم ببيع أي حسابات بعد.' : 'You haven\'t sold any accounts yet.'} <a href="#add-account" onclick="showSection('add-account')" style="color: #e94560; font-weight: 600;">${currentLanguage === 'ar' ? 'انقر هنا' : 'Click here'}</a> ${currentLanguage === 'ar' ? 'لإضافة حساب للبيع.' : 'to add an account for sale.'}</p>
+                            <p>${currentLanguage === 'ar' ? 'لم تقم ببيع أي حسابات بعد.' : 'You have not sold any accounts yet.'} <a href="#add-account" onclick="showSection('add-account')" style="color: #e94560; font-weight: 600;">${currentLanguage === 'ar' ? 'انقر هنا' : 'Click here'}</a> ${currentLanguage === 'ar' ? 'لإضافة حساب للبيع.' : 'to add an account for sale.'}</p>
                         </div>
                     `;
                 }
             } else {
                 document.getElementById('userAvatar').style.display = 'none';
                 document.getElementById('loginBtn').style.display = 'inline-flex';
-                document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-plus"></i> ${currentLanguage === 'ar' ? 'إنشاء حساب' : 'Create Account'}`;
             }
         }
         
@@ -3758,7 +4203,7 @@
                 
                 // التحقق من تسجيل الدخول
                 if (!currentUser) {
-                    showNotification(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'You must login first', 'error');
+                    showNotificationToast(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'You must login first', 'error');
                     showSection('login');
                     return;
                 }
@@ -3766,18 +4211,18 @@
                 // التحقق من اختيار المنصة
                 const platform = document.getElementById('selectedPlatform').value;
                 if (!platform) {
-                    showNotification(currentLanguage === 'ar' ? 'يرجى اختيار منصة التواصل الاجتماعي' : 'Please select a social media platform', 'error');
+                    showNotificationToast(currentLanguage === 'ar' ? 'يرجى اختيار منصة التواصل الاجتماعي' : 'Please select a social media platform', 'error');
                     return;
                 }
                 
                 // التحقق من رفع 2-3 صور
                 if (uploadedImages.length < 2) {
-                    showNotification(currentLanguage === 'ar' ? 'يرجى رفع صورتين على الأقل للحساب' : 'Please upload at least 2 images for the account', 'error');
+                    showNotificationToast(currentLanguage === 'ar' ? 'يرجى رفع صورتين على الأقل للحساب' : 'Please upload at least 2 images for the account', 'error');
                     return;
                 }
                 
                 if (uploadedImages.length > 3) {
-                    showNotification(currentLanguage === 'ar' ? 'يرجى رفع 3 صور كحد أقصى للحساب' : 'Please upload maximum 3 images for the account', 'error');
+                    showNotificationToast(currentLanguage === 'ar' ? 'يرجى رفع 3 صور كحد أقصى للحساب' : 'Please upload a maximum of 3 images for the account', 'error');
                     return;
                 }
                 
@@ -3811,7 +4256,7 @@
                 document.getElementById('uploadedImages').innerHTML = '';
                 uploadedImages = [];
                 
-                showNotification(currentLanguage === 'ar' ? 'تم نشر حسابك بنجاح!' : 'Your account has been published successfully!', 'success');
+                showNotificationToast(currentLanguage === 'ar' ? 'تم نشر حسابك بنجاح!' : 'Your account has been published successfully!', 'success');
                 showSection('home');
                 
                 // تحديث حسابات المستخدم في الملف الشخصي
@@ -3844,7 +4289,7 @@
                         countryName: countryName,
                         phone: countryCode + " " + phone,
                         address: document.getElementById('address').value,
-                        registerDate: getCurrentDate(),
+                        registerDate: getCurrentDateArabic(),
                         profileImage: userProfileImage
                     };
                     
@@ -3860,92 +4305,63 @@
                     // إعادة تعيين النموذج
                     this.reset();
                     
+                    // إضافة إشعار ترحيبي
+                    addNotification(
+                        currentLanguage === 'ar' ? 'مرحباً بك في منصة حسابات!' : 'Welcome to Accounts Platform!',
+                        currentLanguage === 'ar' ? 'تم إنشاء حسابك بنجاح. يمكنك الآن بدء بيع وشراء الحسابات.' : 'Your account has been created successfully. You can now start buying and selling accounts.',
+                        'success'
+                    );
+                    
                     // عرض رسالة نجاح وتوجيه إلى الصفحة الرئيسية
-                    showNotification(currentLanguage === 'ar' ? 'تم إنشاء حسابك بنجاح!' : 'Your account has been created successfully!', 'success');
+                    showNotificationToast(currentLanguage === 'ar' ? 'تم إنشاء حسابك بنجاح!' : 'Your account has been created successfully!', 'success');
                     showSection('home');
                 }, 2000);
             });
             
-            // رفع صورة الملف الشخصي
-            document.getElementById('profilePicture').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        userProfileImage = e.target.result;
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // تغيير صورة الملف الشخصي
-            document.getElementById('changeAvatarInput').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        userProfileImage = e.target.result;
-                        currentUser.profileImage = userProfileImage;
-                        
-                        // تحديث localStorage
-                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                        
-                        // تحديث الواجهة
-                        document.getElementById('userAvatar').innerHTML = `<img src="${userProfileImage}" alt="${currentUser.name}">`;
-                        document.getElementById('profileAvatar').innerHTML = `<img src="${userProfileImage}" alt="${currentUser.name}">`;
-                        
-                        showNotification(currentLanguage === 'ar' ? 'تم تحديث صورة الملف الشخصي' : 'Profile picture updated', 'success');
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-            });
-            
             // رفع صور الحساب واحدة تلو الأخرى
             document.getElementById('imageUpload').addEventListener('change', function(e) {
-                const file = e.target.files[0];
+                const files = e.target.files;
                 
-                if (!file) {
-                    return;
-                }
-                
-                // التحقق من نوع الملف
-                if (!file.type.startsWith('image/')) {
-                    showNotification(currentLanguage === 'ar' ? 'يرجى اختيار صورة فقط' : 'Please select an image only', 'error');
-                    this.value = '';
-                    return;
-                }
-                
-                // التحقق من حجم الملف (5MB كحد أقصى)
-                if (file.size > 5 * 1024 * 1024) {
-                    showNotification(currentLanguage === 'ar' ? 'حجم الصورة يجب أن يكون أقل من 5MB' : 'Image size must be less than 5MB', 'error');
-                    this.value = '';
+                if (!files || files.length === 0) {
                     return;
                 }
                 
                 // التحقق من عدد الصور المرفوعة
-                if (uploadedImages.length >= 3) {
-                    showNotification(currentLanguage === 'ar' ? 'يمكنك رفع 3 صور كحد أقصى' : 'You can upload maximum 3 images', 'error');
+                if (uploadedImages.length + files.length > 3) {
+                    showNotificationToast(currentLanguage === 'ar' ? 'يمكنك رفع 3 صور كحد أقصى' : 'You can upload a maximum of 3 images', 'error');
                     this.value = '';
                     return;
                 }
                 
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    uploadedImages.push(e.target.result);
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
                     
-                    // عرض الصور المرفوعة
-                    displayUploadedImages();
+                    // التحقق من نوع الملف
+                    if (!file.type.startsWith('image/')) {
+                        showNotificationToast(currentLanguage === 'ar' ? 'يرجى اختيار صور فقط' : 'Please select images only', 'error');
+                        continue;
+                    }
                     
-                    // إظهار عدد الصور المرفوعة
-                    updateImageCount();
-                };
-                
-                reader.readAsDataURL(file);
+                    // التحقق من حجم الملف (5MB كحد أقصى)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotificationToast(currentLanguage === 'ar' ? 'حجم الصورة يجب أن يكون أقل من 5MB' : 'Image size must be less than 5MB', 'error');
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        uploadedImages.push(e.target.result);
+                        
+                        // عرض الصور المرفوعة
+                        displayUploadedImages();
+                        
+                        // إظهار عدد الصور المرفوعة
+                        updateImageCount();
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
                 
                 // إعادة تعيين حقل الرفع للسماح برفع المزيد
                 this.value = '';
@@ -3960,8 +4376,8 @@
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'uploaded-image';
                     imageContainer.innerHTML = `
-                        <img src="${image}" alt="${currentLanguage === 'ar' ? 'صورة الحساب' : 'Account Image'} ${index + 1}">
-                        <div class="remove-image" onclick="removeUploadedImage(${index})">&times;</div>
+                        <img src="${image}" alt="صورة الحساب ${index + 1}">
+                        <div class="remove-image" onclick="removeUploadedImage(${index})">×</div>
                     `;
                     uploadedImagesContainer.appendChild(imageContainer);
                 });
@@ -3997,7 +4413,7 @@
                 
                 if (message) {
                     if (!currentUser) {
-                        showNotification(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'You must login first', 'error');
+                        showNotificationToast(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً لاستخدام خدمة الدردشة' : 'You must login first to use the chat service', 'error');
                         showSection('login');
                         return;
                     }
@@ -4007,7 +4423,7 @@
                     newMessage.className = 'message sent';
                     newMessage.innerHTML = `
                         ${message}
-                        <div class="message-time">${getCurrentTime()}</div>
+                        <div class="message-time">${getCurrentTimeArabic()}</div>
                     `;
                     chatBody.appendChild(newMessage);
                     
@@ -4016,17 +4432,16 @@
                     
                     // محاكاة رد البائع بعد ثانيتين
                     setTimeout(() => {
-                        const replies = {
-                            ar: ['شكراً لك', 'هل لديك استفسار آخر؟', 'حسناً، سأتصل بك قريباً', 'هل تريد معرفة المزيد عن الحساب؟'],
-                            en: ['Thank you', 'Do you have another question?', 'OK, I will contact you soon', 'Do you want to know more about the account?']
-                        };
-                        const randomReply = replies[currentLanguage][Math.floor(Math.random() * replies[currentLanguage].length)];
+                        const replies = currentLanguage === 'ar' ? 
+                            ['شكراً لك', 'هل لديك استفسار آخر؟', 'حسناً، سأتصل بك قريباً', 'هل تريد معرفة المزيد عن الحساب؟'] :
+                            ['Thank you', 'Do you have another question?', 'Okay, I will contact you soon', 'Do you want to know more about the account?'];
+                        const randomReply = replies[Math.floor(Math.random() * replies.length)];
                         
                         const replyMessage = document.createElement('div');
                         replyMessage.className = 'message received';
                         replyMessage.innerHTML = `
                             ${randomReply}
-                            <div class="message-time">${getCurrentTime()}</div>
+                            <div class="message-time">${getCurrentTimeArabic()}</div>
                         `;
                         chatBody.appendChild(replyMessage);
                         chatBody.scrollTop = chatBody.scrollHeight;
@@ -4046,7 +4461,7 @@
                 currentUser = null;
                 localStorage.removeItem('currentUser');
                 updateUserInterface();
-                showNotification(currentLanguage === 'ar' ? 'تم تسجيل الخروج بنجاح' : 'Logged out successfully', 'success');
+                showNotificationToast(currentLanguage === 'ar' ? 'تم تسجيل الخروج بنجاح' : 'Logged out successfully', 'success');
                 showSection('home');
             });
             
@@ -4061,7 +4476,7 @@
                         preview.innerHTML = `
                             <div style="position: relative; display: inline-block;">
                                 <img src="${e.target.result}" style="max-width: 200px; border-radius: var(--border-radius-sm);">
-                                <button onclick="removeScreenshot()" style="position: absolute; top: 5px; left: 5px; background: rgba(233, 69, 96, 0.8); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">&times;</button>
+                                <button onclick="removeScreenshot()" style="position: absolute; top: 5px; left: 5px; background: rgba(233, 69, 96, 0.8); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
                             </div>
                         `;
                     };
@@ -4069,6 +4484,71 @@
                     reader.readAsDataURL(file);
                 }
             });
+            
+            // إغلاق نافذة الإشعارات
+            document.getElementById('closeNotifications').addEventListener('click', function() {
+                document.getElementById('notificationsContainer').style.display = 'none';
+            });
+            
+            // إغلاق نافذة الإشعارات عند النقر خارجها
+            document.addEventListener('click', function(event) {
+                const container = document.getElementById('notificationsContainer');
+                const btn = document.getElementById('notificationBtn');
+                
+                if (container && container.style.display === 'flex' && 
+                    !container.contains(event.target) && 
+                    !btn.contains(event.target)) {
+                    container.style.display = 'none';
+                }
+            });
+        }
+        
+        // معالجة تغيير صورة الملف الشخصي
+        function handleProfilePictureChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // التحقق من حجم الملف
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotificationToast(currentLanguage === 'ar' ? 'حجم الصورة يجب أن يكون أقل من 5MB' : 'Image size must be less than 5MB', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userProfileImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // معالجة تغيير الصورة الشخصية
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file && currentUser) {
+                // التحقق من حجم الملف
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotificationToast(currentLanguage === 'ar' ? 'حجم الصورة يجب أن يكون أقل من 5MB' : 'Image size must be less than 5MB', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userProfileImage = e.target.result;
+                    currentUser.profileImage = userProfileImage;
+                    
+                    // تحديث localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // تحديث الواجهة
+                    document.getElementById('userAvatar').innerHTML = `<img src="${userProfileImage}" alt="${currentUser.name}">`;
+                    document.getElementById('profileAvatar').innerHTML = `<img src="${userProfileImage}" alt="${currentUser.name}">`;
+                    
+                    showNotificationToast(currentLanguage === 'ar' ? 'تم تحديث صورة الملف الشخصي' : 'Profile picture updated successfully', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
         }
         
         // إزالة صورة مرفوعة
@@ -4120,16 +4600,16 @@
             const description = document.getElementById('reportDescription').value;
             
             if (!reportType) {
-                showNotification(currentLanguage === 'ar' ? 'يرجى اختيار نوع البلاغ' : 'Please select a report type', 'error');
+                showNotificationToast(currentLanguage === 'ar' ? 'يرجى اختيار نوع البلاغ' : 'Please select a report type', 'error');
                 return;
             }
             
             if (!description.trim()) {
-                showNotification(currentLanguage === 'ar' ? 'يرجى وصف المشكلة' : 'Please describe the problem', 'error');
+                showNotificationToast(currentLanguage === 'ar' ? 'يرجى وصف المشكلة' : 'Please describe the problem', 'error');
                 return;
             }
             
-            showNotification(currentLanguage === 'ar' ? 'تم إرسال البلاغ بنجاح، سنتواصل معك قريباً' : 'Report sent successfully, we will contact you soon', 'success');
+            showNotificationToast(currentLanguage === 'ar' ? 'تم إرسال البلاغ بنجاح، سنتواصل معك قريباً' : 'Report sent successfully, we will contact you soon', 'success');
             
             // إعادة تعيين النموذج
             document.getElementById('reportDescription').value = '';
@@ -4141,28 +4621,40 @@
             document.getElementById('selectedReportType').value = '';
         }
         
-        // فتح نافذة الدردشة
-        function openChat(accountId) {
+        // فتح نافذة الدردشة مع البائع وإرسال إشعار
+        function openChatWithSeller(accountId, accountName, sellerName) {
             if (!currentUser) {
-                showNotification(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً لاستخدام خدمة الدردشة' : 'You must login first to use the chat service', 'error');
+                showNotificationToast(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً لاستخدام خدمة الدردشة' : 'You must login first to use the chat service', 'error');
                 showSection('login');
                 return;
             }
+            
+            // إضافة إشعار للدردشة
+            addNotification(
+                currentLanguage === 'ar' ? 'رسالة جديدة' : 'New Message',
+                currentLanguage === 'ar' ? `لديك رسالة جديدة بخصوص حساب "${accountName}" من ${sellerName}` : `You have a new message regarding account "${accountName}" from ${sellerName}`,
+                'info'
+            );
             
             document.getElementById('chatModal').style.display = 'flex';
             document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
         }
         
+        // فتح نافذة الدردشة (الوظيفة القديمة)
+        function openChat(accountId) {
+            openChatWithSeller(accountId, 'الحساب', 'البائع');
+        }
+        
         // محاكاة الاتصال
         function callSeller(accountId) {
             if (!currentUser) {
-                showNotification(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً لرؤية رقم الهاتف' : 'You must login first to see the phone number', 'error');
+                showNotificationToast(currentLanguage === 'ar' ? 'يجب تسجيل الدخول أولاً لرؤية رقم الهاتف' : 'You must login first to see the phone number', 'error');
                 showSection('login');
                 return;
             }
             
             const account = accounts.find(acc => acc.id === accountId);
-            showNotification(`${currentLanguage === 'ar' ? 'رقم الهاتف:' : 'Phone number:'} ${account.sellerName} - +966 5XX XXX XXX`, 'info');
+            showNotificationToast(`${currentLanguage === 'ar' ? 'رقم الهاتف:' : 'Phone number:'} ${account.sellerName} - +966 5XX XXX XXX`, 'info');
         }
         
         // تغيير قسم الصفحة المعروض
@@ -4172,55 +4664,36 @@
                 section.style.display = 'none';
             });
             
-            // إزالة النشاط من جميع عناصر القائمة
-            document.querySelectorAll('nav a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
             // إظهار القسم المطلوب
             document.getElementById(sectionId).style.display = 'block';
-            
-            // إضافة النشاط لعنصر القائمة المناسب
-            const navLink = document.querySelector(`nav a[href="#${sectionId}"]`);
-            if (navLink) {
-                navLink.classList.add('active');
-            }
-            
-            // إذا كان القسم هو الحسابات، قم بإعادة عرضها
-            if (sectionId === 'accounts' || sectionId === 'home') {
-                renderAccounts(currentFilter);
-            }
             
             // إغلاق القائمة الجانبية
             document.getElementById('hamburgerMenu').classList.remove('active');
             document.getElementById('sidebar').classList.remove('active');
             
-            // إغلاق القائمة الرئيسية على الهواتف
-            if (window.innerWidth <= 992) {
-                document.getElementById('mainNav').classList.remove('active');
-            }
+            // إغلاق نافذة الإشعارات
+            document.getElementById('notificationsContainer').style.display = 'none';
             
             // التمرير إلى أعلى الصفحة
             window.scrollTo(0, 0);
         }
         
-        // إغلاق القائمة
-        function closeNav() {
-            if (window.innerWidth <= 992) {
-                document.getElementById('mainNav').classList.remove('active');
+        // دالة لعرض الإشعارات المنبثقة
+        function showNotificationToast(message, type = 'info') {
+            // التحقق من تفعيل الإشعارات
+            const notificationsToggle = document.getElementById('notificationsToggle');
+            if (notificationsToggle && !notificationsToggle.checked) {
+                return;
             }
-        }
-        
-        // دالة لعرض الإشعارات
-        function showNotification(message, type = 'info') {
+            
             // إزالة أي إشعارات سابقة
-            const existingNotification = document.querySelector('.notification');
+            const existingNotification = document.querySelector('.notification-toast');
             if (existingNotification) {
                 existingNotification.remove();
             }
             
             const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+            notification.className = `notification-toast ${type}`;
             notification.innerHTML = `
                 <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                 ${message}
@@ -4234,43 +4707,29 @@
             }, 5000);
         }
         
-        // الحصول على التاريخ الحالي
-        function getCurrentDate() {
+        // الحصول على التاريخ الحالي بالعربية
+        function getCurrentDateArabic() {
             const now = new Date();
-            if (currentLanguage === 'ar') {
-                const day = now.getDate();
-                const month = now.getMonth() + 1;
-                const year = now.getFullYear();
-                
-                const monthsArabic = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-                
-                return `${day} ${monthsArabic[month-1]} ${year}`;
-            } else {
-                return now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            }
+            const day = now.getDate();
+            const month = now.getMonth() + 1;
+            const year = now.getFullYear();
+            
+            const monthsArabic = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+            
+            return `${day} ${monthsArabic[month-1]} ${year}`;
         }
         
-        // الحصول على الوقت الحالي
-        function getCurrentTime() {
+        // الحصول على الوقت الحالي بالعربية
+        function getCurrentTimeArabic() {
             const now = new Date();
-            if (currentLanguage === 'ar') {
-                let hours = now.getHours();
-                const minutes = now.getMinutes();
-                const ampm = hours >= 12 ? 'م' : 'ص';
-                
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                
-                return `${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
-            } else {
-                return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            }
-        }
-        
-        // تبديل القائمة الرئيسية على الهواتف
-        function toggleNav() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'م' : 'ص';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            
+            return `${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
         }
     </script>
 </body>
