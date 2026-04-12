@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a1a">
     <title>Social Accounts Market - منصة احترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -32,12 +33,12 @@
         }
         body { background: var(--bg-primary); color: var(--text-primary); transition: 0.3s; padding-bottom: 70px; overflow-x: hidden; }
         
-        /* splash */
+        /* splash screen */
         .splash { position: fixed; inset:0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; transition: 0.5s; gap:20px; }
         .splash-logo { font-size: 4rem; font-weight:800; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%{opacity:0.7;transform:scale(1);} 100%{opacity:1;transform:scale(1.05);} }
         
-        /* app */
+        /* app container */
         .app { display: none; }
         
         /* header */
@@ -45,14 +46,14 @@
         .menu-btn, .profile-icon { background: none; border: none; color: var(--text-primary); font-size: 28px; cursor: pointer; }
         .logo { font-size: 1.6rem; font-weight: bold; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
         
-        /* sidebar */
+        /* sidebar (hamburger menu) */
         .sidebar { position: fixed; top:0; right:-280px; width:280px; height:100%; background: var(--bg-secondary); z-index: 1000; transition: 0.3s; padding:20px; border-left:1px solid var(--border-light); backdrop-filter: blur(10px); }
         .sidebar.open { right:0; }
         .sidebar-header { font-size:1.8rem; font-weight:bold; margin-bottom:30px; background:linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
         .sidebar button { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: var(--text-primary); font-size: 16px; cursor: pointer; border-radius: 12px; transition: 0.2s; }
         .sidebar button:hover { background: var(--accent-purple); box-shadow: 0 0 8px var(--accent-neon); }
         
-        /* bottom nav */
+        /* bottom navigation */
         .bottom-nav { position: fixed; bottom:0; left:0; right:0; background: var(--bottom-nav-bg); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 12px 20px; border-top: 1px solid var(--border-light); z-index: 100; }
         .bottom-nav button { background: none; border: none; color: var(--text-secondary); font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
         .bottom-nav button i { font-size: 24px; }
@@ -69,11 +70,11 @@
         .platform-icon i { font-size: 2rem; }
         .platform-icon.active, .platform-icon:hover { background: var(--accent-purple); color: white; transform: scale(1.05); }
         
-        /* filter */
+        /* filter row */
         .filter-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 12px; border-radius: 30px; background: var(--bg-primary); border: 1px solid var(--border-light); color: var(--text-primary); }
         
-        /* cards */
+        /* cards grid */
         .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
         .card { background: var(--card-bg); border-radius: 24px; padding: 16px; border: 1px solid var(--border-light); transition: 0.2s; box-shadow: var(--shadow); }
         .card:hover { transform: translateY(-5px); }
@@ -85,7 +86,7 @@
         .image-preview { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
         .image-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
         
-        /* modal */
+        /* modal (login) */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card-bg); border-radius: 32px; padding: 28px; width: 90%; max-width: 450px; text-align: center; }
         
@@ -113,7 +114,7 @@
 </div>
 
 <div class="app" id="app">
-    <!-- Sidebar -->
+    <!-- Sidebar (Hamburger Menu) -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">SAMarket</div>
         <button data-page="home"><i class="fas fa-home"></i> <span data-i18n="home">الرئيسية</span></button>
@@ -148,30 +149,46 @@
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
+    
     <div id="myAccountsPage" class="page"><h2 data-i18n="myAccountsTitle">📦 حساباتي</h2><div id="myAccountsList" class="accounts-grid"></div></div>
     
-    <!-- Add Account Page -->
+    <!-- Add Account Page (form) -->
     <div id="addAccountPage" class="page">
         <h2 data-i18n="addNewAccount">➕ نشر حساب جديد</h2>
         <form id="addForm">
             <label data-i18n="selectPlatform">اختر المنصة</label>
             <select id="platformSelect" required>
                 <option value="">-- اختر --</option>
-                <option value="TikTok">🎵 TikTok</option><option value="Instagram">📸 Instagram</option><option value="YouTube">▶️ YouTube</option>
-                <option value="Snapchat">👻 Snapchat</option><option value="Twitter">🐦 Twitter</option><option value="Facebook">📘 Facebook</option>
-                <option value="Telegram">✈️ Telegram</option><option value="Threads">🧵 Threads</option>
+                <option value="TikTok">🎵 TikTok</option>
+                <option value="Instagram">📸 Instagram</option>
+                <option value="YouTube">▶️ YouTube</option>
+                <option value="Snapchat">👻 Snapchat</option>
+                <option value="Twitter">🐦 Twitter</option>
+                <option value="Facebook">📘 Facebook</option>
+                <option value="Telegram">✈️ Telegram</option>
+                <option value="Threads">🧵 Threads</option>
             </select>
+            
             <input id="accName" placeholder="اسم الحساب (مثال: @user)" required>
             <input id="followers" placeholder="عدد المتابعين" type="number" required>
+            
             <div style="display: flex; gap: 12px;">
                 <input id="price" placeholder="السعر" type="number" required style="flex:1">
-                <select id="currency" style="width: auto;"><option>SAR</option><option>YER</option><option>USD</option><option>EUR</option></select>
+                <select id="currency" style="width: auto;">
+                    <option value="SAR">🇸🇦 ريال سعودي (SAR)</option>
+                    <option value="YER">🇾🇪 ريال يمني (YER)</option>
+                    <option value="USD">🇺🇸 دولار أمريكي (USD)</option>
+                    <option value="EUR">🇪🇺 يورو (EUR)</option>
+                </select>
             </div>
+            
             <input id="accLink" placeholder="رابط الحساب" required>
             <textarea id="desc" placeholder="وصف الحساب (ماذا يميزه؟ المتابعون الحقيقيون، التفاعل، العمر، إلخ)"></textarea>
+            
             <label data-i18n="uploadImages">صور الإثبات (حد أقصى 3 صور)</label>
             <input type="file" id="images" multiple accept="image/*">
             <div id="imagePreview" class="image-preview"></div>
+            
             <button type="submit" class="btn-primary" id="publishBtn" data-i18n="publish">✅ نشر الحساب</button>
         </form>
     </div>
@@ -232,6 +249,7 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyB3mtcnmHD-rPYxLXLFVhg6VPrNMPIetaw",
         authDomain: "selling-accounts-90d8e.firebaseapp.com",
@@ -245,12 +263,15 @@
     const db = getFirestore(firebaseApp);
     const provider = new GoogleAuthProvider();
     
+    // ImgBB API Key
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     async function uploadToImgBB(file) {
-        const fd = new FormData(); fd.append("image", file); fd.append("key", IMGBB_KEY);
+        const fd = new FormData();
+        fd.append("image", file);
+        fd.append("key", IMGBB_KEY);
         const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: fd });
         const data = await res.json();
-        if (!data.success) throw new Error(data.error?.message);
+        if (!data.success) throw new Error(data.error?.message || "فشل رفع الصورة");
         return data.data.url;
     }
     
@@ -259,7 +280,7 @@
     const translations = {
         ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", darkMode:"الوضع الليلي", logout:"تسجيل الخروج", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", addNewAccount:"➕ نشر حساب جديد", selectPlatform:"اختر المنصة", uploadImages:"صور الإثبات (حد أقصى 3 صور)", publish:"✅ نشر الحساب", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال الطلب" },
         en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", darkMode:"Dark Mode", logout:"Logout", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts", addNewAccount:"➕ Publish New Account", selectPlatform:"Select Platform", uploadImages:"Proof Images (max 3)", publish:"✅ Publish", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Technical Support", send:"Send" },
-        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", darkMode:"Mode nuit", logout:"Déconnexion", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", addNewAccount:"➕ Publier", selectPlatform:"Choisir la plateforme", uploadImages:"Images preuve (max 3)", publish:"✅ Publier", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer" },
+        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", darkMode:"Mode nuit", logout:"Déconnexion", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", addNewAccount:"➕ Publier", selectPlatform:"Choisir", uploadImages:"Preuves (max 3)", publish:"✅ Publier", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer" },
         tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", darkMode:"Gece Modu", logout:"Çıkış", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım", addNewAccount:"➕ Yeni Hesap Yayınla", selectPlatform:"Platform Seç", uploadImages:"Kanıt Resimleri (max 3)", publish:"✅ Yayınla", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Teknik Destek", send:"Gönder" }
     };
     function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
@@ -271,14 +292,30 @@
         document.title = t("home") + " - Social Accounts Market";
     }
     
-    // Navigation
+    // Navigation function
     function showPage(pageId) {
+        console.log("showPage called:", pageId);
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(pageId + 'Page').classList.add('active-page');
+        const targetPage = document.getElementById(pageId + 'Page');
+        if (targetPage) {
+            targetPage.classList.add('active-page');
+        } else {
+            console.error("Page not found:", pageId + 'Page');
+            return;
+        }
         if (pageId === 'home') { loadAccounts(); renderPlatforms(); }
         if (pageId === 'my-accounts') loadMyAccounts();
-        if (pageId === 'messages') { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); }
-        document.querySelectorAll('.bottom-nav button').forEach(btn => { if(btn.dataset.nav === pageId) btn.classList.add('active'); else btn.classList.remove('active'); });
+        if (pageId === 'messages') { 
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
+            loadConversations();
+        }
+        // Update active state in bottom nav
+        document.querySelectorAll('.bottom-nav button').forEach(btn => {
+            if (btn.dataset.nav === pageId) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        // Close sidebar
         document.getElementById('sidebar').classList.remove('open');
     }
     window.navigateTo = showPage;
@@ -288,7 +325,7 @@
     const platformsList = ["TikTok","Instagram","YouTube","Snapchat","Twitter","Facebook","Telegram","Threads"];
     function renderPlatforms() {
         const container = document.getElementById('platformScroll');
-        if(!container) return;
+        if (!container) return;
         let html = '';
         platformsList.forEach(p => {
             html += `<div class="platform-icon" data-platform="${p}"><i class="fab fa-${p.toLowerCase()}"></i><span>${p}</span></div>`;
@@ -303,256 +340,401 @@
         });
     }
     let currentPlatformFilter = "all";
+    
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
-        let q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
-        if(currentPlatformFilter !== "all") q = query(collection(db, 'accounts'), where('platform', '==', currentPlatformFilter), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        let accounts = [];
-        snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
-        const sortVal = document.getElementById('priceSort')?.value || "";
-        accounts = accounts.filter(a => a.name?.toLowerCase().includes(searchTerm) || a.platform?.toLowerCase().includes(searchTerm));
-        if(sortVal === "asc") accounts.sort((a,b)=>a.price-b.price);
-        if(sortVal === "desc") accounts.sort((a,b)=>b.price-a.price);
-        if(accounts.length===0) { container.innerHTML = "<div>لا توجد حسابات</div>"; return; }
-        let html = '';
-        accounts.forEach(acc => {
-            html += `<div class="card"><h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3><p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p><p>💰 ${acc.price} ${acc.currency}</p>${acc.images?.[0] ? `<img src="${acc.images[0]}" style="width:100%; border-radius:12px; margin-top:8px;">` : ''}<button class="contact-seller btn-outline" data-seller="${acc.sellerId}">📩 مراسلة</button></div>`;
-        });
-        container.innerHTML = html;
-        document.querySelectorAll('.contact-seller').forEach(btn => btn.onclick = async () => { if(!currentUser) return alert("تسجيل الدخول مطلوب"); const sellerId=btn.dataset.seller; if(sellerId===currentUser.uid) return alert("لا يمكن مراسلة نفسك"); const convId=[currentUser.uid,sellerId].sort().join('_'); const convRef=doc(db,'conversations',convId); if(!(await getDoc(convRef)).exists()) await setDoc(convRef,{participants:[currentUser.uid,sellerId],updatedAt:Date.now()}); showPage('messages'); setTimeout(()=>loadConversation(convId),200); });
+        if (!container) return;
+        container.innerHTML = 'جار التحميل...';
+        try {
+            let q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
+            if (currentPlatformFilter !== "all") {
+                q = query(collection(db, 'accounts'), where('platform', '==', currentPlatformFilter), orderBy('createdAt', 'desc'));
+            }
+            const snap = await getDocs(q);
+            let accounts = [];
+            snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
+            const sortVal = document.getElementById('priceSort')?.value || "";
+            accounts = accounts.filter(a => a.name?.toLowerCase().includes(searchTerm) || a.platform?.toLowerCase().includes(searchTerm));
+            if (sortVal === "asc") accounts.sort((a,b)=>a.price - b.price);
+            if (sortVal === "desc") accounts.sort((a,b)=>b.price - a.price);
+            if (accounts.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+            let html = '';
+            accounts.forEach(acc => {
+                html += `<div class="card">
+                    <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3>
+                    <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
+                    <p>💰 ${acc.price} ${acc.currency}</p>
+                    ${acc.images?.[0] ? `<img src="${acc.images[0]}" style="width:100%; border-radius:12px; margin-top:8px;">` : ''}
+                    <button class="contact-seller btn-outline" data-seller="${acc.sellerId}">📩 مراسلة</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+            document.querySelectorAll('.contact-seller').forEach(btn => {
+                btn.onclick = async () => {
+                    if (!currentUser) return alert("تسجيل الدخول مطلوب");
+                    const sellerId = btn.dataset.seller;
+                    if (sellerId === currentUser.uid) return alert("لا يمكن مراسلة نفسك");
+                    const convId = [currentUser.uid, sellerId].sort().join('_');
+                    const convRef = doc(db, 'conversations', convId);
+                    if (!(await getDoc(convRef)).exists()) {
+                        await setDoc(convRef, { participants: [currentUser.uid, sellerId], updatedAt: Date.now() });
+                    }
+                    showPage('messages');
+                    setTimeout(() => loadConversation(convId), 200);
+                };
+            });
+        } catch (e) { console.error(e); container.innerHTML = '<div>خطأ في التحميل</div>'; }
     }
     
     async function loadMyAccounts() {
-        if(!currentUser) return;
-        const snap = await getDocs(query(collection(db,'accounts'), where('sellerId','==',currentUser.uid)));
+        if (!currentUser) return;
         const container = document.getElementById('myAccountsList');
-        if(snap.empty) { container.innerHTML='<div>لا توجد حسابات</div>'; return; }
-        let html='';
-        snap.forEach(d=>{ const acc=d.data(); html+=`<div class="card"><h3>${acc.name}</h3><p>${acc.price} ${acc.currency}</p><button class="edit-price btn-primary" data-id="${d.id}" data-price="${acc.price}">تعديل السعر</button><button class="delete-acc btn-outline" data-id="${d.id}">حذف</button></div>`; });
-        container.innerHTML=html;
-        document.querySelectorAll('.edit-price').forEach(btn=>btn.onclick=async()=>{ const newPrice=prompt("السعر الجديد",btn.dataset.price); if(newPrice) await updateDoc(doc(db,'accounts',btn.dataset.id),{price:parseFloat(newPrice)}); loadMyAccounts(); });
-        document.querySelectorAll('.delete-acc').forEach(btn=>btn.onclick=async()=>{ if(confirm("حذف الحساب؟")) await deleteDoc(doc(db,'accounts',btn.dataset.id)); loadMyAccounts(); });
+        const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+        let html = '';
+        snap.forEach(d => {
+            const acc = d.data();
+            html += `<div class="card">
+                <h3>${acc.name}</h3>
+                <p>${acc.price} ${acc.currency}</p>
+                <button class="edit-price btn-primary" data-id="${d.id}" data-price="${acc.price}">تعديل السعر</button>
+                <button class="delete-acc btn-outline" data-id="${d.id}">حذف</button>
+            </div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.edit-price').forEach(btn => {
+            btn.onclick = async () => {
+                const newPrice = prompt("السعر الجديد", btn.dataset.price);
+                if (newPrice) await updateDoc(doc(db, 'accounts', btn.dataset.id), { price: parseFloat(newPrice) });
+                loadMyAccounts();
+            };
+        });
+        document.querySelectorAll('.delete-acc').forEach(btn => {
+            btn.onclick = async () => {
+                if (confirm("حذف الحساب؟")) {
+                    await deleteDoc(doc(db, 'accounts', btn.dataset.id));
+                    loadMyAccounts();
+                }
+            };
+        });
     }
     
-    // Messaging
-    function getKey(u1,u2){ return CryptoJS.SHA256(u1+u2+"KEY").toString(); }
-    function encrypt(m,k){ return CryptoJS.AES.encrypt(m,k).toString(); }
-    function decrypt(c,k){ return CryptoJS.AES.decrypt(c,k).toString(CryptoJS.enc.Utf8); }
+    // Messaging encryption
+    function getKey(u1, u2) { return CryptoJS.SHA256(u1 + u2 + "KEY").toString(); }
+    function encrypt(m, k) { return CryptoJS.AES.encrypt(m, k).toString(); }
+    function decrypt(c, k) { return CryptoJS.AES.decrypt(c, k).toString(CryptoJS.enc.Utf8); }
+    
     async function loadConversations() {
-        if(!currentUser) return;
-        const q = query(collection(db,'conversations'), where('participants','array-contains',currentUser.uid));
-        onSnapshot(q, async (snap)=>{
-            const container=document.getElementById('convList');
-            if(snap.empty){ container.innerHTML='<div>لا توجد محادثات</div>'; return; }
-            let html='';
-            for(const docSnap of snap.docs){
-                const conv=docSnap.data();
-                const otherId=conv.participants.find(id=>id!==currentUser.uid);
-                const userSnap=await getDoc(doc(db,'users',otherId));
-                const name=userSnap.exists()?userSnap.data().name:otherId.slice(0,8);
-                html+=`<div class="card conv-item" data-convid="${docSnap.id}">💬 ${name}</div>`;
+        if (!currentUser) return;
+        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
+        onSnapshot(q, async (snap) => {
+            const container = document.getElementById('convList');
+            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
+            let html = '';
+            for (const docSnap of snap.docs) {
+                const conv = docSnap.data();
+                const otherId = conv.participants.find(id => id !== currentUser.uid);
+                const userSnap = await getDoc(doc(db, 'users', otherId));
+                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0, 8);
+                html += `<div class="card conv-item" data-convid="${docSnap.id}">💬 ${name}</div>`;
             }
-            container.innerHTML=html;
-            document.querySelectorAll('.conv-item').forEach(el=>el.onclick=()=>loadConversation(el.dataset.convid));
+            container.innerHTML = html;
+            document.querySelectorAll('.conv-item').forEach(el => {
+                el.onclick = () => loadConversation(el.dataset.convid);
+            });
         });
     }
-    async function loadConversation(convId){
-        document.getElementById('convList').style.display='none';
-        document.getElementById('chatBox').style.display='block';
-        const parts=convId.split('_');
-        const key=getKey(parts[0],parts[1]);
-        const q=query(collection(db,'conversations',convId,'messages'), orderBy('timestamp'));
-        onSnapshot(q, (snap)=>{
-            const div=document.getElementById('chatMsgs');
-            div.innerHTML='';
-            snap.forEach(msg=>{
-                const data=msg.data();
-                const dec=decrypt(data.encryptedText,key);
-                const isMe=data.senderId===currentUser.uid;
-                div.innerHTML+=`<div style="text-align:${isMe?'right':'left'}"><span style="background:${isMe?'#9b59b6':'#2a2a4a'}; padding:6px 12px; border-radius:18px; display:inline-block;">${dec}</span></div>`;
+    
+    async function loadConversation(convId) {
+        document.getElementById('convList').style.display = 'none';
+        document.getElementById('chatBox').style.display = 'block';
+        const parts = convId.split('_');
+        const key = getKey(parts[0], parts[1]);
+        const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
+        onSnapshot(q, (snap) => {
+            const div = document.getElementById('chatMsgs');
+            div.innerHTML = '';
+            snap.forEach(msg => {
+                const data = msg.data();
+                const dec = decrypt(data.encryptedText, key);
+                const isMe = data.senderId === currentUser.uid;
+                div.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:6px 12px; border-radius:18px; display:inline-block;">${dec}</span></div>`;
             });
-            div.scrollTop=div.scrollHeight;
+            div.scrollTop = div.scrollHeight;
         });
-        document.getElementById('sendMsg').onclick=async()=>{
-            const inp=document.getElementById('msgInput');
-            const txt=inp.value.trim();
-            if(!txt) return;
-            const enc=encrypt(txt,key);
-            await setDoc(doc(collection(db,'conversations',convId,'messages')),{encryptedText:enc,senderId:currentUser.uid,timestamp:Date.now()});
-            inp.value='';
-            await updateDoc(doc(db,'conversations',convId),{updatedAt:Date.now()});
+        document.getElementById('sendMsg').onclick = async () => {
+            const inp = document.getElementById('msgInput');
+            const txt = inp.value.trim();
+            if (!txt) return;
+            const enc = encrypt(txt, key);
+            await setDoc(doc(collection(db, 'conversations', convId, 'messages')), {
+                encryptedText: enc,
+                senderId: currentUser.uid,
+                timestamp: Date.now()
+            });
+            inp.value = '';
+            await updateDoc(doc(db, 'conversations', convId), { updatedAt: Date.now() });
         };
-        document.getElementById('backConv').onclick=()=>{
-            document.getElementById('chatBox').style.display='none';
-            document.getElementById('convList').style.display='block';
+        document.getElementById('backConv').onclick = () => {
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
             loadConversations();
         };
     }
     
-    // Add Account with images
-    document.getElementById('images')?.addEventListener('change',(e)=>{
-        const preview=document.getElementById('imagePreview');
-        preview.innerHTML='';
-        Array.from(e.target.files).slice(0,3).forEach(f=>{ const img=document.createElement('img'); img.src=URL.createObjectURL(f); preview.appendChild(img); });
+    // Add Account Form Submission with images upload
+    document.getElementById('images')?.addEventListener('change', (e) => {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        Array.from(e.target.files).slice(0, 3).forEach(f => {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(f);
+            preview.appendChild(img);
+        });
     });
-    document.getElementById('addForm')?.addEventListener('submit',async(e)=>{
+    
+    document.getElementById('addForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if(!currentUser) return alert("تسجيل الدخول مطلوب");
-        const files=document.getElementById('images').files;
-        if(files.length===0) return alert("ارفع صورة إثبات واحدة على الأقل");
-        const submitBtn=e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled=true; submitBtn.textContent="جاري الرفع...";
-        try{
-            const urls=[];
-            for(let i=0;i<Math.min(files.length,3);i++) urls.push(await uploadToImgBB(files[i]));
-            await setDoc(doc(collection(db,'accounts')),{
-                name:document.getElementById('accName').value,
-                link:document.getElementById('accLink').value,
-                platform:document.getElementById('platformSelect').value,
-                followers:parseInt(document.getElementById('followers').value),
-                price:parseFloat(document.getElementById('price').value),
-                currency:document.getElementById('currency').value,
-                description:document.getElementById('desc').value,
-                images:urls,
-                sellerId:currentUser.uid,
-                views:0,
-                createdAt:Date.now()
+        if (!currentUser) return alert("تسجيل الدخول مطلوب");
+        const files = document.getElementById('images').files;
+        if (files.length === 0) return alert("ارفع صورة إثبات واحدة على الأقل");
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "جاري الرفع...";
+        try {
+            const urls = [];
+            for (let i = 0; i < Math.min(files.length, 3); i++) {
+                urls.push(await uploadToImgBB(files[i]));
+            }
+            await setDoc(doc(collection(db, 'accounts')), {
+                name: document.getElementById('accName').value,
+                link: document.getElementById('accLink').value,
+                platform: document.getElementById('platformSelect').value,
+                followers: parseInt(document.getElementById('followers').value),
+                price: parseFloat(document.getElementById('price').value),
+                currency: document.getElementById('currency').value,
+                description: document.getElementById('desc').value,
+                images: urls,
+                sellerId: currentUser.uid,
+                views: 0,
+                createdAt: Date.now()
             });
             alert("تم النشر بنجاح");
             e.target.reset();
-            document.getElementById('imagePreview').innerHTML='';
+            document.getElementById('imagePreview').innerHTML = '';
             showPage('home');
-        } catch(err){ alert("خطأ: "+err.message); }
-        finally{ submitBtn.disabled=false; submitBtn.textContent="نشر الحساب"; }
+        } catch (err) {
+            alert("خطأ: " + err.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "✅ نشر الحساب";
+        }
     });
     
     // Profile
-    async function loadProfile(){
-        if(!currentUser) return;
-        const userRef=doc(db,'users',currentUser.uid);
-        const snap=await getDoc(userRef);
-        if(!snap.exists()){
-            const rid=Math.floor(1e9+Math.random()*9e9);
-            await setDoc(userRef,{userIdRandom:rid,email:currentUser.email,name:currentUser.displayName||''});
+    async function loadProfile() {
+        if (!currentUser) return;
+        const userRef = doc(db, 'users', currentUser.uid);
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+            const rid = Math.floor(1e9 + Math.random() * 9e9);
+            await setDoc(userRef, { userIdRandom: rid, email: currentUser.email, name: currentUser.displayName || '' });
         }
-        const data=(await getDoc(userRef)).data();
-        document.getElementById('userId').innerText=data?.userIdRandom||currentUser.uid.slice(0,10);
-        document.getElementById('pName').value=data?.name||'';
-        document.getElementById('pEmail').value=data?.email||currentUser.email;
-        let phoneFull=data?.phone||'';
-        let code='', number='';
-        if(phoneFull.startsWith('+')){ const parts=phoneFull.split(' '); code=parts[0]; number=parts.slice(1).join(' '); }
-        document.getElementById('phoneCode').value=code||'+966';
-        document.getElementById('pPhone').value=number||'';
-        document.getElementById('pCity').value=data?.city||'';
-        document.getElementById('pCountry').value=data?.country||'';
-        document.getElementById('pZip').value=data?.zip||'';
-        if(data?.avatar) document.getElementById('avatarImg').src=data.avatar;
-        else if(currentUser.photoURL) document.getElementById('avatarImg').src=currentUser.photoURL;
+        const data = (await getDoc(userRef)).data();
+        document.getElementById('userId').innerText = data?.userIdRandom || currentUser.uid.slice(0, 10);
+        document.getElementById('pName').value = data?.name || '';
+        document.getElementById('pEmail').value = data?.email || currentUser.email;
+        let phoneFull = data?.phone || '';
+        let code = '', number = '';
+        if (phoneFull.startsWith('+')) {
+            const parts = phoneFull.split(' ');
+            code = parts[0];
+            number = parts.slice(1).join(' ');
+        }
+        document.getElementById('phoneCode').value = code || '+966';
+        document.getElementById('pPhone').value = number || '';
+        document.getElementById('pCity').value = data?.city || '';
+        document.getElementById('pCountry').value = data?.country || '';
+        document.getElementById('pZip').value = data?.zip || '';
+        if (data?.avatar) document.getElementById('avatarImg').src = data.avatar;
+        else if (currentUser.photoURL) document.getElementById('avatarImg').src = currentUser.photoURL;
     }
+    
     // Populate phone codes and countries
     const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
     const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
     function populateSelectors() {
         const phoneSelect = document.getElementById('phoneCode');
-        if(phoneSelect) phoneCodes.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); });
+        if (phoneSelect) {
+            phoneSelect.innerHTML = '';
+            phoneCodes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                phoneSelect.appendChild(opt);
+            });
+        }
         const countrySelect = document.getElementById('pCountry');
-        if(countrySelect) arabCountries.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); });
+        if (countrySelect) {
+            countrySelect.innerHTML = '<option value="">اختر الدولة</option>';
+            arabCountries.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                countrySelect.appendChild(opt);
+            });
+        }
     }
-    document.getElementById('avatarImg')?.addEventListener('click',()=>document.getElementById('avatarUpload').click());
-    document.getElementById('avatarUpload')?.addEventListener('change',async(e)=>{
-        const file=e.target.files[0];
-        if(file && currentUser){
-            const url=await uploadToImgBB(file);
-            await updateDoc(doc(db,'users',currentUser.uid),{avatar:url});
-            document.getElementById('avatarImg').src=url;
-            await updateProfile(currentUser,{photoURL:url});
-            alert("تم تحديث الصورة");
+    
+    document.getElementById('avatarImg')?.addEventListener('click', () => document.getElementById('avatarUpload').click());
+    document.getElementById('avatarUpload')?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file && currentUser) {
+            const url = await uploadToImgBB(file);
+            await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
+            document.getElementById('avatarImg').src = url;
+            await updateProfile(currentUser, { photoURL: url });
+            alert("تم تحديث الصورة الشخصية");
         }
     });
-    document.getElementById('profileForm')?.addEventListener('submit',async(e)=>{
+    
+    document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const code = document.getElementById('phoneCode').value;
         const number = document.getElementById('pPhone').value;
         const fullPhone = code + ' ' + number;
-        await updateDoc(doc(db,'users',currentUser.uid),{
-            name:document.getElementById('pName').value,
-            phone:fullPhone,
-            city:document.getElementById('pCity').value,
-            country:document.getElementById('pCountry').value,
-            zip:document.getElementById('pZip').value,
-            email:document.getElementById('pEmail').value
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            name: document.getElementById('pName').value,
+            phone: fullPhone,
+            city: document.getElementById('pCity').value,
+            country: document.getElementById('pCountry').value,
+            zip: document.getElementById('pZip').value,
+            email: document.getElementById('pEmail').value
         });
         alert("تم حفظ الملف الشخصي");
     });
     
     // Support with image
-    document.getElementById('supportImage')?.addEventListener('change',(e)=>{
-        const f=e.target.files[0];
-        if(f){ const img=document.createElement('img'); img.src=URL.createObjectURL(f); img.style.width='100px'; document.getElementById('supportImagePreview').innerHTML=''; document.getElementById('supportImagePreview').appendChild(img); }
+    document.getElementById('supportImage')?.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(f);
+            img.style.width = '100px';
+            const previewDiv = document.getElementById('supportImagePreview');
+            previewDiv.innerHTML = '';
+            previewDiv.appendChild(img);
+        }
     });
-    document.getElementById('supportForm')?.addEventListener('submit',async(e)=>{
+    
+    document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if(!currentUser) return;
-        let imgUrl='';
-        const imgFile=document.getElementById('supportImage').files[0];
-        if(imgFile) imgUrl=await uploadToImgBB(imgFile);
-        await setDoc(doc(collection(db,'supportTickets')),{
-            userId:currentUser.uid,
-            type:document.getElementById('issueType').value,
-            message:document.getElementById('supportMsg').value,
-            image:imgUrl,
-            timestamp:Date.now()
+        if (!currentUser) return;
+        let imgUrl = '';
+        const imgFile = document.getElementById('supportImage').files[0];
+        if (imgFile) imgUrl = await uploadToImgBB(imgFile);
+        await setDoc(doc(collection(db, 'supportTickets')), {
+            userId: currentUser.uid,
+            type: document.getElementById('issueType').value,
+            message: document.getElementById('supportMsg').value,
+            image: imgUrl,
+            timestamp: Date.now()
         });
         alert("تم إرسال طلب الدعم");
-        document.getElementById('supportMsg').value='';
-        document.getElementById('supportImagePreview').innerHTML='';
+        document.getElementById('supportMsg').value = '';
+        document.getElementById('supportImagePreview').innerHTML = '';
+        document.getElementById('supportImage').value = '';
     });
     
     // Language and theme
-    document.getElementById('langSelectSide')?.addEventListener('change',(e)=>{ currentLang=e.target.value; updateUIStrings(); });
-    document.getElementById('themeToggleSide')?.addEventListener('click',()=>document.body.classList.toggle('light'));
+    document.getElementById('langSelectSide')?.addEventListener('change', (e) => {
+        currentLang = e.target.value;
+        updateUIStrings();
+    });
+    document.getElementById('themeToggleSide')?.addEventListener('click', () => document.body.classList.toggle('light'));
     
     // Auth Modal
-    function showAuthModal(){
-        const modal=document.createElement('div'); modal.className='modal';
-        modal.innerHTML=`<div class="modal-content"><h2 style="background:linear-gradient(45deg,#9b59b6,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;">مرحباً بك</h2><input id="loginEmail" placeholder="البريد الإلكتروني"><input id="loginPassword" type="password" placeholder="كلمة المرور"><button id="doLogin" class="btn-primary" style="width:100%">دخول</button><button id="doRegister" class="btn-outline" style="width:100%">إنشاء حساب</button><button id="googleLogin" class="btn-outline" style="width:100%"><i class="fab fa-google"></i> Google</button><button id="closeModal" style="background:none;border:none;color:red;margin-top:12px;">إلغاء</button><div id="authErr" style="color:red;margin-top:8px;"></div></div>`;
+    function showAuthModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2 style="background:linear-gradient(45deg,#9b59b6,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;">مرحباً بك</h2>
+                <input id="loginEmail" placeholder="البريد الإلكتروني">
+                <input id="loginPassword" type="password" placeholder="كلمة المرور">
+                <button id="doLogin" class="btn-primary" style="width:100%">دخول</button>
+                <button id="doRegister" class="btn-outline" style="width:100%">إنشاء حساب</button>
+                <button id="googleLogin" class="btn-outline" style="width:100%"><i class="fab fa-google"></i> Google</button>
+                <button id="closeModal" style="background:none;border:none;color:red;margin-top:12px;">إلغاء</button>
+                <div id="authErr" style="color:red;margin-top:8px;"></div>
+            </div>
+        `;
         document.body.appendChild(modal);
-        modal.querySelector('#doLogin').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,modal.querySelector('#loginEmail').value,modal.querySelector('#loginPassword').value); modal.remove();}catch(e){ modal.querySelector('#authErr').innerText=e.message; } };
-        modal.querySelector('#doRegister').onclick=async()=>{ try{ await createUserWithEmailAndPassword(auth,modal.querySelector('#loginEmail').value,modal.querySelector('#loginPassword').value); modal.remove();}catch(e){ modal.querySelector('#authErr').innerText=e.message; } };
-        modal.querySelector('#googleLogin').onclick=async()=>{ try{ await signInWithPopup(auth,provider); modal.remove();}catch(e){ modal.querySelector('#authErr').innerText=e.message; } };
-        modal.querySelector('#closeModal').onclick=()=>modal.remove();
+        modal.querySelector('#doLogin').onclick = async () => {
+            const email = modal.querySelector('#loginEmail').value;
+            const pass = modal.querySelector('#loginPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                modal.remove();
+            } catch (e) { modal.querySelector('#authErr').innerText = e.message; }
+        };
+        modal.querySelector('#doRegister').onclick = async () => {
+            const email = modal.querySelector('#loginEmail').value;
+            const pass = modal.querySelector('#loginPassword').value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+                modal.remove();
+            } catch (e) { modal.querySelector('#authErr').innerText = e.message; }
+        };
+        modal.querySelector('#googleLogin').onclick = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                modal.remove();
+            } catch (e) { modal.querySelector('#authErr').innerText = e.message; }
+        };
+        modal.querySelector('#closeModal').onclick = () => modal.remove();
     }
     
-    // Main Auth State
-    onAuthStateChanged(auth, async(user)=>{
-        currentUser=user;
-        const splashDiv=document.getElementById('splash');
-        const appDiv=document.getElementById('app');
-        if(user){
-            splashDiv.style.opacity='0'; setTimeout(()=>{ splashDiv.style.display='none'; appDiv.style.display='block'; },500);
+    // Auth State
+    onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
+        const splashDiv = document.getElementById('splash');
+        const appDiv = document.getElementById('app');
+        if (user) {
+            console.log("✅ User logged in:", user.email);
+            splashDiv.style.opacity = '0';
+            setTimeout(() => { splashDiv.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
             await loadProfile();
             populateSelectors();
             renderPlatforms();
             showPage('home');
-            // Bind global events
-            document.getElementById('menuBtn').onclick=()=>document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('profileIcon').onclick=()=>showPage('profile');
-            document.getElementById('logoutBtnSide').onclick=()=>signOut(auth);
-            document.querySelectorAll('.sidebar button[data-page]').forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-            document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.onclick=()=>showPage(btn.dataset.nav));
-            document.getElementById('searchInput')?.addEventListener('input',()=>loadAccounts());
-            document.getElementById('priceSort')?.addEventListener('change',()=>loadAccounts());
+            // Bind global events after login
+            document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('profileIcon').onclick = () => showPage('profile');
+            document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
+            document.querySelectorAll('.sidebar button[data-page]').forEach(btn => btn.onclick = () => showPage(btn.dataset.page));
+            document.querySelectorAll('.bottom-nav button').forEach(btn => btn.onclick = () => showPage(btn.dataset.nav));
+            document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
+            document.getElementById('priceSort')?.addEventListener('change', () => loadAccounts());
         } else {
-            appDiv.style.display='none';
-            splashDiv.style.display='flex';
-            splashDiv.style.opacity='1';
-            setTimeout(showAuthModal,500);
+            appDiv.style.display = 'none';
+            splashDiv.style.display = 'flex';
+            splashDiv.style.opacity = '1';
+            setTimeout(showAuthModal, 500);
         }
     });
-    setTimeout(()=>{ if(!currentUser && document.getElementById('splash').style.display!=='none'){ document.getElementById('splash').style.opacity='0'; setTimeout(()=>{ document.getElementById('splash').style.display='none'; showAuthModal(); },500); } },2000);
+    
+    setTimeout(() => {
+        if (!currentUser && document.getElementById('splash').style.display !== 'none') {
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+                showAuthModal();
+            }, 500);
+        }
+    }, 2000);
 </script>
 </body>
 </html>
