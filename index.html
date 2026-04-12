@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#0a0a1a">
-    <title>Social Accounts Market - منصة احترافية لبيع وشراء الحسابات</title>
+    <title>Social Accounts Market - منصة احترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
@@ -33,12 +32,12 @@
         }
         body { background: var(--bg-primary); color: var(--text-primary); transition: 0.3s; padding-bottom: 70px; overflow-x: hidden; }
         
-        /* splash screen */
+        /* splash */
         .splash { position: fixed; inset:0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; transition: 0.5s; gap:20px; }
         .splash-logo { font-size: 4rem; font-weight:800; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%{opacity:0.7;transform:scale(1);} 100%{opacity:1;transform:scale(1.05);} }
         
-        /* app container */
+        /* app */
         .app { display: none; }
         
         /* header */
@@ -47,8 +46,8 @@
         .logo { font-size: 1.6rem; font-weight: bold; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
         
         /* sidebar */
-        .sidebar { position: fixed; top:0; left:-280px; width:280px; height:100%; background: var(--bg-secondary); z-index: 1000; transition: 0.3s; padding:20px; border-right:1px solid var(--border-light); backdrop-filter: blur(10px); }
-        .sidebar.open { left:0; }
+        .sidebar { position: fixed; top:0; right:-280px; width:280px; height:100%; background: var(--bg-secondary); z-index: 1000; transition: 0.3s; padding:20px; border-left:1px solid var(--border-light); backdrop-filter: blur(10px); }
+        .sidebar.open { right:0; }
         .sidebar-header { font-size:1.8rem; font-weight:bold; margin-bottom:30px; background:linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
         .sidebar button { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: var(--text-primary); font-size: 16px; cursor: pointer; border-radius: 12px; transition: 0.2s; }
         .sidebar button:hover { background: var(--accent-purple); box-shadow: 0 0 8px var(--accent-neon); }
@@ -64,13 +63,13 @@
         .active-page { display: block; }
         
         /* horizontal scroll platforms */
-        .platforms-scroll { display: flex; overflow-x: auto; gap: 16px; padding: 16px; margin-bottom: 20px; background: var(--bg-secondary); border-radius: 30px; scrollbar-width: thin; white-space: nowrap; animation: scrollInfinite 20s linear infinite; }
+        .platforms-scroll { display: flex; overflow-x: auto; gap: 16px; padding: 16px; margin-bottom: 20px; background: var(--bg-secondary); border-radius: 30px; scrollbar-width: thin; white-space: nowrap; }
         .platforms-scroll::-webkit-scrollbar { display: none; }
         .platform-icon { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; min-width: 70px; padding: 8px; background: var(--card-bg); border-radius: 20px; cursor: pointer; transition: 0.2s; color: var(--text-secondary); }
         .platform-icon i { font-size: 2rem; }
         .platform-icon.active, .platform-icon:hover { background: var(--accent-purple); color: white; transform: scale(1.05); }
         
-        /* filter row */
+        /* filter */
         .filter-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 12px; border-radius: 30px; background: var(--bg-primary); border: 1px solid var(--border-light); color: var(--text-primary); }
         
@@ -98,12 +97,9 @@
         .support-attachment { margin: 10px 0; }
         .support-attachment img { max-width: 100px; border-radius: 12px; margin-top: 8px; }
         
-        /* about page */
+        /* about */
         .about-shield { font-size: 4rem; text-align: center; margin: 20px 0; }
         .about-shield i { background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
-        
-        /* language selector */
-        .lang-select { background: var(--bg-primary); border: 1px solid var(--border-light); color: var(--text-primary); padding: 6px 12px; border-radius: 30px; cursor: pointer; }
         
         /* responsive */
         @media (max-width:640px){ .accounts-grid { grid-template-columns: 1fr; } }
@@ -112,34 +108,39 @@
 <body>
 <div class="splash" id="splash">
     <div class="splash-logo"><i class="fas fa-store"></i> SAM</div>
-    <div class="social-icons-splash" style="display: flex; gap: 16px; font-size: 24px;"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div>
+    <div style="display: flex; gap: 16px; font-size: 24px;"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div>
     <div>Social Accounts Market</div>
 </div>
 
 <div class="app" id="app">
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">SAMarket</div>
-        <button data-page="home"><i class="fas fa-home"></i> الرئيسية</button>
-        <button data-page="my-accounts"><i class="fas fa-store"></i> حساباتي</button>
-        <button data-page="add-account"><i class="fas fa-plus-circle"></i> إضافة حساب</button>
-        <button data-page="messages"><i class="fas fa-envelope"></i> الرسائل</button>
-        <button data-page="support"><i class="fas fa-headset"></i> الدعم الفني</button>
-        <button data-page="about"><i class="fas fa-info-circle"></i> عن التطبيق</button>
-        <button id="themeToggleSide"><i class="fas fa-moon"></i> الوضع الليلي</button>
-        <button id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button data-page="home"><i class="fas fa-home"></i> <span data-i18n="home">الرئيسية</span></button>
+        <button data-page="my-accounts"><i class="fas fa-store"></i> <span data-i18n="myAccounts">حساباتي</span></button>
+        <button data-page="add-account"><i class="fas fa-plus-circle"></i> <span data-i18n="addAccount">إضافة حساب</span></button>
+        <button data-page="messages"><i class="fas fa-envelope"></i> <span data-i18n="messages">الرسائل</span></button>
+        <button data-page="support"><i class="fas fa-headset"></i> <span data-i18n="support">الدعم الفني</span></button>
+        <button data-page="about"><i class="fas fa-info-circle"></i> <span data-i18n="about">عن التطبيق</span></button>
+        <button id="themeToggleSide"><i class="fas fa-moon"></i> <span data-i18n="darkMode">الوضع الليلي</span></button>
+        <div style="margin-top: 10px;">
+            <select id="langSelectSide" class="lang-select" style="width:100%; background:var(--bg-primary);">
+                <option value="ar">🇸🇦 العربية</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option><option value="tr">🇹🇷 Türkçe</option>
+            </select>
+        </div>
+        <button id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">تسجيل الخروج</span></button>
     </div>
     
+    <!-- Header -->
     <div class="header">
         <button class="menu-btn" id="menuBtn">☰</button>
         <div class="logo">Social Accounts Market</div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <select id="languageSelect" class="lang-select"><option value="ar">🇸🇦 عربي</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option><option value="tr">🇹🇷 Türkçe</option></select>
-            <button class="profile-icon" id="profileIcon">👤</button>
-        </div>
+        <button class="profile-icon" id="profileIcon">👤</button>
     </div>
     
+    <!-- Pages -->
     <div id="homePage" class="page active-page">
-        <h2 id="homeTitle">🔥 الحسابات المتاحة</h2>
+        <h2 data-i18n="availableAccounts">🔥 الحسابات المتاحة</h2>
         <div class="platforms-scroll" id="platformScroll"></div>
         <div class="filter-row">
             <input type="text" id="searchInput" placeholder="🔍 بحث بالاسم أو المنصة...">
@@ -147,34 +148,37 @@
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
-    <div id="myAccountsPage" class="page"><h2>📦 حساباتي</h2><div id="myAccountsList" class="accounts-grid"></div></div>
+    <div id="myAccountsPage" class="page"><h2 data-i18n="myAccountsTitle">📦 حساباتي</h2><div id="myAccountsList" class="accounts-grid"></div></div>
+    
+    <!-- Add Account Page -->
     <div id="addAccountPage" class="page">
-        <h2>➕ نشر حساب جديد</h2>
+        <h2 data-i18n="addNewAccount">➕ نشر حساب جديد</h2>
         <form id="addForm">
+            <label data-i18n="selectPlatform">اختر المنصة</label>
             <select id="platformSelect" required>
-                <option value="">اختر المنصة</option>
-                <option value="TikTok"><i class="fab fa-tiktok"></i> TikTok</option>
-                <option value="Instagram">Instagram</option><option value="YouTube">YouTube</option>
-                <option value="Snapchat">Snapchat</option><option value="Twitter">Twitter</option>
-                <option value="Facebook">Facebook</option><option value="Telegram">Telegram</option>
-                <option value="Threads">Threads</option>
+                <option value="">-- اختر --</option>
+                <option value="TikTok">🎵 TikTok</option><option value="Instagram">📸 Instagram</option><option value="YouTube">▶️ YouTube</option>
+                <option value="Snapchat">👻 Snapchat</option><option value="Twitter">🐦 Twitter</option><option value="Facebook">📘 Facebook</option>
+                <option value="Telegram">✈️ Telegram</option><option value="Threads">🧵 Threads</option>
             </select>
             <input id="accName" placeholder="اسم الحساب (مثال: @user)" required>
             <input id="followers" placeholder="عدد المتابعين" type="number" required>
-            <input id="accLink" placeholder="رابط الحساب" required>
             <div style="display: flex; gap: 12px;">
                 <input id="price" placeholder="السعر" type="number" required style="flex:1">
                 <select id="currency" style="width: auto;"><option>SAR</option><option>YER</option><option>USD</option><option>EUR</option></select>
             </div>
-            <textarea id="desc" placeholder="وصف الحساب (ماذا يميزه؟)"></textarea>
-            <label>صور الإثبات (حد أقصى 3 صور)</label>
+            <input id="accLink" placeholder="رابط الحساب" required>
+            <textarea id="desc" placeholder="وصف الحساب (ماذا يميزه؟ المتابعون الحقيقيون، التفاعل، العمر، إلخ)"></textarea>
+            <label data-i18n="uploadImages">صور الإثبات (حد أقصى 3 صور)</label>
             <input type="file" id="images" multiple accept="image/*">
             <div id="imagePreview" class="image-preview"></div>
-            <button type="submit" class="btn-primary">✅ نشر الحساب</button>
+            <button type="submit" class="btn-primary" id="publishBtn" data-i18n="publish">✅ نشر الحساب</button>
         </form>
     </div>
+    
+    <!-- Profile Page -->
     <div id="profilePage" class="page">
-        <h2>👤 الملف الشخصي</h2>
+        <h2 data-i18n="profile">👤 الملف الشخصي</h2>
         <div style="text-align:center;">
             <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/100">
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
@@ -184,35 +188,42 @@
             <input id="pName" placeholder="الاسم الكامل">
             <input id="pEmail" placeholder="البريد الإلكتروني">
             <div style="display: flex; gap: 8px;">
-                <select id="phoneCode" style="width: 30%;"></select>
+                <select id="phoneCode" style="width: 35%;"></select>
                 <input id="pPhone" placeholder="رقم الهاتف" style="flex:1">
             </div>
             <input id="pCity" placeholder="المدينة">
             <select id="pCountry"><option value="">اختر الدولة</option></select>
             <input id="pZip" placeholder="الرمز البريدي">
-            <button type="submit" class="btn-primary">حفظ المعلومات</button>
+            <button type="submit" class="btn-primary" data-i18n="save">حفظ المعلومات</button>
         </form>
     </div>
-    <div id="messagesPage" class="page"><h2>💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMsgs" style="height:300px; overflow:auto; background:var(--bg-primary); border-radius:16px; padding:8px;"></div><input id="msgInput" placeholder="اكتب رسالة..."><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
+    
+    <!-- Messages Page -->
+    <div id="messagesPage" class="page"><h2 data-i18n="conversations">💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMsgs" style="height:300px; overflow:auto; background:var(--bg-primary); border-radius:16px; padding:8px;"></div><input id="msgInput" placeholder="اكتب رسالة..."><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
+    
+    <!-- Support Page -->
     <div id="supportPage" class="page">
-        <h2>📞 الدعم الفني</h2>
+        <h2 data-i18n="techSupport">📞 الدعم الفني</h2>
         <form id="supportForm">
             <select id="issueType"><option value="مشكلة في الشراء">مشكلة في الشراء</option><option value="مشكلة في البيع">مشكلة في البيع</option><option value="مشكلة في الدردشة">مشكلة في الدردشة</option><option value="اقتراح">اقتراح</option><option value="أخرى">أخرى</option></select>
             <textarea id="supportMsg" placeholder="اكتب مشكلتك أو اقتراحك بالتفصيل..."></textarea>
             <div class="support-attachment"><label>إرفاق صورة (اختياري)</label><input type="file" id="supportImage" accept="image/*"><div id="supportImagePreview"></div></div>
-            <button type="submit" class="btn-primary">إرسال الطلب</button>
+            <button type="submit" class="btn-primary" data-i18n="send">إرسال الطلب</button>
         </form>
     </div>
+    
+    <!-- About Page -->
     <div id="aboutPage" class="page">
         <div class="about-shield"><i class="fas fa-shield-alt"></i><i class="fas fa-shield-alt"></i></div>
         <h2 style="text-align:center;">Social Accounts Market</h2>
         <p style="text-align:center;">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>🔒 آمن ومضمون - نظام محادثة آمن مع حماية كاملة<br>⚡ فوري وسريع - الحسابات تظهر فوراً لجميع المستخدمين<br><br>تم التطوير بواسطة <strong style="color:#00d4ff;">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</strong><br>مطور ويب وتطبيقات</p>
     </div>
     
+    <!-- Bottom Navigation -->
     <div class="bottom-nav" id="bottomNav">
-        <button data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button data-nav="add-account"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
-        <button data-nav="messages"><i class="fas fa-comment-dots"></i><span>الدردشات</span></button>
+        <button data-nav="home"><i class="fas fa-home"></i><span data-i18n="home">الرئيسية</span></button>
+        <button data-nav="add-account"><i class="fas fa-plus-circle"></i><span data-i18n="addAccount">نشر</span></button>
+        <button data-nav="messages"><i class="fas fa-comment-dots"></i><span data-i18n="messages">الدردشات</span></button>
     </div>
 </div>
 
@@ -246,13 +257,21 @@
     let currentUser = null;
     let currentLang = "ar";
     const translations = {
-        ar: { home: "الرئيسية", add: "إضافة حساب", messages: "الرسائل", myacc: "حساباتي", support: "الدعم", about: "عن التطبيق", logout: "تسجيل الخروج", theme: "الوضع الليلي" },
-        en: { home: "Home", add: "Add Account", messages: "Messages", myacc: "My Accounts", support: "Support", about: "About", logout: "Logout", theme: "Dark Mode" },
-        fr: { home: "Accueil", add: "Ajouter", messages: "Messages", myacc: "Mes comptes", support: "Aide", about: "À propos", logout: "Déconnexion", theme: "Mode nuit" },
-        tr: { home: "Ana Sayfa", add: "Hesap Ekle", messages: "Mesajlar", myacc: "Hesaplarım", support: "Destek", about: "Hakkında", logout: "Çıkış", theme: "Gece Modu" }
+        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", darkMode:"الوضع الليلي", logout:"تسجيل الخروج", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", addNewAccount:"➕ نشر حساب جديد", selectPlatform:"اختر المنصة", uploadImages:"صور الإثبات (حد أقصى 3 صور)", publish:"✅ نشر الحساب", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال الطلب" },
+        en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", darkMode:"Dark Mode", logout:"Logout", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts", addNewAccount:"➕ Publish New Account", selectPlatform:"Select Platform", uploadImages:"Proof Images (max 3)", publish:"✅ Publish", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Technical Support", send:"Send" },
+        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", darkMode:"Mode nuit", logout:"Déconnexion", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", addNewAccount:"➕ Publier", selectPlatform:"Choisir la plateforme", uploadImages:"Images preuve (max 3)", publish:"✅ Publier", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer" },
+        tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", darkMode:"Gece Modu", logout:"Çıkış", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım", addNewAccount:"➕ Yeni Hesap Yayınla", selectPlatform:"Platform Seç", uploadImages:"Kanıt Resimleri (max 3)", publish:"✅ Yayınla", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Teknik Destek", send:"Gönder" }
     };
-    function t(key) { return translations[currentLang]?.[key] || key; }
+    function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
+    function updateUIStrings() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key) el.innerText = t(key);
+        });
+        document.title = t("home") + " - Social Accounts Market";
+    }
     
+    // Navigation
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(pageId + 'Page').classList.add('active-page');
@@ -265,21 +284,21 @@
     window.navigateTo = showPage;
     window.logout = () => signOut(auth);
     
-    // Platforms scroll infinite + filter
-    const platforms = ["TikTok","Instagram","YouTube","Snapchat","Twitter","Facebook","Telegram","Threads"];
+    // Platforms horizontal scroll
+    const platformsList = ["TikTok","Instagram","YouTube","Snapchat","Twitter","Facebook","Telegram","Threads"];
     function renderPlatforms() {
         const container = document.getElementById('platformScroll');
         if(!container) return;
         let html = '';
-        for(let i=0; i<3; i++) {
-            platforms.forEach(p => { html += `<div class="platform-icon" data-platform="${p}"><i class="fab fa-${p.toLowerCase()}"></i><span>${p}</span></div>`; });
-        }
+        platformsList.forEach(p => {
+            html += `<div class="platform-icon" data-platform="${p}"><i class="fab fa-${p.toLowerCase()}"></i><span>${p}</span></div>`;
+        });
         container.innerHTML = html;
         container.querySelectorAll('.platform-icon').forEach(el => {
             el.onclick = () => {
                 currentPlatformFilter = el.dataset.platform;
-                loadAccounts();
                 renderPlatforms();
+                loadAccounts();
             };
         });
     }
@@ -302,7 +321,7 @@
             html += `<div class="card"><h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3><p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p><p>💰 ${acc.price} ${acc.currency}</p>${acc.images?.[0] ? `<img src="${acc.images[0]}" style="width:100%; border-radius:12px; margin-top:8px;">` : ''}<button class="contact-seller btn-outline" data-seller="${acc.sellerId}">📩 مراسلة</button></div>`;
         });
         container.innerHTML = html;
-        document.querySelectorAll('.contact-seller').forEach(btn => btn.onclick = async () => { if(!currentUser) return alert("تسجيل الدخول مطلوب"); const sellerId=btn.dataset.seller; if(sellerId===currentUser.uid) return alert("نفسك"); const convId=[currentUser.uid,sellerId].sort().join('_'); const convRef=doc(db,'conversations',convId); if(!(await getDoc(convRef)).exists()) await setDoc(convRef,{participants:[currentUser.uid,sellerId],updatedAt:Date.now()}); showPage('messages'); setTimeout(()=>loadConversation(convId),200); });
+        document.querySelectorAll('.contact-seller').forEach(btn => btn.onclick = async () => { if(!currentUser) return alert("تسجيل الدخول مطلوب"); const sellerId=btn.dataset.seller; if(sellerId===currentUser.uid) return alert("لا يمكن مراسلة نفسك"); const convId=[currentUser.uid,sellerId].sort().join('_'); const convRef=doc(db,'conversations',convId); if(!(await getDoc(convRef)).exists()) await setDoc(convRef,{participants:[currentUser.uid,sellerId],updatedAt:Date.now()}); showPage('messages'); setTimeout(()=>loadConversation(convId),200); });
     }
     
     async function loadMyAccounts() {
@@ -314,10 +333,10 @@
         snap.forEach(d=>{ const acc=d.data(); html+=`<div class="card"><h3>${acc.name}</h3><p>${acc.price} ${acc.currency}</p><button class="edit-price btn-primary" data-id="${d.id}" data-price="${acc.price}">تعديل السعر</button><button class="delete-acc btn-outline" data-id="${d.id}">حذف</button></div>`; });
         container.innerHTML=html;
         document.querySelectorAll('.edit-price').forEach(btn=>btn.onclick=async()=>{ const newPrice=prompt("السعر الجديد",btn.dataset.price); if(newPrice) await updateDoc(doc(db,'accounts',btn.dataset.id),{price:parseFloat(newPrice)}); loadMyAccounts(); });
-        document.querySelectorAll('.delete-acc').forEach(btn=>btn.onclick=async()=>{ if(confirm("حذف؟")) await deleteDoc(doc(db,'accounts',btn.dataset.id)); loadMyAccounts(); });
+        document.querySelectorAll('.delete-acc').forEach(btn=>btn.onclick=async()=>{ if(confirm("حذف الحساب؟")) await deleteDoc(doc(db,'accounts',btn.dataset.id)); loadMyAccounts(); });
     }
     
-    // messaging
+    // Messaging
     function getKey(u1,u2){ return CryptoJS.SHA256(u1+u2+"KEY").toString(); }
     function encrypt(m,k){ return CryptoJS.AES.encrypt(m,k).toString(); }
     function decrypt(c,k){ return CryptoJS.AES.decrypt(c,k).toString(CryptoJS.enc.Utf8); }
@@ -372,7 +391,7 @@
         };
     }
     
-    // add account with images
+    // Add Account with images
     document.getElementById('images')?.addEventListener('change',(e)=>{
         const preview=document.getElementById('imagePreview');
         preview.innerHTML='';
@@ -409,7 +428,7 @@
         finally{ submitBtn.disabled=false; submitBtn.textContent="نشر الحساب"; }
     });
     
-    // profile
+    // Profile
     async function loadProfile(){
         if(!currentUser) return;
         const userRef=doc(db,'users',currentUser.uid);
@@ -422,16 +441,25 @@
         document.getElementById('userId').innerText=data?.userIdRandom||currentUser.uid.slice(0,10);
         document.getElementById('pName').value=data?.name||'';
         document.getElementById('pEmail').value=data?.email||currentUser.email;
-        document.getElementById('pPhone').value=data?.phone||'';
+        let phoneFull=data?.phone||'';
+        let code='', number='';
+        if(phoneFull.startsWith('+')){ const parts=phoneFull.split(' '); code=parts[0]; number=parts.slice(1).join(' '); }
+        document.getElementById('phoneCode').value=code||'+966';
+        document.getElementById('pPhone').value=number||'';
         document.getElementById('pCity').value=data?.city||'';
         document.getElementById('pCountry').value=data?.country||'';
         document.getElementById('pZip').value=data?.zip||'';
         if(data?.avatar) document.getElementById('avatarImg').src=data.avatar;
         else if(currentUser.photoURL) document.getElementById('avatarImg').src=currentUser.photoURL;
-        // populate phone codes
-        const codes = ["+966","+967","+20","+971","+1","+44","+90","+33"];
-        const phoneSelect=document.getElementById('phoneCode');
-        if(phoneSelect) codes.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); });
+    }
+    // Populate phone codes and countries
+    const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
+    const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
+    function populateSelectors() {
+        const phoneSelect = document.getElementById('phoneCode');
+        if(phoneSelect) phoneCodes.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); });
+        const countrySelect = document.getElementById('pCountry');
+        if(countrySelect) arabCountries.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); });
     }
     document.getElementById('avatarImg')?.addEventListener('click',()=>document.getElementById('avatarUpload').click());
     document.getElementById('avatarUpload')?.addEventListener('change',async(e)=>{
@@ -446,18 +474,21 @@
     });
     document.getElementById('profileForm')?.addEventListener('submit',async(e)=>{
         e.preventDefault();
+        const code = document.getElementById('phoneCode').value;
+        const number = document.getElementById('pPhone').value;
+        const fullPhone = code + ' ' + number;
         await updateDoc(doc(db,'users',currentUser.uid),{
             name:document.getElementById('pName').value,
-            phone:document.getElementById('phoneCode').value+document.getElementById('pPhone').value,
+            phone:fullPhone,
             city:document.getElementById('pCity').value,
             country:document.getElementById('pCountry').value,
             zip:document.getElementById('pZip').value,
             email:document.getElementById('pEmail').value
         });
-        alert("تم الحفظ");
+        alert("تم حفظ الملف الشخصي");
     });
     
-    // support with image
+    // Support with image
     document.getElementById('supportImage')?.addEventListener('change',(e)=>{
         const f=e.target.files[0];
         if(f){ const img=document.createElement('img'); img.src=URL.createObjectURL(f); img.style.width='100px'; document.getElementById('supportImagePreview').innerHTML=''; document.getElementById('supportImagePreview').appendChild(img); }
@@ -480,14 +511,11 @@
         document.getElementById('supportImagePreview').innerHTML='';
     });
     
-    // language
-    document.getElementById('languageSelect')?.addEventListener('change',(e)=>{ currentLang=e.target.value; updateUILang(); });
-    function updateUILang(){ /* simple example */ }
-    
-    // theme
+    // Language and theme
+    document.getElementById('langSelectSide')?.addEventListener('change',(e)=>{ currentLang=e.target.value; updateUIStrings(); });
     document.getElementById('themeToggleSide')?.addEventListener('click',()=>document.body.classList.toggle('light'));
     
-    // auth modal
+    // Auth Modal
     function showAuthModal(){
         const modal=document.createElement('div'); modal.className='modal';
         modal.innerHTML=`<div class="modal-content"><h2 style="background:linear-gradient(45deg,#9b59b6,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;">مرحباً بك</h2><input id="loginEmail" placeholder="البريد الإلكتروني"><input id="loginPassword" type="password" placeholder="كلمة المرور"><button id="doLogin" class="btn-primary" style="width:100%">دخول</button><button id="doRegister" class="btn-outline" style="width:100%">إنشاء حساب</button><button id="googleLogin" class="btn-outline" style="width:100%"><i class="fab fa-google"></i> Google</button><button id="closeModal" style="background:none;border:none;color:red;margin-top:12px;">إلغاء</button><div id="authErr" style="color:red;margin-top:8px;"></div></div>`;
@@ -498,6 +526,7 @@
         modal.querySelector('#closeModal').onclick=()=>modal.remove();
     }
     
+    // Main Auth State
     onAuthStateChanged(auth, async(user)=>{
         currentUser=user;
         const splashDiv=document.getElementById('splash');
@@ -505,9 +534,10 @@
         if(user){
             splashDiv.style.opacity='0'; setTimeout(()=>{ splashDiv.style.display='none'; appDiv.style.display='block'; },500);
             await loadProfile();
+            populateSelectors();
             renderPlatforms();
             showPage('home');
-            // bind events
+            // Bind global events
             document.getElementById('menuBtn').onclick=()=>document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('profileIcon').onclick=()=>showPage('profile');
             document.getElementById('logoutBtnSide').onclick=()=>signOut(auth);
