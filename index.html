@@ -3,58 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>سوق الحسابات - النسخة المتكاملة</title>
+    <title>سوق الحسابات - منصة احترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0a0a1a; color: white; padding-bottom: 70px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #111; position: sticky; top: 0; z-index: 99; }
-        .menu-btn, .profile-icon { background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #111122;
+            --card-bg: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0d0;
+            --accent-purple: #9b59b6;
+            --accent-neon: #00d4ff;
+            --border-light: #2a2a4a;
+        }
+        body.light {
+            --bg-primary: #f4f4fc;
+            --bg-secondary: #e8e8f0;
+            --card-bg: #ffffff;
+            --text-primary: #121212;
+            --text-secondary: #3a3a5a;
+            --border-light: #d0d0e0;
+        }
+        body { background: var(--bg-primary); color: var(--text-primary); transition: 0.3s; padding-bottom: 70px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-secondary); position: sticky; top: 0; z-index: 99; border-bottom: 1px solid var(--border-light); }
+        .menu-btn, .profile-icon { background: none; border: none; color: var(--text-primary); font-size: 28px; cursor: pointer; }
         .logo { font-size: 1.4rem; font-weight: bold; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
-        .sidebar { position: fixed; top: 0; right: -260px; width: 260px; height: 100%; background: #111; transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid #333; overflow-y: auto; }
+        .sidebar { position: fixed; top: 0; right: -260px; width: 260px; height: 100%; background: var(--bg-secondary); transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid var(--border-light); overflow-y: auto; }
         .sidebar.open { right: 0; }
-        .sidebar button { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: white; font-size: 16px; cursor: pointer; border-radius: 12px; }
-        .sidebar button:hover { background: #9b59b6; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; justify-content: space-around; padding: 12px; z-index: 100; }
+        .sidebar button, .sidebar select { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: var(--text-primary); font-size: 16px; cursor: pointer; border-radius: 12px; }
+        .sidebar button:hover { background: var(--accent-purple); }
+        .sidebar select { background: var(--bg-primary); border: 1px solid var(--border-light); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); display: flex; justify-content: space-around; padding: 12px; z-index: 100; border-top: 1px solid var(--border-light); }
         .bottom-nav button { background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .bottom-nav button i { font-size: 24px; }
-        .bottom-nav button.active { color: #00d4ff; }
+        .bottom-nav button.active { color: var(--accent-neon); }
         .page { display: none; padding: 20px; }
         .active-page { display: block; }
-        .card { background: #1a1a2e; padding: 16px; border-radius: 20px; margin-bottom: 16px; }
+        .card { background: var(--card-bg); padding: 16px; border-radius: 20px; margin-bottom: 16px; border: 1px solid var(--border-light); }
         .btn-primary { background: linear-gradient(90deg, #9b59b6, #00d4ff); border: none; padding: 10px 20px; border-radius: 40px; color: white; cursor: pointer; font-weight: bold; }
         .btn-outline { background: transparent; border: 1px solid #00d4ff; color: #00d4ff; padding: 8px 16px; border-radius: 40px; cursor: pointer; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 16px; background: #222; color: white; border: none; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 16px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-light); }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: #1a1a2e; padding: 24px; border-radius: 28px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--card-bg); padding: 24px; border-radius: 28px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
         .image-preview { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
         .image-preview img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; }
         .profile-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 16px; display: block; cursor: pointer; border: 3px solid #00d4ff; object-fit: cover; }
-        .chat-messages { height: 300px; overflow-y: auto; background: #222; border-radius: 16px; padding: 8px; margin-bottom: 8px; }
-        .conversation-item { padding: 12px; border-bottom: 1px solid #333; cursor: pointer; }
-        .conversation-item:hover { background: #9b59b6; }
+        .chat-messages { height: 300px; overflow-y: auto; background: var(--bg-primary); border-radius: 16px; padding: 8px; margin-bottom: 8px; }
+        .conversation-item { padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; }
+        .conversation-item:hover { background: var(--accent-purple); }
+        .support-attachment { margin: 10px 0; }
+        .support-attachment img { max-width: 100px; border-radius: 12px; margin-top: 8px; }
+        .about-shield { font-size: 4rem; text-align: center; margin: 20px 0; }
+        .about-shield i { background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
     </style>
 </head>
 <body>
-<div id="splash" style="position:fixed; inset:0; background:#0a0a1a; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:9999;">
+<div id="splash" style="position:fixed; inset:0; background:var(--bg-primary); display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:9999;">
     <div style="font-size:48px; font-weight:bold; background:linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent;">SAM</div>
-    <div>سوق الحسابات</div>
+    <div data-i18n="loading">جاري التحميل...</div>
 </div>
 
 <div id="app" style="display:none;">
     <!-- القائمة الجانبية -->
     <div class="sidebar" id="sidebar">
-        <div style="font-size:24px; margin-bottom:30px;">القائمة</div>
-        <button data-page="home">🏠 الرئيسية</button>
-        <button data-page="my-accounts">📦 حساباتي</button>
-        <button data-page="add-account">➕ إضافة حساب</button>
-        <button data-page="messages">💬 الرسائل</button>
-        <button data-page="support">🛠️ الدعم الفني</button>
-        <button data-page="about">ℹ️ عن التطبيق</button>
-        <button id="themeToggleSide">🌙 الوضع الليلي</button>
-        <button id="logoutBtnSide">🚪 تسجيل الخروج</button>
+        <div style="font-size:24px; margin-bottom:30px;" data-i18n="menu">القائمة</div>
+        <button data-page="home" data-i18n="home">🏠 الرئيسية</button>
+        <button data-page="my-accounts" data-i18n="myAccounts">📦 حساباتي</button>
+        <button data-page="add-account" data-i18n="addAccount">➕ إضافة حساب</button>
+        <button data-page="messages" data-i18n="messages">💬 الرسائل</button>
+        <button data-page="support" data-i18n="support">🛠️ الدعم الفني</button>
+        <button data-page="about" data-i18n="about">ℹ️ عن التطبيق</button>
+        <button id="themeToggleSide" data-i18n="darkMode">🌙 الوضع الليلي</button>
+        <select id="langSelect">
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+        </select>
+        <button id="logoutBtnSide" data-i18n="logout">🚪 تسجيل الخروج</button>
     </div>
     
     <div class="header">
@@ -65,79 +94,86 @@
     
     <!-- الصفحة الرئيسية -->
     <div id="homePage" class="page active-page">
-        <h2>🔥 الحسابات المتاحة</h2>
+        <h2 data-i18n="availableAccounts">🔥 الحسابات المتاحة</h2>
         <div id="accountsList">جار التحميل...</div>
     </div>
     
     <!-- صفحة حساباتي -->
     <div id="myAccountsPage" class="page">
-        <h2>📦 حساباتي</h2>
+        <h2 data-i18n="myAccountsTitle">📦 حساباتي</h2>
         <div id="myAccountsList"></div>
     </div>
     
-    <!-- صفحة إضافة حساب (مودال) - سنستخدم نفس المودال من الأسفل -->
+    <!-- صفحة إضافة حساب (مودال) -->
     <div id="addAccountPage" class="page"></div>
     
     <!-- صفحة الملف الشخصي -->
     <div id="profilePage" class="page">
-        <h2>👤 الملف الشخصي</h2>
+        <h2 data-i18n="profile">👤 الملف الشخصي</h2>
         <div style="text-align:center;">
             <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/100">
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
             <div style="background:#9b59b6; display:inline-block; padding:4px 12px; border-radius:40px; margin-top:8px;">🆔 <span id="userId"></span></div>
         </div>
         <form id="profileForm">
-            <input id="pName" placeholder="الاسم الكامل">
-            <input id="pEmail" placeholder="البريد الإلكتروني">
+            <input id="pName" placeholder="الاسم الكامل" data-i18n-placeholder="fullName">
+            <input id="pEmail" placeholder="البريد الإلكتروني" data-i18n-placeholder="email">
             <div style="display: flex; gap: 8px;">
                 <select id="phoneCode" style="width: 35%;"></select>
-                <input id="pPhone" placeholder="رقم الهاتف" style="flex:1">
+                <input id="pPhone" placeholder="رقم الهاتف" style="flex:1" data-i18n-placeholder="phone">
             </div>
-            <input id="pCity" placeholder="المدينة">
+            <input id="pCity" placeholder="المدينة" data-i18n-placeholder="city">
             <select id="pCountry"><option value="">اختر الدولة</option></select>
-            <input id="pZip" placeholder="الرمز البريدي (اختياري)">
-            <button type="submit" class="btn-primary">حفظ المعلومات</button>
+            <input id="pZip" placeholder="الرمز البريدي (اختياري)" data-i18n-placeholder="zip">
+            <button type="submit" class="btn-primary" data-i18n="save">حفظ المعلومات</button>
         </form>
-        <button id="logoutBtn" class="btn-primary" style="background:#555; margin-top:16px;">تسجيل خروج</button>
     </div>
     
     <!-- صفحة الدردشات -->
     <div id="messagesPage" class="page">
-        <h2>💬 المحادثات</h2>
+        <h2 data-i18n="conversations">💬 المحادثات</h2>
         <div id="convList"></div>
         <div id="chatBox" style="display:none">
             <div id="chatMessages" class="chat-messages"></div>
-            <input id="messageInput" placeholder="اكتب رسالة...">
-            <button id="sendMsg" class="btn-primary">إرسال</button>
-            <button id="backConv" class="btn-outline">رجوع</button>
+            <input id="messageInput" placeholder="اكتب رسالة..." data-i18n-placeholder="typeMessage">
+            <button id="sendMsg" class="btn-primary" data-i18n="send">إرسال</button>
+            <button id="backConv" class="btn-outline" data-i18n="back">رجوع</button>
         </div>
     </div>
     
     <!-- صفحة الدعم الفني -->
     <div id="supportPage" class="page">
-        <h2>📞 الدعم الفني</h2>
+        <h2 data-i18n="techSupport">📞 الدعم الفني</h2>
         <form id="supportForm">
             <select id="issueType">
-                <option>مشكلة في الشراء</option><option>مشكلة في البيع</option>
-                <option>مشكلة في الدردشة</option><option>اقتراح</option><option>أخرى</option>
+                <option value="purchase" data-i18n="issuePurchase">مشكلة في الشراء</option>
+                <option value="sell" data-i18n="issueSell">مشكلة في البيع</option>
+                <option value="chat" data-i18n="issueChat">مشكلة في الدردشة</option>
+                <option value="suggestion" data-i18n="suggestion">اقتراح</option>
+                <option value="other" data-i18n="other">أخرى</option>
             </select>
-            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..."></textarea>
-            <button type="submit" class="btn-primary">إرسال</button>
+            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..." data-i18n-placeholder="supportMessage"></textarea>
+            <div class="support-attachment">
+                <label data-i18n="attachImage">إرفاق صورة (اختياري)</label>
+                <input type="file" id="supportImage" accept="image/*">
+                <div id="supportImagePreview"></div>
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="send">إرسال</button>
         </form>
     </div>
     
     <!-- صفحة عن التطبيق -->
     <div id="aboutPage" class="page">
-        <div style="text-align:center; font-size:48px; margin:20px;"><i class="fas fa-shield-alt" style="color:#00d4ff;"></i></div>
-        <h2 style="text-align:center;">سوق الحسابات</h2>
-        <p style="text-align:center;">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>🔒 آمن ومضمون<br>⚡ فوري وسريع<br><br>تطوير: <strong style="color:#00d4ff;">Ameen Al-Zawahi</strong></p>
+        <div class="about-shield"><i class="fas fa-shield-alt"></i><i class="fas fa-shield-alt"></i></div>
+        <h2 style="text-align:center;">Social Accounts Market</h2>
+        <p style="text-align:center;" data-i18n="aboutText">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>🔒 آمن ومضمون - نظام محادثة آمن مع حماية كاملة<br>⚡ فوري وسريع - الحسابات تظهر فوراً لجميع المستخدمين<br><br>تم التطوير بواسطة <strong style="color:#00d4ff;">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</strong><br>مطور ويب وتطبيقات</p>
     </div>
     
     <!-- الشريط السفلي -->
     <div class="bottom-nav">
-        <button id="navHome"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button id="navAdd"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
-        <button id="navMessages"><i class="fas fa-comment-dots"></i><span>الدردشات</span></button>
+        <button id="navHome"><i class="fas fa-home"></i><span data-i18n="home">الرئيسية</span></button>
+        <button id="navAdd"><i class="fas fa-plus-circle"></i><span data-i18n="addAccount">نشر</span></button>
+        <button id="navMessages"><i class="fas fa-comment-dots"></i><span data-i18n="messages">الدردشات</span></button>
     </div>
 </div>
 
@@ -169,6 +205,27 @@
     }
     
     let currentUser = null;
+    let currentLang = "ar";
+    
+    // الترجمات
+    const translations = {
+        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", darkMode:"الوضع الليلي", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي (اختياري)", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", issuePurchase:"مشكلة في الشراء", issueSell:"مشكلة في البيع", issueChat:"مشكلة في الدردشة", suggestion:"اقتراح", other:"أخرى", aboutText:"المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>🔒 آمن ومضمون - نظام محادثة آمن مع حماية كاملة<br>⚡ فوري وسريع - الحسابات تظهر فوراً لجميع المستخدمين<br><br>تم التطوير بواسطة <strong style=\"color:#00d4ff;\">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</strong><br>مطور ويب وتطبيقات", loading:"جاري التحميل..." },
+        en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", darkMode:"Dark Mode", logout:"Logout", menu:"Menu", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Send", back:"Back", fullName:"Full Name", email:"Email", phone:"Phone", city:"City", zip:"Postal Code (optional)", typeMessage:"Type a message...", supportMessage:"Describe your issue in detail...", attachImage:"Attach image (optional)", issuePurchase:"Purchase issue", issueSell:"Selling issue", issueChat:"Chat issue", suggestion:"Suggestion", other:"Other", aboutText:"The first platform to buy and sell social media accounts<br><br>🔒 Secure and guaranteed - Secure chat system with full protection<br>⚡ Instant and fast - Accounts appear immediately to all users<br><br>Developed by <strong style=\"color:#00d4ff;\">Ameen Al-Zawahi</strong><br>Web & App Developer", loading:"Loading..." },
+        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Support", about:"À propos", darkMode:"Mode nuit", logout:"Déconnexion", menu:"Menu", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer", back:"Retour", fullName:"Nom complet", email:"Email", phone:"Téléphone", city:"Ville", zip:"Code postal (optionnel)", typeMessage:"Écrivez un message...", supportMessage:"Décrivez votre problème en détail...", attachImage:"Joindre une image (optionnel)", issuePurchase:"Problème d'achat", issueSell:"Problème de vente", issueChat:"Problème de chat", suggestion:"Suggestion", other:"Autre", aboutText:"La première plateforme pour acheter et vendre des comptes de réseaux sociaux<br><br>🔒 Sécurisé et garanti<br>⚡ Instantané et rapide<br><br>Développé par <strong style=\"color:#00d4ff;\">Ameen Al-Zawahi</strong><br>Développeur Web & App", loading:"Chargement..." },
+        tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", darkMode:"Gece Modu", logout:"Çıkış", menu:"Menü", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Destek", send:"Gönder", back:"Geri", fullName:"Tam Ad", email:"E-posta", phone:"Telefon", city:"Şehir", zip:"Posta Kodu (isteğe bağlı)", typeMessage:"Mesaj yaz...", supportMessage:"Sorununuzu detaylıca açıklayın...", attachImage:"Resim ekle (isteğe bağlı)", issuePurchase:"Satın alma sorunu", issueSell:"Satış sorunu", issueChat:"Sohbet sorunu", suggestion:"Öneri", other:"Diğer", aboutText:"Sosyal medya hesaplarını alıp satmak için ilk platform<br><br>🔒 Güvenli ve garantili<br>⚡ Anlık ve hızlı<br><br>Geliştiren: <strong style=\"color:#00d4ff;\">Ameen Al-Zawahi</strong><br>Web & App Geliştirici", loading:"Yükleniyor..." }
+    };
+    
+    function updateUI() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key) el.innerHTML = translations[currentLang][key] || key;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (key) el.placeholder = translations[currentLang][key] || key;
+        });
+        document.title = translations[currentLang].home + " - سوق الحسابات";
+    }
     
     // التنقل بين الصفحات
     function showPage(pageId) {
@@ -182,7 +239,6 @@
             loadConversations();
         }
         document.getElementById('sidebar').classList.remove('open');
-        // تحديث الشريط السفلي
         document.querySelectorAll('.bottom-nav button').forEach(btn => btn.classList.remove('active'));
         if (pageId === 'home') document.getElementById('navHome').classList.add('active');
         if (pageId === 'messages') document.getElementById('navMessages').classList.add('active');
@@ -191,11 +247,11 @@
     // تحميل الحسابات للرئيسية
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
-        container.innerHTML = 'جار التحميل...';
+        container.innerHTML = translations[currentLang].loading;
         try {
             const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = '<div>لا توجد حسابات للبيع</div>'; return; }
+            if (snap.empty) { container.innerHTML = '<div>' + translations[currentLang].noAccounts + '</div>'; return; }
             let html = '';
             snap.forEach(d => {
                 const acc = d.data();
@@ -204,15 +260,15 @@
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency}</p>
                     ${acc.images?.[0] ? `<img src="${acc.images[0]}" style="width:100%; border-radius:12px; margin-top:8px;">` : ''}
-                    <button class="contact-seller btn-outline" data-seller="${acc.sellerId}">📩 مراسلة البائع</button>
+                    <button class="contact-seller btn-outline" data-seller="${acc.sellerId}">📩 ${translations[currentLang].contact}</button>
                 </div>`;
             });
             container.innerHTML = html;
             document.querySelectorAll('.contact-seller').forEach(btn => {
                 btn.onclick = async () => {
-                    if (!currentUser) return alert("تسجيل الدخول مطلوب");
+                    if (!currentUser) return alert(translations[currentLang].loginRequired);
                     const sellerId = btn.dataset.seller;
-                    if (sellerId === currentUser.uid) return alert("لا يمكن مراسلة نفسك");
+                    if (sellerId === currentUser.uid) return alert(translations[currentLang].cantMessageSelf);
                     const convId = [currentUser.uid, sellerId].sort().join('_');
                     const convRef = doc(db, 'conversations', convId);
                     if (!(await getDoc(convRef)).exists()) await setDoc(convRef, { participants: [currentUser.uid, sellerId], updatedAt: Date.now() });
@@ -220,38 +276,39 @@
                     setTimeout(() => loadConversation(convId), 200);
                 };
             });
-        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; }
+        } catch(e) { container.innerHTML = '<div>' + translations[currentLang].error + '</div>'; }
     }
     
     // تحميل حساباتي
     async function loadMyAccounts() {
         if (!currentUser) return;
         const container = document.getElementById('myAccountsList');
+        container.innerHTML = translations[currentLang].loading;
         const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
         const snap = await getDocs(q);
-        if (snap.empty) { container.innerHTML = '<div>لا توجد حسابات منشورة</div>'; return; }
+        if (snap.empty) { container.innerHTML = '<div>' + translations[currentLang].noAccounts + '</div>'; return; }
         let html = '';
         snap.forEach(d => {
             const acc = d.data();
             html += `<div class="card">
                 <h3>${acc.name}</h3>
                 <p>${acc.price} ${acc.currency}</p>
-                <button class="edit-price btn-primary" data-id="${d.id}" data-price="${acc.price}">تعديل السعر</button>
-                <button class="delete-acc btn-outline" data-id="${d.id}">حذف</button>
+                <button class="edit-price btn-primary" data-id="${d.id}" data-price="${acc.price}">${translations[currentLang].editPrice}</button>
+                <button class="delete-acc btn-outline" data-id="${d.id}">${translations[currentLang].delete}</button>
             </div>`;
         });
         container.innerHTML = html;
         document.querySelectorAll('.edit-price').forEach(btn => btn.onclick = async () => {
-            const newPrice = prompt("السعر الجديد", btn.dataset.price);
+            const newPrice = prompt(translations[currentLang].enterNewPrice, btn.dataset.price);
             if (newPrice) await updateDoc(doc(db, 'accounts', btn.dataset.id), { price: parseFloat(newPrice) });
             loadMyAccounts();
         });
         document.querySelectorAll('.delete-acc').forEach(btn => btn.onclick = async () => {
-            if (confirm("حذف الحساب؟")) { await deleteDoc(doc(db, 'accounts', btn.dataset.id)); loadMyAccounts(); }
+            if (confirm(translations[currentLang].confirmDelete)) { await deleteDoc(doc(db, 'accounts', btn.dataset.id)); loadMyAccounts(); }
         });
     }
     
-    // الدردشات المشفرة
+    // الدردشات المشفرة (نفس الكود السابق)
     function getKey(u1, u2) { return CryptoJS.SHA256(u1+u2+"KEY").toString(); }
     function encrypt(m,k) { return CryptoJS.AES.encrypt(m,k).toString(); }
     function decrypt(c,k) { return CryptoJS.AES.decrypt(c,k).toString(CryptoJS.enc.Utf8); }
@@ -261,7 +318,7 @@
         const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
         onSnapshot(q, async (snap) => {
             const container = document.getElementById('convList');
-            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
+            if (snap.empty) { container.innerHTML = '<div>' + translations[currentLang].noConversations + '</div>'; return; }
             let html = '';
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
@@ -312,38 +369,37 @@
         };
     }
     
-    // ========== نافذة نشر الحساب (مودال) مع رفع الصور التراكمي ==========
-    let currentImageFiles = []; // لتخزين الصور المختارة
-    
+    // نافذة نشر الحساب (مودال) مع رفع الصور التراكمي
+    let currentImageFiles = [];
     function showAddModal() {
         currentImageFiles = [];
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <h3>➕ نشر حساب جديد</h3>
+                <h3>➕ ${translations[currentLang].addAccount}</h3>
                 <form id="modalAddForm">
                     <select id="modalPlatform" required>
-                        <option value="">اختر المنصة</option>
+                        <option value="">${translations[currentLang].selectPlatform}</option>
                         <option>TikTok</option><option>Instagram</option><option>YouTube</option>
                         <option>Snapchat</option><option>Twitter</option><option>Facebook</option><option>Telegram</option>
                     </select>
-                    <input id="modalAccName" placeholder="اسم الحساب (مثال: @user)" required>
-                    <input id="modalFollowers" placeholder="عدد المتابعين" type="number" required>
+                    <input id="modalAccName" placeholder="${translations[currentLang].accountName}" required>
+                    <input id="modalFollowers" placeholder="${translations[currentLang].followers}" type="number" required>
                     <div style="display:flex; gap:10px;">
-                        <input id="modalPrice" placeholder="السعر" type="number" required style="flex:1">
+                        <input id="modalPrice" placeholder="${translations[currentLang].price}" type="number" required style="flex:1">
                         <select id="modalCurrency" style="width:auto;">
-                            <option>ريال سعودي</option><option>ريال يمني</option><option>دولار أمريكي</option>
+                            <option>${translations[currentLang].sar}</option><option>${translations[currentLang].yer}</option><option>${translations[currentLang].usd}</option>
                         </select>
                     </div>
-                    <input id="modalLink" placeholder="رابط الحساب" required>
-                    <textarea id="modalDesc" placeholder="وصف الحساب (ماذا يميزه؟)"></textarea>
-                    <label>صور الإثبات (يمكنك إضافة صور متعددة، حد أقصى 3 صور)</label>
+                    <input id="modalLink" placeholder="${translations[currentLang].link}" required>
+                    <textarea id="modalDesc" placeholder="${translations[currentLang].description}"></textarea>
+                    <label>${translations[currentLang].uploadImages}</label>
                     <input type="file" id="modalImages" accept="image/*">
-                    <button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ إضافة صورة أخرى</button>
+                    <button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ ${translations[currentLang].addAnotherImage}</button>
                     <div id="modalPreview" class="image-preview"></div>
-                    <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">✅ نشر الحساب</button>
-                    <button type="button" id="closeModalBtn" style="background:none; border:none; color:red; margin-top:10px;">إلغاء</button>
+                    <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">✅ ${translations[currentLang].publish}</button>
+                    <button type="button" id="closeModalBtn" style="background:none; border:none; color:red; margin-top:10px;">${translations[currentLang].cancel}</button>
                 </form>
             </div>
         `;
@@ -352,16 +408,24 @@
         const previewDiv = modal.querySelector('#modalPreview');
         const imagesInput = modal.querySelector('#modalImages');
         
-        // تحديث المعاينة
         function updatePreview() {
             previewDiv.innerHTML = '';
             currentImageFiles.forEach((file, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                wrapper.style.margin = '5px';
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
-                img.style.position = 'relative';
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.borderRadius = '12px';
+                img.style.objectFit = 'cover';
                 const removeBtn = document.createElement('button');
                 removeBtn.innerHTML = '✖';
                 removeBtn.style.position = 'absolute';
+                removeBtn.style.top = '-8px';
+                removeBtn.style.right = '-8px';
                 removeBtn.style.background = 'red';
                 removeBtn.style.border = 'none';
                 removeBtn.style.borderRadius = '50%';
@@ -369,47 +433,39 @@
                 removeBtn.style.height = '20px';
                 removeBtn.style.color = 'white';
                 removeBtn.style.cursor = 'pointer';
-                removeBtn.style.marginRight = '-10px';
-                removeBtn.style.marginTop = '-10px';
-                const wrapper = document.createElement('div');
-                wrapper.style.position = 'relative';
-                wrapper.style.display = 'inline-block';
-                wrapper.appendChild(img);
-                wrapper.appendChild(removeBtn);
-                previewDiv.appendChild(wrapper);
                 removeBtn.onclick = () => {
                     currentImageFiles.splice(idx, 1);
                     updatePreview();
                 };
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                previewDiv.appendChild(wrapper);
             });
         }
         
-        // إضافة صورة جديدة
         imagesInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 if (currentImageFiles.length >= 3) {
-                    alert("لا يمكنك إضافة أكثر من 3 صور");
+                    alert(translations[currentLang].maxImages);
                 } else {
                     currentImageFiles.push(file);
                     updatePreview();
                 }
             }
-            imagesInput.value = ''; // لإعادة تعيين الحقل لاختيار صور إضافية
+            imagesInput.value = '';
         });
         
-        // زر إضافة صورة أخرى
         modal.querySelector('#addImageBtn').onclick = () => imagesInput.click();
         
-        // إرسال النموذج
         const form = modal.querySelector('#modalAddForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return alert("تسجيل الدخول مطلوب");
-            if (currentImageFiles.length === 0) return alert("ارفع صورة إثبات واحدة على الأقل");
+            if (!currentUser) return alert(translations[currentLang].loginRequired);
+            if (currentImageFiles.length === 0) return alert(translations[currentLang].uploadAtLeastOne);
             const submitBtn = form.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.textContent = "جاري الرفع...";
+            submitBtn.textContent = translations[currentLang].uploading;
             try {
                 const urls = [];
                 for (let i=0; i<currentImageFiles.length; i++) {
@@ -428,17 +484,17 @@
                     views: 0,
                     createdAt: Date.now()
                 });
-                alert("✅ تم نشر الحساب بنجاح!");
+                alert(translations[currentLang].publishedSuccess);
                 modal.remove();
                 loadAccounts();
-            } catch(err) { alert("❌ خطأ: " + err.message); }
-            finally { submitBtn.disabled = false; submitBtn.textContent = "✅ نشر الحساب"; }
+            } catch(err) { alert(translations[currentLang].error + ": " + err.message); }
+            finally { submitBtn.disabled = false; submitBtn.textContent = translations[currentLang].publish; }
         });
         
         modal.querySelector('#closeModalBtn').onclick = () => modal.remove();
     }
     
-    // ========== الملف الشخصي مع رموز الهاتف والدول ==========
+    // الملف الشخصي مع رموز الهاتف والدول
     const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
     const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
     
@@ -450,7 +506,7 @@
         }
         const countrySelect = document.getElementById('pCountry');
         if (countrySelect) {
-            countrySelect.innerHTML = '<option value="">اختر الدولة</option>';
+            countrySelect.innerHTML = '<option value="">' + translations[currentLang].selectCountry + '</option>';
             arabCountries.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); });
         }
     }
@@ -491,7 +547,7 @@
             await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
             document.getElementById('avatarImg').src = url;
             await updateProfile(currentUser, { photoURL: url });
-            alert("تم تحديث الصورة");
+            alert(translations[currentLang].imageUpdated);
         }
     });
     document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
@@ -506,34 +562,55 @@
             zip: document.getElementById('pZip').value,
             email: document.getElementById('pEmail').value
         });
-        alert("تم حفظ الملف الشخصي");
+        alert(translations[currentLang].profileSaved);
     });
     
-    // الدعم الفني
+    // الدعم الفني مع رفع صورة
+    document.getElementById('supportImage')?.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(f);
+            img.style.width = '100px';
+            img.style.borderRadius = '12px';
+            img.style.marginTop = '8px';
+            document.getElementById('supportImagePreview').innerHTML = '';
+            document.getElementById('supportImagePreview').appendChild(img);
+        }
+    });
     document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!currentUser) return;
+        if (!currentUser) return alert(translations[currentLang].loginRequired);
+        let imgUrl = '';
+        const imgFile = document.getElementById('supportImage').files[0];
+        if (imgFile) imgUrl = await uploadToImgBB(imgFile);
         await setDoc(doc(collection(db, 'supportTickets')), {
             userId: currentUser.uid,
             type: document.getElementById('issueType').value,
             message: document.getElementById('supportMsg').value,
+            image: imgUrl,
             timestamp: Date.now()
         });
-        alert("تم إرسال طلب الدعم");
+        alert(translations[currentLang].supportSent);
         document.getElementById('supportMsg').value = '';
+        document.getElementById('supportImagePreview').innerHTML = '';
+        document.getElementById('supportImage').value = '';
     });
     
-    // ========== أحداث القائمة الجانبية والأزرار ==========
+    // أحداث القائمة الجانبية والأزرار
     document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('profileIcon').onclick = () => showPage('profile');
     document.getElementById('navHome').onclick = () => showPage('home');
     document.getElementById('navAdd').onclick = () => showAddModal();
     document.getElementById('navMessages').onclick = () => showPage('messages');
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
-    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light-mode');
-    
-    // روابط القائمة الجانبية
+    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
+    document.getElementById('langSelect').onchange = (e) => {
+        currentLang = e.target.value;
+        updateUI();
+        populateSelectors(); // تحديث قوائم الدول
+        if (currentUser) loadAccounts(); // إعادة تحميل البيانات باللغة الجديدة
+    };
     document.querySelectorAll('.sidebar button[data-page]').forEach(btn => {
         btn.onclick = () => {
             const page = btn.dataset.page;
@@ -542,36 +619,59 @@
         };
     });
     
-    // ========== نافذة تسجيل الدخول ==========
+    // نافذة تسجيل الدخول مع تحسين إنشاء الحساب
     function showAuthModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <h3>🔐 تسجيل الدخول</h3>
-                <input id="loginEmail" placeholder="البريد الإلكتروني">
-                <input id="loginPassword" type="password" placeholder="كلمة المرور">
-                <button id="doLogin" class="btn-primary" style="width:100%">دخول</button>
-                <button id="doRegister" class="btn-primary" style="width:100%; background:#555;">إنشاء حساب</button>
+                <h3>🔐 ${translations[currentLang].login}</h3>
+                <input id="loginEmail" placeholder="${translations[currentLang].email}" autocomplete="email">
+                <input id="loginPassword" type="password" placeholder="${translations[currentLang].password}" autocomplete="current-password">
+                <button id="doLogin" class="btn-primary" style="width:100%">${translations[currentLang].login}</button>
+                <button id="doRegister" class="btn-primary" style="width:100%; background:#555;">${translations[currentLang].register}</button>
                 <button id="googleLogin" class="btn-primary" style="width:100%; background:#db4437;">Google</button>
-                <button id="closeModal" style="background:none; border:none; color:red; margin-top:12px;">إلغاء</button>
+                <button id="closeModal" style="background:none; border:none; color:red; margin-top:12px;">${translations[currentLang].cancel}</button>
                 <div id="authErr" style="color:red;"></div>
             </div>
         `;
         document.body.appendChild(modal);
+        
         modal.querySelector('#doLogin').onclick = async () => {
-            try { await signInWithEmailAndPassword(auth, modal.querySelector('#loginEmail').value, modal.querySelector('#loginPassword').value); modal.remove(); } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
+            try {
+                await signInWithEmailAndPassword(auth, modal.querySelector('#loginEmail').value, modal.querySelector('#loginPassword').value);
+                modal.remove();
+            } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
         };
         modal.querySelector('#doRegister').onclick = async () => {
-            try { await createUserWithEmailAndPassword(auth, modal.querySelector('#loginEmail').value, modal.querySelector('#loginPassword').value); modal.remove(); } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
+            const email = modal.querySelector('#loginEmail').value;
+            const pass = modal.querySelector('#loginPassword').value;
+            if (!email || !pass) return modal.querySelector('#authErr').innerText = translations[currentLang].fillFields;
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                // إنشاء مستند للمستخدم في Firestore
+                const rid = Math.floor(1e9 + Math.random()*9e9);
+                await setDoc(doc(db, 'users', userCred.user.uid), {
+                    userIdRandom: rid,
+                    email: email,
+                    name: email.split('@')[0],
+                    createdAt: Date.now()
+                });
+                alert(translations[currentLang].accountCreated);
+                modal.remove();
+                // تسجيل الدخول تلقائي (حدث onAuthStateChanged سيتولى الباقي)
+            } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
         };
         modal.querySelector('#googleLogin').onclick = async () => {
-            try { await signInWithPopup(auth, provider); modal.remove(); } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
+            try {
+                await signInWithPopup(auth, provider);
+                modal.remove();
+            } catch(e) { modal.querySelector('#authErr').innerText = e.message; }
         };
         modal.querySelector('#closeModal').onclick = () => modal.remove();
     }
     
-    // ========== مراقبة حالة المستخدم ==========
+    // مراقبة حالة المستخدم
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const splash = document.getElementById('splash');
@@ -596,6 +696,86 @@
             setTimeout(() => { document.getElementById('splash').style.display = 'none'; showAuthModal(); }, 500);
         }
     }, 2000);
+    
+    // إضافة الترجمات المفقودة
+    translations.ar.noAccounts = "لا توجد حسابات";
+    translations.ar.contact = "مراسلة";
+    translations.ar.loginRequired = "تسجيل الدخول مطلوب";
+    translations.ar.cantMessageSelf = "لا يمكن مراسلة نفسك";
+    translations.ar.editPrice = "تعديل السعر";
+    translations.ar.delete = "حذف";
+    translations.ar.enterNewPrice = "أدخل السعر الجديد";
+    translations.ar.confirmDelete = "هل أنت متأكد من حذف هذا الحساب؟";
+    translations.ar.noConversations = "لا توجد محادثات";
+    translations.ar.selectPlatform = "اختر المنصة";
+    translations.ar.accountName = "اسم الحساب";
+    translations.ar.followers = "عدد المتابعين";
+    translations.ar.price = "السعر";
+    translations.ar.sar = "ريال سعودي";
+    translations.ar.yer = "ريال يمني";
+    translations.ar.usd = "دولار أمريكي";
+    translations.ar.link = "رابط الحساب";
+    translations.ar.description = "وصف الحساب";
+    translations.ar.uploadImages = "صور الإثبات (حد أقصى 3)";
+    translations.ar.addAnotherImage = "إضافة صورة أخرى";
+    translations.ar.publish = "نشر الحساب";
+    translations.ar.cancel = "إلغاء";
+    translations.ar.maxImages = "لا يمكنك إضافة أكثر من 3 صور";
+    translations.ar.uploadAtLeastOne = "ارفع صورة إثبات واحدة على الأقل";
+    translations.ar.uploading = "جاري الرفع...";
+    translations.ar.publishedSuccess = "تم نشر الحساب بنجاح";
+    translations.ar.error = "خطأ";
+    translations.ar.selectCountry = "اختر الدولة";
+    translations.ar.imageUpdated = "تم تحديث الصورة";
+    translations.ar.profileSaved = "تم حفظ الملف الشخصي";
+    translations.ar.supportSent = "تم إرسال طلب الدعم";
+    translations.ar.login = "تسجيل الدخول";
+    translations.ar.register = "إنشاء حساب";
+    translations.ar.password = "كلمة المرور";
+    translations.ar.fillFields = "يرجى ملء البريد وكلمة المرور";
+    translations.ar.accountCreated = "تم إنشاء الحساب بنجاح! سيتم تسجيل الدخول تلقائياً.";
+    
+    // نفس الشيء لباقي اللغات (اختصاراً نضيف الأساسيات)
+    for (let lang of ['en','fr','tr']) {
+        translations[lang].noAccounts = translations[lang].noAccounts || "No accounts";
+        translations[lang].contact = "Contact";
+        translations[lang].loginRequired = "Login required";
+        translations[lang].cantMessageSelf = "Cannot message yourself";
+        translations[lang].editPrice = "Edit price";
+        translations[lang].delete = "Delete";
+        translations[lang].enterNewPrice = "Enter new price";
+        translations[lang].confirmDelete = "Are you sure?";
+        translations[lang].noConversations = "No conversations";
+        translations[lang].selectPlatform = "Select platform";
+        translations[lang].accountName = "Account name";
+        translations[lang].followers = "Followers";
+        translations[lang].price = "Price";
+        translations[lang].sar = "SAR";
+        translations[lang].yer = "YER";
+        translations[lang].usd = "USD";
+        translations[lang].link = "Account link";
+        translations[lang].description = "Description";
+        translations[lang].uploadImages = "Proof images (max 3)";
+        translations[lang].addAnotherImage = "Add another image";
+        translations[lang].publish = "Publish";
+        translations[lang].cancel = "Cancel";
+        translations[lang].maxImages = "Maximum 3 images";
+        translations[lang].uploadAtLeastOne = "Upload at least one image";
+        translations[lang].uploading = "Uploading...";
+        translations[lang].publishedSuccess = "Account published!";
+        translations[lang].error = "Error";
+        translations[lang].selectCountry = "Select country";
+        translations[lang].imageUpdated = "Image updated";
+        translations[lang].profileSaved = "Profile saved";
+        translations[lang].supportSent = "Support request sent";
+        translations[lang].login = "Login";
+        translations[lang].register = "Register";
+        translations[lang].password = "Password";
+        translations[lang].fillFields = "Fill email and password";
+        translations[lang].accountCreated = "Account created! You are now logged in.";
+    }
+    
+    updateUI();
 </script>
 </body>
 </html>
