@@ -92,7 +92,9 @@
         .profile-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; display: block; cursor: pointer; border: 3px solid var(--accent-neon); }
         .user-id-badge { background: var(--accent-purple); padding: 6px 12px; border-radius: 40px; font-size: 14px; display: inline-block; margin: 8px auto; width: fit-content; }
         
-        /* responsive */
+        /* copy button */
+        .copy-code-btn { position: fixed; bottom: 80px; right: 20px; background: var(--accent-neon); color: #000; border: none; padding: 8px 16px; border-radius: 40px; font-size: 12px; cursor: pointer; z-index: 1000; font-weight: bold; }
+        
         @media (max-width:640px){ .accounts-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -117,7 +119,7 @@
         <button id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </div>
     
-    <!-- Header: الملف الشخصي في اليمين والقائمة في اليسار -->
+    <!-- Header -->
     <div class="header">
         <div style="display: flex; gap: 16px;">
             <button class="profile-icon" id="profileIcon">👤</button>
@@ -244,6 +246,9 @@
         <button data-nav="messages"><i class="fas fa-comment-dots"></i><span>الدردشات</span></button>
     </div>
 </div>
+
+<!-- زر نسخ الكود (يظهر بعد تحميل التطبيق) -->
+<button class="copy-code-btn" id="copyCodeBtn" style="display:none;">📋 نسخ الكود</button>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -680,6 +685,17 @@
         modal.querySelector('#closeModal').onclick = () => modal.remove();
     }
     
+    // Copy code button functionality
+    const copyBtn = document.getElementById('copyCodeBtn');
+    if (copyBtn) {
+        copyBtn.onclick = () => {
+            const code = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("✅ تم نسخ الكود بالكامل! يمكنك لصقه في ملف index.html");
+            }).catch(() => alert("❌ فشل النسخ، حاول يدوياً"));
+        };
+    }
+    
     // Auth State and Global Event Binding
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
@@ -688,7 +704,7 @@
         if (user) {
             console.log("✅ User logged in:", user.email);
             splashDiv.style.opacity = '0';
-            setTimeout(() => { splashDiv.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
+            setTimeout(() => { splashDiv.style.display = 'none'; appDiv.style.display = 'block'; if(copyBtn) copyBtn.style.display = 'block'; }, 500);
             await loadProfile();
             populateSelectors();
             renderPlatforms();
@@ -709,6 +725,7 @@
             appDiv.style.display = 'none';
             splashDiv.style.display = 'flex';
             splashDiv.style.opacity = '1';
+            if(copyBtn) copyBtn.style.display = 'none';
             setTimeout(showAuthModal, 500);
         }
     });
