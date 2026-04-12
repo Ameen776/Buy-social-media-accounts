@@ -155,6 +155,9 @@
         .conversation-item { padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; }
         .conversation-item:hover { background: var(--accent-purple); }
         .chat-messages { height: 300px; overflow-y: auto; background: var(--bg-primary); border-radius: 16px; padding: 8px; margin-bottom: 8px; }
+        
+        /* زر نسخ الكود (للتوضيح) */
+        .copy-btn { background: var(--accent-neon); border: none; padding: 8px 16px; border-radius: 30px; color: #000; font-weight: bold; cursor: pointer; margin: 20px auto; display: block; width: fit-content; }
     </style>
 </head>
 <body>
@@ -204,7 +207,7 @@
         <div id="aboutPage" class="page"><h2>ℹ️ عن التطبيق</h2><p><strong>Social Accounts Market</strong><br>المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>✅ آمن ومضمون<br>⚡ فوري وسريع<br><br>تم التطوير بواسطة <strong style="color:#00d4ff;">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</strong></p></div>
     </div>
     
-    <!-- الشريط السفلي: الرئيسية - نشر - الدردشات (الدردشات في أقصى اليمين) -->
+    <!-- الشريط السفلي: الرئيسية - نشر - الدردشات -->
     <div class="bottom-nav" id="bottomNav">
         <div class="bottom-nav-item" data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></div>
         <div class="bottom-nav-item" data-nav="add-account"><i class="fas fa-plus-circle"></i><span>نشر</span></div>
@@ -213,15 +216,20 @@
 </div>
 
 <script type="module">
+    // استيراد التوابع من النطاق العام
     const { auth, db, storage, provider } = window.firebase;
     const { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut, updateProfile } = window;
     const { collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment } = window;
     const { ref, uploadBytes, getDownloadURL } = window;
     
     let currentUser = null;
+    let currentPlatform = 'all';
+    let activeListeners = false;
+    
     const splash = document.getElementById('splashScreen');
     const appContainer = document.getElementById('appContainer');
     
+    // إخفاء splash بعد 2 ثانية
     setTimeout(() => {
         if (splash.style.display !== 'none') {
             splash.style.opacity = '0';
@@ -233,6 +241,7 @@
         }
     }, 2000);
     
+    // نافذة تسجيل الدخول
     function showAuthModal() {
         const existing = document.querySelector('.modal');
         if(existing) existing.remove();
@@ -268,15 +277,12 @@
         };
         modal.querySelector('#authGoogleBtn').onclick = async () => {
             try { await signInWithPopup(auth, provider); modal.remove(); } 
-            catch(e) { 
-                if(e.code === 'auth/network-request-failed') {
-                    showError("خطأ في الشبكة أو إعدادات Firebase: تأكد من إضافة النطاق الحالي (ameen776.github.io) إلى Authorized Domains في Firebase Console.");
-                } else { showError(e.message); }
-            }
+            catch(e) { showError(e.message); }
         };
         modal.querySelector('#closeAuthModal').onclick = () => { modal.remove(); if(!currentUser) showAuthModal(); };
     }
     
+    // مراقبة المستخدم
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         if(user) {
@@ -284,9 +290,13 @@
             if(modal) modal.remove();
             appContainer.style.display = 'block';
             await initUserProfile();
-            loadAccounts();
-            loadConversationsList();
-            setupRouting();
+            // تأخير بسيط لضمان تحميل DOM
+            setTimeout(() => {
+                loadAccounts();
+                loadConversationsList();
+                setupEventListeners(); // ربط الأحداث بعد تسجيل الدخول
+                navigateTo('home');
+            }, 100);
             if(splash.style.display !== 'none') { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 600); }
         } else {
             appContainer.style.display = 'none';
@@ -320,9 +330,9 @@
         else if(currentUser.photoURL) document.getElementById('profileAvatarImg').src = currentUser.photoURL;
     }
     
-    let currentPlatform = 'all';
-    async function loadAccounts(platform = 'all') {
+    async function loadAccounts(platform = currentPlatform) {
         const accountsDiv = document.getElementById('accountsList');
+        if(!accountsDiv) return;
         let q;
         if(platform === 'all') q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
         else q = query(collection(db, 'accounts'), where('platform', '==', platform), orderBy('createdAt', 'desc'));
@@ -360,6 +370,7 @@
     const platformsList = ['all','TikTok','Instagram','YouTube','Snapchat','Twitter','Facebook','Telegram','Threads'];
     function renderPlatformStrip() {
         const strip = document.getElementById('platformStrip');
+        if(!strip) return;
         strip.innerHTML = platformsList.map(p => `
             <div class="platform-icon ${currentPlatform === p ? 'active' : ''}" data-platform="${p}">
                 <i class="fab fa-${p === 'all' ? 'star-of-life' : p.toLowerCase()}"></i>
@@ -380,6 +391,7 @@
         const convQuery = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid), orderBy('updatedAt', 'desc'));
         onSnapshot(convQuery, async (snap) => {
             const container = document.getElementById('conversationsList');
+            if(!container) return;
             if(snap.empty) { container.innerHTML = '<p>لا توجد محادثات بعد</p>'; return; }
             let html = '';
             for(const docSnap of snap.docs) {
@@ -401,14 +413,17 @@
     function decryptMsg(cipher, key) { return CryptoJS.AES.decrypt(cipher, key).toString(CryptoJS.enc.Utf8); }
     
     async function loadConversation(convId) {
-        document.getElementById('conversationsList').style.display = 'none';
-        document.getElementById('chatArea').style.display = 'block';
+        const convList = document.getElementById('conversationsList');
+        const chatArea = document.getElementById('chatArea');
+        if(convList) convList.style.display = 'none';
+        if(chatArea) chatArea.style.display = 'block';
         const participants = convId.split('_');
         const key = getEncryptionKey(participants[0], participants[1]);
         const messagesRef = collection(db, 'conversations', convId, 'messages');
         const q = query(messagesRef, orderBy('timestamp'));
         onSnapshot(q, (snap) => {
             const chatDiv = document.getElementById('chatMessages');
+            if(!chatDiv) return;
             chatDiv.innerHTML = '';
             snap.forEach(msgDoc => {
                 const data = msgDoc.data();
@@ -419,78 +434,97 @@
             chatDiv.scrollTop = chatDiv.scrollHeight;
         });
         window.currentConvId = convId;
-        document.getElementById('sendMsgBtn').onclick = async () => {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if(!text) return;
-            const encrypted = encryptMsg(text, key);
-            await setDoc(doc(collection(db, 'conversations', convId, 'messages')), {
-                encryptedText: encrypted, senderId: currentUser.uid, timestamp: Date.now()
-            });
-            input.value = '';
-            await updateDoc(doc(db, 'conversations', convId), { updatedAt: Date.now() });
-        };
-        document.getElementById('backToConv').onclick = () => {
-            document.getElementById('chatArea').style.display = 'none';
-            document.getElementById('conversationsList').style.display = 'block';
-            loadConversationsList();
-        };
+        const sendBtn = document.getElementById('sendMsgBtn');
+        if(sendBtn) {
+            sendBtn.onclick = async () => {
+                const input = document.getElementById('messageInput');
+                const text = input?.value.trim();
+                if(!text) return;
+                const encrypted = encryptMsg(text, key);
+                await setDoc(doc(collection(db, 'conversations', convId, 'messages')), {
+                    encryptedText: encrypted, senderId: currentUser.uid, timestamp: Date.now()
+                });
+                if(input) input.value = '';
+                await updateDoc(doc(db, 'conversations', convId), { updatedAt: Date.now() });
+            };
+        }
+        const backBtn = document.getElementById('backToConv');
+        if(backBtn) {
+            backBtn.onclick = () => {
+                if(chatArea) chatArea.style.display = 'none';
+                if(convList) convList.style.display = 'block';
+                loadConversationsList();
+            };
+        }
     }
     
-    document.getElementById('addAccountForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if(!currentUser) return;
-        const files = document.getElementById('images').files;
-        let imgUrls = [];
-        for(let file of files) {
-            const fileRef = ref(storage, `accounts/${Date.now()}_${file.name}`);
-            await uploadBytes(fileRef, file);
-            const url = await getDownloadURL(fileRef);
-            imgUrls.push(url);
-        }
-        await setDoc(doc(collection(db, 'accounts')), {
-            name: document.getElementById('accName').value, link: document.getElementById('accLink').value,
-            platform: document.getElementById('platform').value, followers: parseInt(document.getElementById('followers').value),
-            price: parseFloat(document.getElementById('price').value), currency: document.getElementById('currency').value,
-            description: document.getElementById('description').value, images: imgUrls, sellerId: currentUser.uid,
-            views: 0, createdAt: Date.now()
+    // إضافة حساب
+    const addForm = document.getElementById('addAccountForm');
+    if(addForm) {
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentUser) return;
+            const files = document.getElementById('images').files;
+            let imgUrls = [];
+            for(let file of files) {
+                const fileRef = ref(storage, `accounts/${Date.now()}_${file.name}`);
+                await uploadBytes(fileRef, file);
+                const url = await getDownloadURL(fileRef);
+                imgUrls.push(url);
+            }
+            await setDoc(doc(collection(db, 'accounts')), {
+                name: document.getElementById('accName').value, link: document.getElementById('accLink').value,
+                platform: document.getElementById('platform').value, followers: parseInt(document.getElementById('followers').value),
+                price: parseFloat(document.getElementById('price').value), currency: document.getElementById('currency').value,
+                description: document.getElementById('description').value, images: imgUrls, sellerId: currentUser.uid,
+                views: 0, createdAt: Date.now()
+            });
+            alert("تم النشر");
+            addForm.reset();
+            navigateTo('home');
         });
-        alert("تم النشر");
-        document.getElementById('addAccountForm').reset();
-        navigateTo('home');
-    });
+    }
     
-    document.getElementById('profileAvatarImg').onclick = () => document.getElementById('avatarUpload').click();
-    document.getElementById('avatarUpload').onchange = async (e) => {
-        const file = e.target.files[0];
-        if(file && currentUser) {
-            const avatarRef = ref(storage, `avatars/${currentUser.uid}`);
-            await uploadBytes(avatarRef, file);
-            const url = await getDownloadURL(avatarRef);
-            await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
-            document.getElementById('profileAvatarImg').src = url;
-            if(currentUser) await updateProfile(currentUser, { photoURL: url });
-        }
-    };
-    document.getElementById('profileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if(!currentUser) return;
-        await updateDoc(doc(db, 'users', currentUser.uid), {
-            name: document.getElementById('profileName').value,
-            phone: document.getElementById('profilePhone').value,
-            city: document.getElementById('profileCity').value,
-            country: document.getElementById('profileCountry').value,
-            zip: document.getElementById('profileZip').value,
-            email: document.getElementById('profileEmail').value
+    // الملف الشخصي
+    const avatarImg = document.getElementById('profileAvatarImg');
+    const avatarUpload = document.getElementById('avatarUpload');
+    if(avatarImg) avatarImg.onclick = () => avatarUpload?.click();
+    if(avatarUpload) {
+        avatarUpload.onchange = async (e) => {
+            const file = e.target.files[0];
+            if(file && currentUser) {
+                const avatarRef = ref(storage, `avatars/${currentUser.uid}`);
+                await uploadBytes(avatarRef, file);
+                const url = await getDownloadURL(avatarRef);
+                await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
+                if(avatarImg) avatarImg.src = url;
+                if(currentUser) await updateProfile(currentUser, { photoURL: url });
+            }
+        };
+    }
+    const profileForm = document.getElementById('profileForm');
+    if(profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentUser) return;
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                name: document.getElementById('profileName').value,
+                phone: document.getElementById('profilePhone').value,
+                city: document.getElementById('profileCity').value,
+                country: document.getElementById('profileCountry').value,
+                zip: document.getElementById('profileZip').value,
+                email: document.getElementById('profileEmail').value
+            });
+            alert("تم حفظ الملف الشخصي");
         });
-        alert("تم حفظ الملف الشخصي");
-    });
+    }
     
     async function loadMyAccounts() {
         if(!currentUser) return;
         const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
         const snap = await getDocs(q);
         const container = document.getElementById('myAccountsList');
+        if(!container) return;
         if(snap.empty) { container.innerHTML = '<p>لا توجد حسابات</p>'; return; }
         let html = '';
         snap.forEach(docSnap => {
@@ -502,47 +536,78 @@
         document.querySelectorAll('.edit-acc').forEach(btn => btn.onclick = async () => { let newPrice = prompt("السعر الجديد", btn.dataset.price); if(newPrice) { await updateDoc(doc(db, 'accounts', btn.dataset.id), { price: parseFloat(newPrice) }); loadMyAccounts(); } });
     }
     
-    document.getElementById('supportForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if(!currentUser) return;
-        await setDoc(doc(collection(db, 'supportTickets')), { userId: currentUser.uid, message: document.getElementById('supportMsg').value, timestamp: Date.now() });
-        alert("تم الإرسال");
-        document.getElementById('supportMsg').value = '';
-    });
+    // الدعم الفني
+    const supportForm = document.getElementById('supportForm');
+    if(supportForm) {
+        supportForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentUser) return;
+            await setDoc(doc(collection(db, 'supportTickets')), { userId: currentUser.uid, message: document.getElementById('supportMsg').value, timestamp: Date.now() });
+            alert("تم الإرسال");
+            document.getElementById('supportMsg').value = '';
+        });
+    }
     
+    // وظائف التنقل
     function navigateTo(page) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(page+'Page').classList.add('active-page');
+        const targetPage = document.getElementById(page+'Page');
+        if(targetPage) targetPage.classList.add('active-page');
         if(page === 'home') { renderPlatformStrip(); loadAccounts(currentPlatform); }
         if(page === 'my-accounts') loadMyAccounts();
-        if(page === 'messages') { document.getElementById('chatArea').style.display = 'none'; document.getElementById('conversationsList').style.display = 'block'; loadConversationsList(); }
+        if(page === 'messages') { 
+            const chatArea = document.getElementById('chatArea');
+            const convList = document.getElementById('conversationsList');
+            if(chatArea) chatArea.style.display = 'none';
+            if(convList) convList.style.display = 'block';
+            loadConversationsList();
+        }
         document.querySelectorAll('.bottom-nav-item').forEach(item => {
             if(item.dataset.nav === page) item.classList.add('active');
             else item.classList.remove('active');
         });
-        document.getElementById('sidebar').classList.remove('open');
+        // إغلاق القائمة الجانبية
+        const sidebar = document.getElementById('sidebar');
+        if(sidebar) sidebar.classList.remove('open');
     }
     
-    function setupRouting() {
+    function setupEventListeners() {
+        // روابط القائمة الجانبية
         document.querySelectorAll('.sidebar nav a[data-page]').forEach(link => {
             link.onclick = (e) => { e.preventDefault(); navigateTo(link.dataset.page); };
         });
+        // الشريط السفلي
         document.querySelectorAll('.bottom-nav-item').forEach(item => {
             item.onclick = () => navigateTo(item.dataset.nav);
         });
-        document.getElementById('profileIcon').onclick = () => navigateTo('profile');
-        document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
-        document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
-        document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+        // أيقونة الملف الشخصي
+        const profileIcon = document.getElementById('profileIcon');
+        if(profileIcon) profileIcon.onclick = () => navigateTo('profile');
+        // تسجيل الخروج
+        const logoutBtn = document.getElementById('logoutBtnSide');
+        if(logoutBtn) logoutBtn.onclick = () => signOut(auth);
+        // الوضع الليلي
+        const themeToggle = document.getElementById('themeToggleSide');
+        if(themeToggle) themeToggle.onclick = () => document.body.classList.toggle('light');
+        // فتح/غلق القائمة الجانبية
+        const menuBtn = document.getElementById('menuBtn');
+        if(menuBtn) {
+            menuBtn.onclick = () => {
+                const sidebar = document.getElementById('sidebar');
+                if(sidebar) sidebar.classList.toggle('open');
+            };
+        }
+        // إغلاق القائمة عند النقر خارجها
         document.addEventListener('click', (e) => {
             const sidebar = document.getElementById('sidebar');
-            if(sidebar.classList.contains('open') && !sidebar.contains(e.target) && !document.getElementById('menuBtn').contains(e.target)) {
+            const menuBtnEl = document.getElementById('menuBtn');
+            if(sidebar && sidebar.classList.contains('open') && !sidebar.contains(e.target) && menuBtnEl && !menuBtnEl.contains(e.target)) {
                 sidebar.classList.remove('open');
             }
         });
-        navigateTo('home');
     }
     
+    // بدء تشغيل الشريط الأفقي (سيتم استدعاؤه عند الحاجة)
     renderPlatformStrip();
 </script>
 </body>
