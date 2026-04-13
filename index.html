@@ -18,7 +18,6 @@
             --accent-purple: #9b59b6;
             --accent-neon: #00d4ff;
             --border-light: #2a2a4a;
-            --success: #00ff88;
         }
         body.light {
             --bg-primary: #f4f4fc;
@@ -28,31 +27,23 @@
             --text-secondary: #3a3a5a;
             --border-light: #d0d0e0;
         }
-        body { background: var(--bg-primary); color: var(--text-primary); transition: 0.3s; padding-bottom: 70px; overflow-x: hidden; }
-        
-        /* splash */
+        body { background: var(--bg-primary); color: var(--text-primary); transition: 0.3s; padding-bottom: 70px; }
         .splash { position: fixed; inset:0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; transition: 0.5s; gap:20px; }
         .splash-logo { font-size: 4rem; font-weight:800; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%{opacity:0.7;transform:scale(1);} 100%{opacity:1;transform:scale(1.05);} }
-        
         .app { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-secondary); position: sticky; top: 0; z-index: 99; border-bottom: 1px solid var(--border-light); }
         .menu-btn, .profile-icon { background: none; border: none; color: var(--text-primary); font-size: 28px; cursor: pointer; }
         .logo { font-size: 1.4rem; font-weight: bold; background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
-        
-        /* sidebar */
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--bg-secondary); transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid var(--border-light); overflow-y: auto; }
         .sidebar.open { right: 0; }
         .sidebar button, .sidebar select { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: var(--text-primary); font-size: 16px; cursor: pointer; border-radius: 12px; }
         .sidebar button:hover { background: var(--accent-purple); }
         .sidebar select { background: var(--bg-primary); border: 1px solid var(--border-light); }
-        
-        /* bottom nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); display: flex; justify-content: space-around; padding: 12px; z-index: 100; border-top: 1px solid var(--border-light); }
         .bottom-nav button { background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .bottom-nav button i { font-size: 24px; }
         .bottom-nav button.active { color: var(--accent-neon); }
-        
         .page { display: none; padding: 20px; }
         .active-page { display: block; }
         .card { background: var(--card-bg); padding: 16px; border-radius: 20px; margin-bottom: 16px; border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s; }
@@ -68,8 +59,6 @@
         .chat-messages { height: 300px; overflow-y: auto; background: var(--bg-primary); border-radius: 16px; padding: 8px; margin-bottom: 8px; }
         .conversation-item { padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; }
         .conversation-item:hover { background: var(--accent-purple); }
-        
-        /* about 3D */
         .about-3d { text-align: center; perspective: 1000px; }
         .about-card-3d { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(0,212,255,0.2)); backdrop-filter: blur(10px); border-radius: 40px; padding: 40px 20px; transform-style: preserve-3d; transform: rotateY(5deg) rotateX(5deg); transition: 0.4s; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid rgba(0,212,255,0.3); }
         .about-card-3d:hover { transform: rotateY(0deg) rotateX(0deg) scale(1.02); }
@@ -77,8 +66,6 @@
         @keyframes float3d { 0%,100%{transform:translateY(0px);}50%{transform:translateY(-15px);} }
         .developer-name { background: linear-gradient(45deg,#9b59b6,#00d4ff); -webkit-background-clip:text; background-clip:text; color:transparent; font-size: 1.5rem; font-weight: bold; display: inline-block; animation: glow 2s ease-in-out infinite; }
         @keyframes glow { 0%,100%{text-shadow:0 0 5px #9b59b6;}50%{text-shadow:0 0 20px #00d4ff;} }
-        
-        /* auth */
         .auth-container { position: fixed; inset: 0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e); display: flex; align-items: center; justify-content: center; z-index: 10001; overflow-y: auto; }
         .auth-card { background: rgba(26,26,46,0.95); backdrop-filter: blur(10px); border-radius: 40px; padding: 40px; width: 90%; max-width: 450px; text-align: center; border: 1px solid rgba(0,212,255,0.3); animation: fadeInUp 0.5s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -94,9 +81,6 @@
         .success-check { color: #00ff88; font-size: 3rem; animation: checkPop 0.5s ease; }
         @keyframes checkPop { 0%{transform:scale(0);}80%{transform:scale(1.2);}100%{transform:scale(1);} }
         .suggest-password { font-size: 12px; color: var(--accent-neon); cursor: pointer; margin-top: -5px; margin-bottom: 10px; text-align: left; }
-        
-        /* copy button */
-        .copy-code-btn { position: fixed; bottom: 80px; right: 20px; background: var(--accent-neon); color: #000; border: none; padding: 8px 16px; border-radius: 40px; font-size: 12px; cursor: pointer; z-index: 1000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -106,7 +90,6 @@
 </div>
 
 <div id="app" class="app">
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div style="font-size:24px; margin-bottom:30px;">القائمة</div>
         <button data-page="home">🏠 الرئيسية</button>
@@ -180,9 +163,6 @@
     </div>
 </div>
 
-<!-- زر نسخ الكود -->
-<button class="copy-code-btn" id="copyCodeBtn" style="display:none;">📋 نسخ الكود</button>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -237,14 +217,10 @@
         if (pageId === 'messages') document.getElementById('navMessages').classList.add('active');
     }
     
-    // عرض تفاصيل الحساب عند النقر عليه
     function showAccountDetails(account) {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
+        const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
-        if (account.images && account.images.length) {
-            imagesHtml = '<div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;">' + account.images.map(img => `<img src="${img}" style="width:100px; height:100px; border-radius:12px; object-fit:cover;">`).join('') + '</div>';
-        }
+        if (account.images && account.images.length) imagesHtml = '<div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;">' + account.images.map(img => `<img src="${img}" style="width:100px; height:100px; border-radius:12px; object-fit:cover;">`).join('') + '</div>';
         modal.innerHTML = `<div class="modal-content"><h3>${account.name}</h3><p><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</p><p>👥 ${account.followers?.toLocaleString()} متابع</p><p>💰 ${account.price} ${account.currency}</p><p>🔗 <a href="${account.link}" target="_blank" style="color:#00d4ff;">${account.link}</a></p><p>📝 ${account.description || 'لا يوجد وصف'}</p>${imagesHtml}<button class="btn-primary" id="closeDetails">إغلاق</button></div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeDetails').onclick = () => modal.remove();
@@ -252,7 +228,7 @@
     
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
-        container.innerHTML = t('loading') || 'جار التحميل...';
+        container.innerHTML = 'جار التحميل...';
         try {
             const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
@@ -269,13 +245,8 @@
                 </div>`;
             });
             container.innerHTML = html;
-            // عرض التفاصيل عند النقر على البطاقة
             document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('contact-seller')) return;
-                    const id = card.dataset.id;
-                    snap.forEach(d => { if (d.id === id) showAccountDetails(d.data()); });
-                });
+                card.addEventListener('click', (e) => { if (e.target.classList.contains('contact-seller')) return; const id = card.dataset.id; snap.forEach(d => { if (d.id === id) showAccountDetails(d.data()); }); });
             });
             document.querySelectorAll('.contact-seller').forEach(btn => {
                 btn.onclick = async (e) => {
@@ -296,7 +267,7 @@
     async function loadMyAccounts() {
         if (!currentUser) return;
         const container = document.getElementById('myAccountsList');
-        container.innerHTML = t('loading') || 'جار التحميل...';
+        container.innerHTML = 'جار التحميل...';
         try {
             const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
             const snap = await getDocs(q);
@@ -325,7 +296,6 @@
         } catch(e) { container.innerHTML = `<div>${t('error')}</div>`; }
     }
     
-    // تشفير المحادثات
     function getKey(u1, u2) { return CryptoJS.SHA256(u1+u2+"KEY").toString(); }
     function encrypt(m,k) { return CryptoJS.AES.encrypt(m,k).toString(); }
     function decrypt(c,k) { return CryptoJS.AES.decrypt(c,k).toString(CryptoJS.enc.Utf8); }
@@ -382,12 +352,10 @@
         };
     }
     
-    // إضافة حساب
     let currentImageFiles = [];
     function showAddModal() {
         currentImageFiles = [];
-        const modal = document.createElement('div');
-        modal.className = 'modal';
+        const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('addAccount')}</h3>
             <form id="modalAddForm">
                 <select id="modalPlatform" required><option value="">${t('selectPlatform')}</option>
@@ -445,7 +413,6 @@
         modal.querySelector('#closeModalBtn').onclick = () => modal.remove();
     }
     
-    // الملف الشخصي
     const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
     const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
     function populateSelectors() {
@@ -496,7 +463,6 @@
         alert(t('profileSaved'));
     });
     
-    // الدعم
     document.getElementById('supportImage')?.addEventListener('change', (e) => {
         const f = e.target.files[0];
         if (f) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.style.width = '100px'; img.style.borderRadius = '12px'; document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImagePreview').appendChild(img); }
@@ -512,7 +478,6 @@
         document.getElementById('supportMsg').value = ''; document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImage').value = '';
     });
     
-    // أحداث
     document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('profileIcon').onclick = () => showPage('profile');
     document.getElementById('navHome').onclick = () => showPage('home');
@@ -525,14 +490,11 @@
         updateUI();
         populateSelectors();
         if (currentUser) { loadAccounts(); loadMyAccounts(); loadConversations(); }
-        // تحديث النصوص في العناصر الثابتة
-        document.querySelectorAll('.sidebar button[data-page]').forEach(btn => { const key = btn.getAttribute('data-page'); if(key) btn.innerHTML = btn.innerHTML.replace(/[🏠📦➕💬🛠️ℹ️🌙🚪].*/, (m) => m + ' ' + t(key)); });
     };
     document.querySelectorAll('.sidebar button[data-page]').forEach(btn => {
         btn.onclick = () => { const page = btn.dataset.page; if (page === 'add-account') showAddModal(); else showPage(page); };
     });
     
-    // شاشات تسجيل الدخول
     let authContainer = null;
     function generateStrongPassword() { return Math.random().toString(36).slice(-12) + "!@#"; }
     function showLoginScreen() {
@@ -576,28 +538,19 @@
         document.getElementById('switchToLogin').onclick = () => showLoginScreen();
     }
     
-    // مراقبة حالة المستخدم
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const splash = document.getElementById('splash');
         const appDiv = document.getElementById('app');
-        const copyBtn = document.getElementById('copyCodeBtn');
         if (user) {
-            splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; if(copyBtn) copyBtn.style.display = 'block'; }, 500);
+            splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
             await loadProfile(); populateSelectors(); loadAccounts(); showPage('home');
         } else {
             appDiv.style.display = 'none'; splash.style.display = 'flex'; splash.style.opacity = '1';
-            if(copyBtn) copyBtn.style.display = 'none';
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 1000);
         }
     });
     setTimeout(() => { if (!currentUser && document.getElementById('splash').style.display !== 'none') { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; showLoginScreen(); }, 500); } }, 2000);
-    
-    // زر نسخ الكود
-    document.getElementById('copyCodeBtn').onclick = () => {
-        const code = document.documentElement.outerHTML;
-        navigator.clipboard.writeText(code).then(() => alert("✅ تم نسخ الكود بالكامل! يمكنك لصقه في ملف index.html")).catch(() => alert("❌ فشل النسخ، حاول يدوياً"));
-    };
 </script>
 </body>
 </html>
