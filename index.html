@@ -2,86 +2,77 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سوق الحسابات</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0f0f1a; color: white; padding-bottom: 70px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1a1a2a; position: sticky; top: 0; }
-        .menu-btn, .profile-icon { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
-        .logo { font-size: 1.3rem; font-weight: bold; color: #00d4ff; }
-        .sidebar { position: fixed; top: 0; right: -260px; width: 260px; height: 100%; background: #1a1a2a; transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid #333; }
-        .sidebar.open { right: 0; }
-        .sidebar button { display: block; width: 100%; text-align: right; padding: 12px; margin: 8px 0; background: none; border: none; color: white; font-size: 16px; cursor: pointer; border-radius: 10px; }
-        .sidebar button:hover { background: #333; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2a; display: flex; justify-content: space-around; padding: 10px; z-index: 100; border-top: 1px solid #333; }
-        .bottom-nav button { background: none; border: none; color: #aaa; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .bottom-nav button i { font-size: 22px; }
-        .bottom-nav button.active { color: #00d4ff; }
-        .page { display: none; padding: 20px; }
-        .active-page { display: block; }
-        .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: #1e1e2e; padding: 15px; border-radius: 16px; border: 1px solid #2a2a3a; cursor: pointer; }
-        .card:hover { background: #252540; }
-        .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
-        .card p { font-size: 0.85rem; margin: 5px 0; color: #bbb; }
-        .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-top: 10px; }
-        .btn-primary { background: #00d4ff; border: none; padding: 8px 16px; border-radius: 30px; color: #1a1a2a; cursor: pointer; font-weight: bold; }
-        .btn-outline { background: transparent; border: 1px solid #00d4ff; color: #00d4ff; padding: 6px 12px; border-radius: 30px; cursor: pointer; }
-        .message-btn { background: transparent; border: 1px solid #00d4ff; color: #00d4ff; padding: 8px; border-radius: 30px; cursor: pointer; margin-top: 12px; width: 100%; }
-        .message-btn:hover { background: rgba(0,212,255,0.1); }
-        .filter-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .filter-row input, .filter-row select { flex: 1; padding: 10px; border-radius: 25px; background: #1e1e2e; border: 1px solid #333; color: white; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; background: #1e1e2e; color: white; border: 1px solid #333; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: #1e1e2e; padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        .image-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin: 10px 0; }
-        .image-scroll img { width: 130px; height: 130px; object-fit: cover; border-radius: 12px; flex-shrink: 0; }
-        .image-preview { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
-        .image-preview img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
-        .profile-avatar { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px; display: block; cursor: pointer; border: 3px solid #00d4ff; object-fit: cover; }
-        .chat-messages { height: 250px; overflow-y: auto; background: #0f0f1a; border-radius: 16px; padding: 8px; margin-bottom: 8px; }
-        .conversation-item { padding: 12px; border-bottom: 1px solid #333; cursor: pointer; }
-        .conversation-item:hover { background: #333; }
-        .auth-container { position: fixed; inset: 0; background: #0f0f1a; display: flex; align-items: center; justify-content: center; z-index: 10001; }
-        .auth-card { background: #1e1e2e; border-radius: 30px; padding: 30px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #00d4ff; }
-        .social-icons-row { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
-        .social-icons-row i { font-size: 1.8rem; color: #00d4ff; }
-        .auth-switch { margin-top: 15px; color: #00d4ff; cursor: pointer; }
-        .success-check { color: #00ff88; font-size: 2.5rem; animation: checkPop 0.5s ease; }
-        @keyframes checkPop { 0%{transform:scale(0);}80%{transform:scale(1.2);}100%{transform:scale(1);} }
-        .suggest-password { font-size: 12px; color: #00d4ff; cursor: pointer; margin-top: -5px; margin-bottom: 10px; text-align: left; }
-        @media (max-width: 640px) { .accounts-grid { grid-template-columns: 1fr; } }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+        body{background:#0f0f1a;color:#fff;padding-bottom:70px;}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#1a1a2a;}
+        .menu-btn,.profile-icon{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;}
+        .logo{font-size:1.2rem;font-weight:bold;color:#00d4ff;}
+        .sidebar{position:fixed;top:0;right:-260px;width:260px;height:100%;background:#1a1a2a;transition:0.3s;padding:20px;z-index:1000;border-left:1px solid #2a2a3a;}
+        .sidebar.open{right:0;}
+        .sidebar button{display:block;width:100%;text-align:right;padding:12px;margin:5px 0;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;border-radius:8px;}
+        .sidebar button:hover{background:#2a2a3a;}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a2a;display:flex;justify-content:space-around;padding:10px;z-index:100;border-top:1px solid #2a2a3a;}
+        .bottom-nav button{background:none;border:none;color:#888;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+        .bottom-nav button i{font-size:20px;}
+        .bottom-nav button.active{color:#00d4ff;}
+        .page{display:none;padding:15px;}
+        .active-page{display:block;}
+        .accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;}
+        .card{background:#1e1e2e;padding:12px;border-radius:14px;border:1px solid #2a2a3a;}
+        .card h3{font-size:1rem;margin-bottom:6px;}
+        .card p{font-size:0.75rem;margin:3px 0;color:#aaa;}
+        .card img{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:8px;}
+        .btn-primary{background:#00d4ff;border:none;padding:6px 12px;border-radius:25px;color:#111;cursor:pointer;font-weight:bold;font-size:0.75rem;}
+        .btn-outline{background:transparent;border:1px solid #00d4ff;color:#00d4ff;padding:5px 10px;border-radius:25px;cursor:pointer;font-size:0.75rem;}
+        .btn-danger{background:#ff4444;border:none;padding:6px 12px;border-radius:25px;color:#fff;cursor:pointer;font-size:0.75rem;}
+        .filter-row{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap;}
+        .filter-row input,.filter-row select{flex:1;padding:8px;border-radius:20px;background:#1e1e2e;border:1px solid #2a2a3a;color:#fff;font-size:0.8rem;}
+        input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:10px;background:#1e1e2e;color:#fff;border:1px solid #2a2a3a;}
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:10000;}
+        .modal-content{background:#1e1e2e;padding:20px;border-radius:16px;width:90%;max-width:450px;max-height:85vh;overflow-y:auto;}
+        .image-scroll{display:flex;overflow-x:auto;gap:8px;padding:8px 0;margin:8px 0;}
+        .image-scroll img{width:100px;height:100px;object-fit:cover;border-radius:10px;cursor:pointer;}
+        .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
+        .image-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;}
+        .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;cursor:pointer;border:2px solid #00d4ff;}
+        .chat-messages{height:250px;overflow-y:auto;background:#0f0f1a;border-radius:12px;padding:8px;margin-bottom:8px;}
+        .conversation-item{padding:12px;border-bottom:1px solid #2a2a3a;cursor:pointer;}
+        .conversation-item:hover{background:#2a2a3a;}
+        .auth-container{position:fixed;inset:0;background:#0f0f1a;display:flex;align-items:center;justify-content:center;z-index:10001;}
+        .auth-card{background:#1e1e2e;border-radius:25px;padding:25px;width:90%;max-width:350px;text-align:center;border:1px solid #00d4ff;}
+        .social-icons-row{display:flex;justify-content:center;gap:12px;margin:15px 0;}
+        .social-icons-row i{font-size:1.5rem;color:#00d4ff;}
+        .auth-switch{margin-top:12px;color:#00d4ff;cursor:pointer;}
+        .success-check{color:#00ff88;font-size:2rem;animation:checkPop 0.5s ease;}
+        @keyframes checkPop{0%{transform:scale(0);}80%{transform:scale(1.2);}100%{transform:scale(1);}}
+        @media(max-width:640px){.accounts-grid{grid-template-columns:1fr;}}
     </style>
 </head>
 <body>
 <div id="splash" style="position:fixed; inset:0; background:#0f0f1a; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:9999;">
-    <div style="font-size:42px; color:#00d4ff;">SAM</div>
-    <div style="margin-top:10px;">سوق الحسابات</div>
+    <div style="font-size:40px; color:#00d4ff;">SAM</div>
+    <div>سوق الحسابات</div>
 </div>
 
 <div id="app" style="display:none;">
     <div class="sidebar" id="sidebar">
-        <div style="font-size:22px; margin-bottom:30px;">القائمة</div>
-        <button id="menuHome">🏠 الرئيسية</button>
-        <button id="menuMyAccounts">📦 حساباتي</button>
-        <button id="menuAddAccount">➕ إضافة حساب</button>
-        <button id="menuMessages">💬 الرسائل</button>
-        <button id="menuSupport">🛠️ الدعم الفني</button>
-        <button id="menuAbout">ℹ️ عن التطبيق</button>
-        <button id="themeToggleSide">🌙 الوضع الليلي</button>
-        <select id="langSelect">
-            <option value="ar">🇸🇦 العربية</option>
-            <option value="en">🇺🇸 English</option>
-        </select>
+        <div style="font-size:20px; margin-bottom:20px;">القائمة</div>
+        <button onclick="window.showPage('home')">🏠 الرئيسية</button>
+        <button onclick="window.showPage('my-accounts')">📦 حساباتي</button>
+        <button onclick="window.showAddModal()">➕ إضافة حساب</button>
+        <button onclick="window.showPage('messages')">💬 الرسائل</button>
+        <button onclick="window.showPage('support')">🛠️ الدعم</button>
+        <button onclick="window.showPage('about')">ℹ️ عن التطبيق</button>
         <button id="logoutBtnSide">🚪 تسجيل الخروج</button>
     </div>
     
     <div class="header">
-        <button class="profile-icon" id="profileIcon">👤</button>
+        <button class="profile-icon" onclick="window.showPage('profile')">👤</button>
         <div class="logo">سوق الحسابات</div>
         <button class="menu-btn" id="menuBtn">☰</button>
     </div>
@@ -89,62 +80,46 @@
     <div id="homePage" class="page active-page">
         <h2>🔥 الحسابات المتاحة</h2>
         <div class="filter-row">
-            <input type="text" id="searchInput" placeholder="🔍 بحث بالاسم أو المنصة...">
-            <select id="platformFilter"><option value="all">كل المنصات</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option><option>Telegram</option></select>
-            <select id="priceSort"><option value="">ترتيب السعر</option><option value="asc">الأقل سعراً</option><option value="desc">الأعلى سعراً</option></select>
+            <input type="text" id="searchInput" placeholder="بحث...">
+            <select id="platformFilter"><option value="all">الكل</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
-    <div id="myAccountsPage" class="page"><h2>📦 حساباتي (التي نشرتها)</h2><div id="myAccountsList" class="accounts-grid"></div></div>
+    <div id="myAccountsPage" class="page"><h2>📦 حساباتي</h2><div id="myAccountsList" class="accounts-grid"></div></div>
     <div id="addAccountPage" class="page"></div>
     
     <div id="profilePage" class="page">
         <h2>👤 الملف الشخصي</h2>
         <div style="text-align:center;">
-            <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/100">
+            <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/80">
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
-            <div style="background:#9b59b6; display:inline-block; padding:4px 12px; border-radius:40px; margin-top:8px;">🆔 <span id="userId"></span></div>
+            <div style="background:#9b59b6; display:inline-block; padding:3px 10px; border-radius:30px; margin-top:8px;">🆔 <span id="userId"></span></div>
         </div>
         <form id="profileForm">
-            <input id="pName" placeholder="الاسم الكامل">
-            <input id="pEmail" placeholder="البريد الإلكتروني">
-            <div style="display: flex; gap: 8px;"><select id="phoneCode" style="width: 35%;"></select><input id="pPhone" placeholder="رقم الهاتف" style="flex:1"></div>
-            <input id="pCity" placeholder="المدينة">
-            <select id="pCountry"><option value="">اختر الدولة</option></select>
-            <input id="pZip" placeholder="الرمز البريدي (اختياري)">
-            <button type="submit" class="btn-primary">حفظ المعلومات</button>
+            <input id="pName" placeholder="الاسم"><input id="pEmail" placeholder="البريد">
+            <input id="pPhone" placeholder="الهاتف"><input id="pCity" placeholder="المدينة">
+            <select id="pCountry"><option>السعودية</option><option>اليمن</option><option>مصر</option><option>الإمارات</option></select>
+            <button type="submit" class="btn-primary">حفظ</button>
         </form>
     </div>
     
-    <div id="messagesPage" class="page"><h2>💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMessages" class="chat-messages"></div><input id="messageInput" placeholder="اكتب رسالة..."><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
+    <div id="messagesPage" class="page"><h2>💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMessages" class="chat-messages"></div><input id="messageInput" placeholder="رسالة..."><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
     
-    <div id="supportPage" class="page">
-        <h2>📞 الدعم الفني</h2>
-        <form id="supportForm">
-            <select id="issueType"><option>مشكلة في الشراء</option><option>مشكلة في البيع</option><option>مشكلة في الدردشة</option><option>اقتراح</option><option>أخرى</option></select>
-            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..."></textarea>
-            <div><label>إرفاق صورة</label><input type="file" id="supportImage" accept="image/*"><div id="supportImagePreview"></div></div>
-            <button type="submit" class="btn-primary">إرسال</button>
-        </form>
-    </div>
+    <div id="supportPage" class="page"><h2>📞 الدعم</h2><form id="supportForm"><textarea id="supportMsg" placeholder="مشكلتك..."></textarea><button type="submit" class="btn-primary">إرسال</button></form></div>
     
-    <div id="aboutPage" class="page">
-        <div style="text-align:center; font-size:40px; margin:20px;"><i class="fas fa-shield-alt" style="color:#00d4ff;"></i></div>
-        <h2 style="text-align:center;">سوق الحسابات</h2>
-        <p style="text-align:center;">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي<br><br>🔒 آمن ومضمون<br>⚡ فوري وسريع<br><br>تطوير: <strong style="color:#00d4ff;">Ameen Al-Zawahi</strong></p>
-    </div>
+    <div id="aboutPage" class="page"><div style="text-align:center; font-size:40px; margin:15px;"><i class="fas fa-shield-alt" style="color:#00d4ff;"></i></div><h2 style="text-align:center;">سوق الحسابات</h2><p style="text-align:center;">منصة بيع وشراء الحسابات<br>تطوير: Ameen Al-Zawahi</p></div>
     
     <div class="bottom-nav">
-        <button id="navHome"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button id="navAdd"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
-        <button id="navMessages"><i class="fas fa-comment-dots"></i><span>الدردشات</span></button>
+        <button onclick="window.showPage('home')"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
+        <button onclick="window.showPage('messages')"><i class="fas fa-comment-dots"></i><span>الدردشات</span></button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, onSnapshot, increment, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyB3mtcnmHD-rPYxLXLFVhg6VPrNMPIetaw",
@@ -168,17 +143,22 @@
         return data.data.url;
     }
     
-    let currentUserObj = null;
+    let currentUser = null;
     
-    async function incrementViews(accountId) {
-        if (!accountId) return;
-        const accountRef = doc(db, 'accounts', accountId);
-        await updateDoc(accountRef, { views: increment(1) });
-    }
+    window.showPage = function(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(pageId + 'Page').classList.add('active-page');
+        document.getElementById('sidebar').classList.remove('open');
+        if (pageId === 'home') loadAccounts();
+        if (pageId === 'my-accounts') loadMyAccounts();
+        if (pageId === 'messages') {
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
+            loadConversations();
+        }
+    };
     
-    async function showAccountDetails(account, accountId) {
-        await incrementViews(accountId);
-        account.views = (account.views || 0) + 1;
+    async function showDetails(account) {
         const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
         if (account.images && account.images.length) {
@@ -186,63 +166,78 @@
         }
         modal.innerHTML = `<div class="modal-content">
             <h3>${account.name}</h3>
-            <p><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</p>
-            <p>👥 ${account.followers?.toLocaleString()} متابع</p>
+            <p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p>
             <p>💰 ${account.price} ${account.currency}</p>
             <p>👁️ ${account.views || 0} مشاهدة</p>
             <p>🔗 <a href="${account.link}" target="_blank" style="color:#00d4ff;">${account.link}</a></p>
-            <p>📝 ${account.description || 'لا يوجد وصف'}</p>
+            <p>📝 ${account.description || ''}</p>
             ${imagesHtml}
             <button class="btn-primary" id="closeDetails">إغلاق</button>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeDetails').onclick = () => modal.remove();
+        await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
     }
     
-    async function openChatModal(sellerId, sellerName) {
-        if (!currentUserObj) return alert("تسجيل الدخول مطلوب");
-        if (sellerId === currentUserObj.uid) return alert("لا يمكن مراسلة نفسك");
-        const convId = [currentUserObj.uid, sellerId].sort().join('_');
+    window.openChat = async function(sellerId, sellerName) {
+        if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
+        if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
+        
+        const convId = [currentUser.uid, sellerId].sort().join('_');
         const convRef = doc(db, 'conversations', convId);
-        if (!(await getDoc(convRef)).exists()) await setDoc(convRef, { participants: [currentUserObj.uid, sellerId], updatedAt: Date.now() });
+        if (!(await getDoc(convRef)).exists()) {
+            await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
+        }
         
         const modal = document.createElement('div'); modal.className = 'modal';
+        const uid = Date.now();
         modal.innerHTML = `<div class="modal-content">
             <h3>💬 مراسلة: ${sellerName}</h3>
-            <div id="chatModalMessages" style="height:250px; overflow-y:auto; background:#0f0f1a; border-radius:16px; padding:8px; margin-bottom:8px;"></div>
-            <input type="text" id="chatModalInput" placeholder="اكتب رسالتك..." style="width:100%; padding:10px; border-radius:20px; background:#1e1e2e; border:1px solid #333; color:white;">
-            <button id="sendModalMsg" class="btn-primary" style="margin-top:8px;">إرسال</button>
-            <button id="closeModalChat" class="btn-outline" style="margin-top:8px;">إغلاق</button>
+            <div id="chatArea_${uid}" style="height:250px; overflow-y:auto; background:#0f0f1a; border-radius:12px; padding:8px; margin-bottom:8px;"></div>
+            <input type="text" id="chatInput_${uid}" placeholder="اكتب رسالتك..." style="width:100%; padding:8px; border-radius:20px; background:#1e1e2e; border:1px solid #2a2a3a; color:#fff;">
+            <button id="sendBtn_${uid}" class="btn-primary" style="margin-top:8px;">إرسال</button>
+            <button id="closeBtn_${uid}" class="btn-outline" style="margin-top:8px;">إغلاق</button>
         </div>`;
         document.body.appendChild(modal);
         
-        const messagesDiv = modal.querySelector('#chatModalMessages');
-        const inputField = modal.querySelector('#chatModalInput');
-        const sendBtn = modal.querySelector('#sendModalMsg');
-        const closeBtn = modal.querySelector('#closeModalChat');
+        const messagesDiv = modal.querySelector(`#chatArea_${uid}`);
+        const inputField = modal.querySelector(`#chatInput_${uid}`);
+        const sendBtn = modal.querySelector(`#sendBtn_${uid}`);
+        const closeBtn = modal.querySelector(`#closeBtn_${uid}`);
         
-        const key = getKey(convId.split('_')[0], convId.split('_')[1]);
         const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
         const unsubscribe = onSnapshot(q, (snap) => {
             messagesDiv.innerHTML = '';
+            if (snap.empty) {
+                messagesDiv.innerHTML = '<div style="text-align:center;color:#aaa; padding:20px;">ابدأ المحادثة 👇</div>';
+                return;
+            }
             snap.forEach(msgDoc => {
                 const data = msgDoc.data();
-                const decrypted = decrypt(data.encryptedText, key);
-                const isMe = data.senderId === currentUserObj.uid;
-                messagesDiv.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${decrypted}</span></div>`;
+                const isMe = data.senderId === currentUser.uid;
+                messagesDiv.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;">
+                    <span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">
+                        <strong>${isMe ? 'أنت' : sellerName}:</strong> ${data.text}
+                    </span>
+                </div>`;
             });
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         });
+        
         sendBtn.onclick = async () => {
             const txt = inputField.value.trim();
             if (!txt) return;
-            const encrypted = encrypt(txt, key);
-            await setDoc(doc(collection(db, 'conversations', convId, 'messages')), { encryptedText: encrypted, senderId: currentUserObj.uid, timestamp: Date.now() });
+            // ✅ استخدام addDoc بدلاً من setDoc
+            await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                text: txt,
+                senderId: currentUser.uid,
+                timestamp: Date.now()
+            });
             inputField.value = '';
-            await updateDoc(doc(db, 'conversations', convId), { updatedAt: Date.now() });
         };
+        
         closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
-    }
+    };
     
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
@@ -252,127 +247,137 @@
             const snap = await getDocs(q);
             let accounts = [];
             snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
-            const platformFilter = document.getElementById('platformFilter')?.value || "all";
-            const sortVal = document.getElementById('priceSort')?.value || "";
-            let filtered = accounts.filter(acc => {
-                const matchSearch = acc.name?.toLowerCase().includes(searchTerm) || acc.platform?.toLowerCase().includes(searchTerm);
-                const matchPlatform = platformFilter === "all" || acc.platform === platformFilter;
+            
+            const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
+            const platform = document.getElementById('platformFilter')?.value || "all";
+            let filtered = accounts.filter(a => {
+                const matchSearch = a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search);
+                const matchPlatform = platform === "all" || a.platform === platform;
                 return matchSearch && matchPlatform;
             });
-            if (sortVal === "asc") filtered.sort((a,b) => a.price - b.price);
-            if (sortVal === "desc") filtered.sort((a,b) => b.price - a.price);
-            if (filtered.length === 0) { container.innerHTML = `<div>لا توجد حسابات</div>`; return; }
+            if (filtered.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+            
             let html = '';
             for (const acc of filtered) {
                 let sellerName = "مستخدم";
                 const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
                 if (userSnap.exists()) sellerName = userSnap.data().name || sellerName;
-                html += `<div class="card" data-id="${acc.id}">
+                html += `<div class="card">
                     <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3>
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
-                    <p>💰 ${acc.price} ${acc.currency}</p>
-                    <p>👁️ ${acc.views || 0} مشاهدة</p>
+                    <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     ${acc.images?.[0] ? `<img src="${acc.images[0]}">` : ''}
-                    <button class="message-btn" data-seller="${acc.sellerId}" data-sellername="${sellerName}">📩 مراسلة البائع</button>
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="details-btn" data-id='${acc.id}' style="background:#00d4ff; border:none; padding:6px 12px; border-radius:25px; color:#111; cursor:pointer; font-weight:bold; font-size:0.75rem;">🔍 تفاصيل</button>
+                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid #00d4ff; color:#00d4ff; padding:5px 10px; border-radius:25px; cursor:pointer; font-size:0.75rem;">💬 مراسلة</button>
+                    </div>
                 </div>`;
             }
             container.innerHTML = html;
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('message-btn')) return;
-                    const id = card.dataset.id;
-                    const acc = filtered.find(a => a.id === id);
-                    if (acc) showAccountDetails(acc, id);
-                });
+            
+            const accountsMap = {};
+            accounts.forEach(acc => accountsMap[acc.id] = acc);
+            
+            document.querySelectorAll('.details-btn').forEach(btn => {
+                btn.onclick = () => showDetails(accountsMap[btn.dataset.id]);
             });
-        } catch(e) { container.innerHTML = `<div>خطأ في التحميل</div>`; console.error(e); }
+        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
     }
     
     async function loadMyAccounts() {
-        if (!currentUserObj) {
-            document.getElementById('myAccountsList').innerHTML = `<div>يرجى تسجيل الدخول</div>`;
-            return;
+        if (!currentUser) { 
+            document.getElementById('myAccountsList').innerHTML = '<div class="card" style="text-align:center;">تسجيل الدخول مطلوب</div>'; 
+            return; 
         }
         const container = document.getElementById('myAccountsList');
-        container.innerHTML = 'جار التحميل...';
+        container.innerHTML = '<div class="card" style="text-align:center;">جار التحميل...</div>';
         try {
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUserObj.uid));
+            const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
             const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = `<div>لا توجد حسابات منشورة</div>`; return; }
+            console.log("عدد حساباتي المنشورة:", snap.size);
+            if (snap.empty) { 
+                container.innerHTML = '<div class="card" style="text-align:center;">لا توجد حسابات منشورة</div>'; 
+                return; 
+            }
             let html = '';
             snap.forEach(d => {
                 const acc = d.data();
-                html += `<div class="card" data-id="${d.id}">
-                    <h3>${acc.name}</h3>
+                html += `<div class="card">
+                    <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3>
                     <p>💰 ${acc.price} ${acc.currency}</p>
+                    <p>👥 ${acc.followers?.toLocaleString()} متابع</p>
                     <p>👁️ ${acc.views || 0} مشاهدة</p>
-                    <button class="edit-price-btn btn-primary" data-id="${d.id}" data-price="${acc.price}" style="margin-left:8px;">تعديل السعر</button>
-                    <button class="delete-acc-btn btn-outline" data-id="${d.id}">حذف</button>
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="edit-btn" data-id="${d.id}" data-price="${acc.price}" style="background:#00d4ff; border:none; padding:6px 12px; border-radius:25px; color:#111; cursor:pointer; font-weight:bold; font-size:0.75rem;">✏️ تعديل السعر</button>
+                        <button class="delete-btn" data-id="${d.id}" style="background:#ff4444; border:none; padding:6px 12px; border-radius:25px; color:#fff; cursor:pointer; font-size:0.75rem;">🗑️ حذف</button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
-            document.querySelectorAll('.edit-price-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = async () => {
                     const newPrice = prompt("أدخل السعر الجديد", btn.dataset.price);
                     if (newPrice && !isNaN(parseFloat(newPrice))) {
                         await updateDoc(doc(db, 'accounts', btn.dataset.id), { price: parseFloat(newPrice) });
                         loadMyAccounts();
                         loadAccounts();
+                        alert("تم تحديث السعر");
                     }
-                });
+                };
             });
-            document.querySelectorAll('.delete-acc-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (confirm("هل أنت متأكد من حذف هذا الحساب؟")) {
-                        await deleteDoc(doc(db, 'accounts', btn.dataset.id));
-                        loadMyAccounts();
-                        loadAccounts();
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) { 
+                        await deleteDoc(doc(db, 'accounts', btn.dataset.id)); 
+                        loadMyAccounts(); 
+                        loadAccounts(); 
+                        alert("تم حذف الحساب");
                     }
-                });
+                };
             });
-        } catch(e) { container.innerHTML = `<div>خطأ في التحميل</div>`; console.error(e); }
+        } catch(e) { 
+            container.innerHTML = '<div class="card" style="text-align:center;">خطأ في التحميل</div>'; 
+            console.error(e); 
+        }
     }
     
-    function getKey(u1, u2) { return CryptoJS.SHA256(u1+u2+"KEY").toString(); }
-    function encrypt(m,k) { return CryptoJS.AES.encrypt(m,k).toString(); }
-    function decrypt(c,k) { return CryptoJS.AES.decrypt(c,k).toString(CryptoJS.enc.Utf8); }
-    
     async function loadConversations() {
-        if (!currentUserObj) return;
-        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUserObj.uid));
+        if (!currentUser) return;
+        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
         onSnapshot(q, async (snap) => {
             const container = document.getElementById('convList');
-            if (snap.empty) { container.innerHTML = `<div>لا توجد محادثات</div>`; return; }
+            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
             let html = '';
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
-                const otherId = conv.participants.find(id => id !== currentUserObj.uid);
+                const otherId = conv.participants.find(id => id !== currentUser.uid);
                 const userSnap = await getDoc(doc(db, 'users', otherId));
-                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,8);
+                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
                 html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}</div>`;
             }
             container.innerHTML = html;
-            document.querySelectorAll('.conversation-item').forEach(el => el.onclick = () => loadConversation(el.dataset.convid));
+            document.querySelectorAll('.conversation-item').forEach(el => {
+                el.onclick = () => loadConversation(el.dataset.convid);
+            });
         });
     }
     
     async function loadConversation(convId) {
         document.getElementById('convList').style.display = 'none';
         document.getElementById('chatBox').style.display = 'block';
-        const parts = convId.split('_');
-        const key = getKey(parts[0], parts[1]);
         const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
         onSnapshot(q, (snap) => {
             const div = document.getElementById('chatMessages');
             div.innerHTML = '';
+            if (snap.empty) {
+                div.innerHTML = '<div style="text-align:center;color:#aaa; padding:20px;">ابدأ المحادثة 👇</div>';
+                return;
+            }
             snap.forEach(msg => {
                 const data = msg.data();
-                const dec = decrypt(data.encryptedText, key);
-                const isMe = data.senderId === currentUserObj.uid;
-                div.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${dec}</span></div>`;
+                const isMe = data.senderId === currentUser.uid;
+                div.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;"><strong>${isMe ? 'أنت' : 'الطرف الآخر'}:</strong> ${data.text}</span></div>`;
             });
             div.scrollTop = div.scrollHeight;
         });
@@ -380,10 +385,12 @@
             const inp = document.getElementById('messageInput');
             const txt = inp.value.trim();
             if (!txt) return;
-            const enc = encrypt(txt, key);
-            await setDoc(doc(collection(db, 'conversations', convId, 'messages')), { encryptedText: enc, senderId: currentUserObj.uid, timestamp: Date.now() });
+            await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                text: txt,
+                senderId: currentUser.uid,
+                timestamp: Date.now()
+            });
             inp.value = '';
-            await updateDoc(doc(db, 'conversations', convId), { updatedAt: Date.now() });
         };
         document.getElementById('backConv').onclick = () => {
             document.getElementById('chatBox').style.display = 'none';
@@ -392,237 +399,166 @@
         };
     }
     
-    let currentImageFiles = [];
-    function showAddModal() {
-        currentImageFiles = [];
+    window.showAddModal = function() {
+        let currentImageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ إضافة حساب جديد</h3>
-            <form id="modalAddForm">
-                <select id="modalPlatform" required><option value="">اختر المنصة</option>
-                <option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option><option>Telegram</option></select>
-                <input id="modalAccName" placeholder="اسم الحساب" required>
-                <input id="modalFollowers" placeholder="عدد المتابعين" type="number" required>
-                <div style="display:flex; gap:10px;"><input id="modalPrice" placeholder="السعر" type="number" required style="flex:1"><select id="modalCurrency" style="width:auto;"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار أمريكي</option></select></div>
-                <input id="modalLink" placeholder="رابط الحساب" required>
-                <textarea id="modalDesc" placeholder="وصف الحساب"></textarea>
-                <label>صور الإثبات (حد أقصى 3)</label><input type="file" id="modalImages" accept="image/*"><button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ إضافة صورة أخرى</button>
-                <div id="modalPreview" class="image-preview"></div>
-                <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">✅ نشر الحساب</button>
-                <button type="button" id="closeModalBtn" style="background:none; border:none; color:red; margin-top:10px;">إلغاء</button>
+        modal.innerHTML = `<div class="modal-content"><h3>➕ نشر حساب جديد</h3>
+            <form id="addForm">
+                <select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
+                <input id="addName" placeholder="اسم الحساب" required>
+                <input id="addFollowers" placeholder="عدد المتابعين" type="number" required>
+                <div style="display:flex; gap:8px;"><input id="addPrice" placeholder="السعر" type="number" required style="flex:1"><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div>
+                <input id="addLink" placeholder="رابط الحساب" required>
+                <textarea id="addDesc" placeholder="وصف الحساب"></textarea>
+                <label>صور الإثبات (حد أقصى 3)</label><input type="file" id="addImages" multiple accept="image/*">
+                <div id="previewImages" class="image-preview"></div>
+                <button type="submit" class="btn-primary">نشر</button>
+                <button type="button" id="cancelModal" class="btn-outline">إلغاء</button>
             </form></div>`;
         document.body.appendChild(modal);
-        const previewDiv = modal.querySelector('#modalPreview');
-        const imagesInput = modal.querySelector('#modalImages');
-        function updatePreview() {
+        const previewDiv = modal.querySelector('#previewImages');
+        const imagesInput = modal.querySelector('#addImages');
+        imagesInput.addEventListener('change', () => {
             previewDiv.innerHTML = '';
-            currentImageFiles.forEach((file, idx) => {
-                const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; wrapper.style.display = 'inline-block'; wrapper.style.margin = '5px';
-                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '70px'; img.style.height = '70px'; img.style.borderRadius = '10px'; img.style.objectFit = 'cover';
-                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.border = 'none'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '18px'; removeBtn.style.height = '18px'; removeBtn.style.color = 'white'; removeBtn.style.cursor = 'pointer';
-                removeBtn.onclick = () => { currentImageFiles.splice(idx, 1); updatePreview(); };
-                wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper);
+            Array.from(imagesInput.files).slice(0,3).forEach(f => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(f);
+                previewDiv.appendChild(img);
             });
-        }
-        imagesInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { if (currentImageFiles.length >= 3) alert("الحد الأقصى 3 صور"); else { currentImageFiles.push(file); updatePreview(); } }
-            imagesInput.value = '';
         });
-        modal.querySelector('#addImageBtn').onclick = () => imagesInput.click();
-        const form = modal.querySelector('#modalAddForm');
+        const form = modal.querySelector('#addForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUserObj) return alert("تسجيل الدخول مطلوب");
-            if (currentImageFiles.length === 0) return alert("ارفع صورة إثبات واحدة على الأقل");
-            const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.disabled = true; submitBtn.textContent = "جاري الرفع...";
+            // ✅ استخدام auth.currentUser للتأكد من وجود UID
+            const user = auth.currentUser;
+            if (!user) return alert("تسجيل الدخول مطلوب");
+            console.log("UID وقت النشر:", user.uid);
+            const files = Array.from(imagesInput.files);
+            if (files.length === 0) return alert("ارفع صورة");
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.textContent = "جاري الرفع...";
             try {
                 const urls = [];
-                for (let i=0; i<currentImageFiles.length; i++) urls.push(await uploadToImgBB(currentImageFiles[i]));
+                for (let i=0; i<Math.min(files.length,3); i++) urls.push(await uploadToImgBB(files[i]));
                 await setDoc(doc(collection(db, 'accounts')), {
-                    name: modal.querySelector('#modalAccName').value, link: modal.querySelector('#modalLink').value,
-                    platform: modal.querySelector('#modalPlatform').value, followers: parseInt(modal.querySelector('#modalFollowers').value),
-                    price: parseFloat(modal.querySelector('#modalPrice').value), currency: modal.querySelector('#modalCurrency').value,
-                    description: modal.querySelector('#modalDesc').value, images: urls, sellerId: currentUserObj.uid,
+                    name: document.getElementById('addName').value, link: document.getElementById('addLink').value,
+                    platform: document.getElementById('addPlatform').value, followers: parseInt(document.getElementById('addFollowers').value),
+                    price: parseFloat(document.getElementById('addPrice').value), currency: document.getElementById('addCurrency').value,
+                    description: document.getElementById('addDesc').value, images: urls, sellerId: user.uid,
                     views: 0, createdAt: Date.now()
                 });
-                alert("تم النشر بنجاح"); modal.remove(); loadAccounts();
+                alert("تم النشر"); modal.remove(); loadAccounts(); loadMyAccounts();
             } catch(err) { alert("خطأ: "+err.message); }
-            finally { submitBtn.disabled = false; submitBtn.textContent = "نشر الحساب"; }
+            finally { btn.disabled = false; btn.textContent = "نشر"; }
         });
-        modal.querySelector('#closeModalBtn').onclick = () => modal.remove();
-    }
+        modal.querySelector('#cancelModal').onclick = () => modal.remove();
+    };
     
-    const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
-    const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
-    function populateSelectors() {
-        const phoneSelect = document.getElementById('phoneCode');
-        if (phoneSelect) { phoneSelect.innerHTML = ''; phoneCodes.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); }); }
-        const countrySelect = document.getElementById('pCountry');
-        if (countrySelect) { countrySelect.innerHTML = '<option value="">اختر الدولة</option>'; arabCountries.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); }); }
-    }
     async function loadProfile() {
-        if (!currentUserObj) return;
-        const userRef = doc(db, 'users', currentUserObj.uid);
+        if (!currentUser) return;
+        const userRef = doc(db, 'users', currentUser.uid);
         const snap = await getDoc(userRef);
-        if (!snap.exists()) { const rid = Math.floor(1e9 + Math.random()*9e9); await setDoc(userRef, { userIdRandom: rid, email: currentUserObj.email, name: currentUserObj.displayName || '' }); }
+        if (!snap.exists()) {
+            const rid = Math.floor(1e9 + Math.random()*9e9);
+            await setDoc(userRef, { userIdRandom: rid, email: currentUser.email, name: currentUser.displayName || '' });
+        }
         const data = (await getDoc(userRef)).data();
-        document.getElementById('userId').innerText = data?.userIdRandom || currentUserObj.uid.slice(0,10);
+        document.getElementById('userId').innerText = data?.userIdRandom || currentUser.uid.slice(0,8);
         document.getElementById('pName').value = data?.name || '';
-        document.getElementById('pEmail').value = data?.email || currentUserObj.email;
-        let phoneFull = data?.phone || ''; let code='', number='';
-        if (phoneFull.startsWith('+')) { const parts = phoneFull.split(' '); code = parts[0]; number = parts.slice(1).join(' '); }
-        document.getElementById('phoneCode').value = code || '+966';
-        document.getElementById('pPhone').value = number || '';
+        document.getElementById('pEmail').value = data?.email || currentUser.email;
+        document.getElementById('pPhone').value = data?.phone || '';
         document.getElementById('pCity').value = data?.city || '';
-        document.getElementById('pCountry').value = data?.country || '';
-        document.getElementById('pZip').value = data?.zip || '';
+        document.getElementById('pCountry').value = data?.country || 'السعودية';
         if (data?.avatar) document.getElementById('avatarImg').src = data.avatar;
-        else if (currentUserObj.photoURL) document.getElementById('avatarImg').src = currentUserObj.photoURL;
+        else if (currentUser.photoURL) document.getElementById('avatarImg').src = currentUser.photoURL;
     }
     document.getElementById('avatarImg')?.addEventListener('click', () => document.getElementById('avatarUpload').click());
     document.getElementById('avatarUpload')?.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (file && currentUserObj) {
+        if (file && currentUser) {
             const url = await uploadToImgBB(file);
-            await updateDoc(doc(db, 'users', currentUserObj.uid), { avatar: url });
+            await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
             document.getElementById('avatarImg').src = url;
-            await updateProfile(currentUserObj, { photoURL: url });
+            await updateProfile(currentUser, { photoURL: url });
             alert("تم تحديث الصورة");
         }
     });
     document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const code = document.getElementById('phoneCode').value;
-        const number = document.getElementById('pPhone').value;
-        await updateDoc(doc(db, 'users', currentUserObj.uid), {
-            name: document.getElementById('pName').value, phone: code + ' ' + number,
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            name: document.getElementById('pName').value, phone: document.getElementById('pPhone').value,
             city: document.getElementById('pCity').value, country: document.getElementById('pCountry').value,
-            zip: document.getElementById('pZip').value, email: document.getElementById('pEmail').value
+            email: document.getElementById('pEmail').value
         });
         alert("تم حفظ الملف الشخصي");
     });
     
-    document.getElementById('supportImage')?.addEventListener('change', (e) => {
-        const f = e.target.files[0];
-        if (f) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.style.width = '80px'; img.style.borderRadius = '10px'; document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImagePreview').appendChild(img); }
-    });
     document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!currentUserObj) return alert("تسجيل الدخول مطلوب");
-        let imgUrl = '';
-        const imgFile = document.getElementById('supportImage').files[0];
-        if (imgFile) imgUrl = await uploadToImgBB(imgFile);
-        await setDoc(doc(collection(db, 'supportTickets')), { userId: currentUserObj.uid, type: document.getElementById('issueType').value, message: document.getElementById('supportMsg').value, image: imgUrl, timestamp: Date.now() });
+        if (!currentUser) return;
+        await setDoc(doc(collection(db, 'supportTickets')), { userId: currentUser.uid, message: document.getElementById('supportMsg').value, timestamp: Date.now() });
         alert("تم إرسال طلب الدعم");
-        document.getElementById('supportMsg').value = ''; document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImage').value = '';
+        document.getElementById('supportMsg').value = '';
     });
-    
-    function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(pageId + 'Page').classList.add('active-page');
-        if (pageId === 'home') loadAccounts();
-        if (pageId === 'my-accounts') loadMyAccounts();
-        if (pageId === 'messages') { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); }
-        document.getElementById('sidebar').classList.remove('open');
-        document.querySelectorAll('.bottom-nav button').forEach(btn => btn.classList.remove('active'));
-        if (pageId === 'home') document.getElementById('navHome').classList.add('active');
-        if (pageId === 'messages') document.getElementById('navMessages').classList.add('active');
-    }
-    
-    // ربط الأحداث
-    document.addEventListener("click", function(e) {
-        if (e.target.classList.contains("message-btn")) {
-            const sellerId = e.target.dataset.seller;
-            const sellerName = e.target.dataset.sellername;
-            if (sellerId && sellerName) {
-                openChatModal(sellerId, sellerName);
-            }
-        }
-    });
-    
-    document.getElementById("menuHome").addEventListener("click", () => showPage('home'));
-    document.getElementById("menuMyAccounts").addEventListener("click", () => {
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
-        document.getElementById("myAccountsPage").classList.add("active-page");
-        loadMyAccounts();
-    });
-    document.getElementById("menuAddAccount").addEventListener("click", () => showAddModal());
-    document.getElementById("menuMessages").addEventListener("click", () => showPage('messages'));
-    document.getElementById("menuSupport").addEventListener("click", () => showPage('support'));
-    document.getElementById("menuAbout").addEventListener("click", () => showPage('about'));
     
     document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('profileIcon').onclick = () => showPage('profile');
-    document.getElementById('navHome').onclick = () => showPage('home');
-    document.getElementById('navAdd').onclick = () => showAddModal();
-    document.getElementById('navMessages').onclick = () => showPage('messages');
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
-    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
-    document.getElementById('langSelect').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if (currentUserObj) { loadAccounts(); loadMyAccounts(); loadConversations(); } };
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('priceSort')?.addEventListener('change', () => loadAccounts());
     
     let authContainer = null;
-    function generateStrongPassword() { return Math.random().toString(36).slice(-10) + "!@#"; }
     function showLoginScreen() {
         if (authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>🔐 تسجيل الدخول</h2><input type="email" id="loginEmail" placeholder="البريد الإلكتروني" autocomplete="email"><input type="password" id="loginPassword" placeholder="كلمة المرور" autocomplete="current-password"><button id="doLoginBtn" class="btn-primary" style="width:100%;margin-top:10px;">تسجيل الدخول</button><div class="auth-switch" id="switchToRegister">إنشاء حساب جديد</div><button id="googleLoginBtn" class="btn-outline" style="width:100%;margin-top:10px;"><i class="fab fa-google"></i> Google</button><div id="loginError" style="color:red;margin-top:10px;"></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>🔐 تسجيل الدخول</h2><input id="loginEmail" placeholder="البريد"><input id="loginPassword" type="password" placeholder="كلمة المرور"><button id="doLogin" class="btn-primary" style="width:100%;margin-top:10px;">دخول</button><div class="auth-switch" id="toRegister">إنشاء حساب</div><button id="googleLogin" class="btn-outline" style="width:100%;margin-top:10px;">Google</button><div id="loginError" style="color:red;"></div></div>`;
         document.body.appendChild(authContainer);
-        document.getElementById('doLoginBtn').onclick = async () => {
-            const email = document.getElementById('loginEmail').value, pass = document.getElementById('loginPassword').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); authContainer.remove(); authContainer=null; } catch(e) { document.getElementById('loginError').innerText = e.message; }
+        document.getElementById('doLogin').onclick = async () => {
+            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
-        document.getElementById('switchToRegister').onclick = () => showRegisterScreen();
-        document.getElementById('googleLoginBtn').onclick = async () => {
-            try { await signInWithPopup(auth, provider); authContainer.remove(); authContainer=null; } catch(e) { document.getElementById('loginError').innerText = e.message; }
+        document.getElementById('toRegister').onclick = () => showRegisterScreen();
+        document.getElementById('googleLogin').onclick = async () => {
+            try { await signInWithPopup(auth, provider); authContainer.remove(); } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
     }
     function showRegisterScreen() {
         if (authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>📝 إنشاء حساب جديد</h2><input type="text" id="regName" placeholder="الاسم الكامل"><input type="email" id="regEmail" placeholder="البريد الإلكتروني" autocomplete="email"><input type="password" id="regPassword" placeholder="كلمة المرور" autocomplete="new-password"><div class="suggest-password" id="suggestPasswordBtn">🔑 اقتراح كلمة مرور قوية</div><div id="passwordSuggestionDisplay" class="password-suggestion" style="display:none;"></div><select id="regCountry"><option value="">اختر الدولة</option>${arabCountries.map(c=>`<option>${c}</option>`).join('')}</select><button id="doRegisterBtn" class="btn-primary" style="width:100%;margin-top:10px;">إنشاء حساب</button><div class="auth-switch" id="switchToLogin">لديك حساب؟ تسجيل الدخول</div><div id="registerError" style="color:red;margin-top:10px;"></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>📝 إنشاء حساب</h2><input id="regName" placeholder="الاسم"><input id="regEmail" placeholder="البريد"><input id="regPassword" type="password" placeholder="كلمة المرور"><button id="doRegister" class="btn-primary" style="width:100%;margin-top:10px;">إنشاء</button><div class="auth-switch" id="toLogin">تسجيل الدخول</div><div id="regError" style="color:red;"></div></div>`;
         document.body.appendChild(authContainer);
-        const passwordField = document.getElementById('regPassword');
-        document.getElementById('suggestPasswordBtn').onclick = () => {
-            const strongPass = generateStrongPassword(); passwordField.value = strongPass;
-            const disp = document.getElementById('passwordSuggestionDisplay'); disp.style.display = 'block'; disp.innerHTML = `🔐 كلمة المرور المقترحة: ${strongPass}`; setTimeout(()=>disp.style.display='none',5000);
-        };
-        document.getElementById('doRegisterBtn').onclick = async () => {
-            const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, password = document.getElementById('regPassword').value, country = document.getElementById('regCountry').value;
-            if (!name || !email || !password || !country) { document.getElementById('registerError').innerText = "املأ جميع الحقول"; return; }
+        document.getElementById('doRegister').onclick = async () => {
+            const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, pass = document.getElementById('regPassword').value;
+            if (!name || !email || !pass) { document.getElementById('regError').innerText = "املأ الحقول"; return; }
             try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 await updateProfile(userCred.user, { displayName: name });
                 const rid = Math.floor(1e9 + Math.random()*9e9);
-                await setDoc(doc(db, 'users', userCred.user.uid), { userIdRandom: rid, email, name, country, createdAt: Date.now() });
-                const btn = document.getElementById('doRegisterBtn');
-                btn.innerHTML = '<span class="success-check">✓</span> تم إنشاء الحساب!';
+                await setDoc(doc(db, 'users', userCred.user.uid), { userIdRandom: rid, email, name, createdAt: Date.now() });
+                const btn = document.getElementById('doRegister');
+                btn.innerHTML = '<span class="success-check">✓</span> تم!';
                 btn.disabled = true;
                 setTimeout(() => { showLoginScreen(); }, 1500);
-            } catch(e) { document.getElementById('registerError').innerText = e.message; }
+            } catch(e) { document.getElementById('regError').innerText = e.message; }
         };
-        document.getElementById('switchToLogin').onclick = () => showLoginScreen();
+        document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
     
     onAuthStateChanged(auth, async (user) => {
-        currentUserObj = user;
+        currentUser = user;
         const splash = document.getElementById('splash');
         const appDiv = document.getElementById('app');
         if (user) {
+            console.log("✅ مستخدم مسجل:", user.email, "UID:", user.uid);
             splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
-            await loadProfile(); populateSelectors(); loadAccounts(); showPage('home');
+            await loadProfile(); 
+            await loadAccounts(); 
+            await loadMyAccounts();
+            window.showPage('home');
         } else {
             appDiv.style.display = 'none'; splash.style.display = 'flex'; splash.style.opacity = '1';
-            setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 1000);
+            setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
         }
     });
-    setTimeout(() => { if (!currentUserObj && document.getElementById('splash').style.display !== 'none') { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; showLoginScreen(); }, 500); } }, 2000);
-    
-    let currentLang = "ar";
-    function updateUI() {}
+    setTimeout(() => { if (!currentUser && document.getElementById('splash').style.display !== 'none') { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; showLoginScreen(); }, 500); } }, 2000);
 </script>
 </body>
 </html>
