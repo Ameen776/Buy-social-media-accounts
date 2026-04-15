@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>سوق الحسابات - النسخة النهائية</title>
+    <title>سوق الحسابات - لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
@@ -132,7 +132,13 @@
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
-    <div id="myAccountsPage" class="page"><h2 data-i18n="myAccountsTitle">📦 حساباتي (لوحة التحكم)</h2><div id="myAccountsList" class="accounts-grid"></div></div>
+    <div id="myAccountsPage" class="page">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 data-i18n="myAccountsTitle">📦 حساباتي (لوحة التحكم)</h2>
+            <button id="refreshMyAccounts" class="btn-outline" style="padding:4px 12px;">🔄 تحديث</button>
+        </div>
+        <div id="myAccountsList" class="accounts-grid"></div>
+    </div>
     <div id="addAccountPage" class="page"></div>
     
     <div id="profilePage" class="page">
@@ -222,6 +228,7 @@
     let currentUser = null;
     let unreadCount = 0;
     let currentLang = "ar";
+    let myAccountsUnsubscribe = null;
     
     const translations = {
         ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي (لوحة التحكم)", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث..." },
@@ -241,7 +248,9 @@
         document.getElementById(pageId + 'Page').classList.add('active-page');
         document.getElementById('sidebar').classList.remove('open');
         if (pageId === 'home') loadAccounts();
-        if (pageId === 'my-accounts') loadMyAccounts();
+        if (pageId === 'my-accounts') {
+            loadMyAccountsRealtime();
+        }
         if (pageId === 'messages') {
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
@@ -405,37 +414,50 @@
                 description: modal.querySelector('#editDesc').value,
                 images: imageUrls
             });
-            alert("تم التحديث"); modal.remove(); loadMyAccounts(); loadAccounts();
+            alert("تم التحديث"); modal.remove(); 
+            // تحديث لوحة التحكم والصفحة الرئيسية
+            if (myAccountsUnsubscribe) loadMyAccountsRealtime();
+            loadAccounts();
         };
         modal.querySelector('#cancelEditBtn').onclick = () => modal.remove();
     }
     
-    async function loadMyAccounts() {
-        if (!currentUser) { document.getElementById('myAccountsList').innerHTML = '<div class="card">تسجيل الدخول مطلوب</div>'; return; }
+    // دالة حية (realtime) لجلب حسابات المستخدم الحالي وتحديثها تلقائياً
+    function loadMyAccountsRealtime() {
+        if (!currentUser) {
+            document.getElementById('myAccountsList').innerHTML = '<div class="card">تسجيل الدخول مطلوب</div>';
+            return;
+        }
+        if (myAccountsUnsubscribe) myAccountsUnsubscribe();
         const container = document.getElementById('myAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
-        try {
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
-            const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>'; return; }
+        const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
+        myAccountsUnsubscribe = onSnapshot(q, (snap) => {
+            if (snap.empty) {
+                container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
+                return;
+            }
             let html = '';
-            snap.forEach(d => {
-                const acc = d.data();
+            snap.forEach(docSnap => {
+                const acc = docSnap.data();
                 html += `<div class="card">
                     <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3>
                     <p>💰 ${acc.price} ${acc.currency}</p>
                     <p>👥 ${acc.followers?.toLocaleString()} متابع</p>
                     <p>👁️ ${acc.views || 0} مشاهدة</p>
                     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
-                        <button class="full-edit-btn btn-primary" data-id="${d.id}" data-account='${JSON.stringify(acc)}'>✏️ تعديل كامل</button>
-                        <button class="delete-btn btn-danger" data-id="${d.id}">🗑️ حذف</button>
+                        <button class="full-edit-btn btn-primary" data-id="${docSnap.id}" data-account='${JSON.stringify(acc)}'>✏️ تعديل كامل</button>
+                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ حذف</button>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
             document.querySelectorAll('.full-edit-btn').forEach(btn => { btn.onclick = () => { const acc = JSON.parse(btn.dataset.account); showFullEditModal(btn.dataset.id, acc); }; });
-            document.querySelectorAll('.delete-btn').forEach(btn => { btn.onclick = async () => { if(confirm("حذف الحساب نهائياً؟")){ await deleteDoc(doc(db, 'accounts', btn.dataset.id)); loadMyAccounts(); loadAccounts(); alert("تم الحذف"); } }; });
-        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; console.error(e); }
+            document.querySelectorAll('.delete-btn').forEach(btn => { btn.onclick = async () => { if(confirm("حذف الحساب نهائياً؟")){ await deleteDoc(doc(db, 'accounts', btn.dataset.id)); alert("تم الحذف"); } }; });
+        }, (error) => {
+            console.error("خطأ في الاستماع لحساباتي:", error);
+            container.innerHTML = '<div class="card">خطأ في التحميل</div>';
+        });
     }
     
     async function loadConversationsWithNotification() {
@@ -553,7 +575,8 @@
                     description: document.getElementById('addDesc').value, images: urls, sellerId: user.uid,
                     views: 0, createdAt: Date.now()
                 });
-                alert("تم النشر"); modal.remove(); loadAccounts(); loadMyAccounts();
+                alert("تم النشر"); modal.remove(); loadAccounts(); 
+                if (myAccountsUnsubscribe) loadMyAccountsRealtime();
             } catch(err) { alert("خطأ: "+err.message); }
             finally { btn.disabled = false; btn.textContent = "نشر"; }
         });
@@ -629,8 +652,9 @@
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); loadMyAccounts(); loadConversationsWithNotification(); } };
+    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); if(myAccountsUnsubscribe) loadMyAccountsRealtime(); loadConversationsWithNotification(); } };
     document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
+    document.getElementById('refreshMyAccounts')?.addEventListener('click', () => { if(myAccountsUnsubscribe) loadMyAccountsRealtime(); });
     
     let authContainer = null;
     function generateStrongPassword() { return Math.random().toString(36).slice(-12) + "!@#"; }
@@ -698,8 +722,10 @@
         const splash = document.getElementById('splash');
         const appDiv = document.getElementById('app');
         if (user) {
+            console.log("✅ مستخدم مسجل:", user.email, "UID:", user.uid);
             splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
-            await loadProfile(); populateSelectors(); await loadAccounts(); await loadMyAccounts(); 
+            await loadProfile(); populateSelectors(); await loadAccounts(); 
+            if (myAccountsUnsubscribe) loadMyAccountsRealtime();
             await loadConversationsWithNotification();
             window.showPage('home');
         } else {
