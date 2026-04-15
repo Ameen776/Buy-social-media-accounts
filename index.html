@@ -9,52 +9,73 @@
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-        body{background:#0f0f1a;color:#fff;padding-bottom:70px;}
-        .header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#1a1a2a;position:sticky;top:0;z-index:99;}
-        .menu-btn,.profile-icon{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;}
-        .logo{font-size:1.2rem;font-weight:bold;color:#00d4ff;}
-        .sidebar{position:fixed;top:0;right:-260px;width:260px;height:100%;background:#1a1a2a;transition:0.3s;padding:20px;z-index:1000;border-left:1px solid #2a2a3a;overflow-y:auto;}
+        :root {
+            --bg-body: #0f0f1a;
+            --bg-header: #1a1a2a;
+            --bg-card: #1e1e2e;
+            --text-primary: #fff;
+            --text-secondary: #aaa;
+            --border-color: #2a2a3a;
+            --accent: #00d4ff;
+            --accent-purple: #9b59b6;
+        }
+        body.light {
+            --bg-body: #f0f0f8;
+            --bg-header: #e0e0e8;
+            --bg-card: #ffffff;
+            --text-primary: #111;
+            --text-secondary: #555;
+            --border-color: #ccc;
+            --accent: #0077b6;
+            --accent-purple: #6a4e9b;
+        }
+        body{background:var(--bg-body);color:var(--text-primary);transition:0.3s;padding-bottom:70px;}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:var(--bg-header);position:sticky;top:0;z-index:99;}
+        .menu-btn,.profile-icon{background:none;border:none;color:var(--text-primary);font-size:26px;cursor:pointer;}
+        .logo{font-size:1.2rem;font-weight:bold;color:var(--accent);}
+        .sidebar{position:fixed;top:0;right:-260px;width:260px;height:100%;background:var(--bg-header);transition:0.3s;padding:20px;z-index:1000;border-left:1px solid var(--border-color);overflow-y:auto;}
         .sidebar.open{right:0;}
-        .sidebar button{display:block;width:100%;text-align:right;padding:12px;margin:5px 0;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;border-radius:8px;}
-        .sidebar button:hover{background:#2a2a3a;}
-        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a2a;display:flex;justify-content:space-around;padding:10px;z-index:100;border-top:1px solid #2a2a3a;}
+        .sidebar button,.sidebar select{display:block;width:100%;text-align:right;padding:12px;margin:5px 0;background:none;border:none;color:var(--text-primary);font-size:15px;cursor:pointer;border-radius:8px;}
+        .sidebar button:hover{background:var(--border-color);}
+        .sidebar select{background:var(--bg-card);border:1px solid var(--border-color);}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg-header);display:flex;justify-content:space-around;padding:10px;z-index:100;border-top:1px solid var(--border-color);}
         .bottom-nav button{background:none;border:none;color:#888;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
         .bottom-nav button i{font-size:20px;}
-        .bottom-nav button.active{color:#00d4ff;}
+        .bottom-nav button.active{color:var(--accent);}
         .notification-badge{position:absolute;top:-5px;right:-10px;background:#ff4444;color:#fff;border-radius:50%;min-width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
         .page{display:none;padding:15px;}
         .active-page{display:block;}
         .accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;}
-        .card{background:#1e1e2e;padding:12px;border-radius:14px;border:1px solid #2a2a3a;}
+        .card{background:var(--bg-card);padding:12px;border-radius:14px;border:1px solid var(--border-color);}
         .card h3{font-size:1rem;margin-bottom:6px;}
-        .card p{font-size:0.75rem;margin:3px 0;color:#aaa;}
+        .card p{font-size:0.75rem;margin:3px 0;color:var(--text-secondary);}
         .card img{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:8px;}
-        .btn-primary{background:#00d4ff;border:none;padding:6px 12px;border-radius:25px;color:#111;cursor:pointer;font-weight:bold;font-size:0.75rem;}
-        .btn-outline{background:transparent;border:1px solid #00d4ff;color:#00d4ff;padding:5px 10px;border-radius:25px;cursor:pointer;font-size:0.75rem;}
+        .btn-primary{background:var(--accent);border:none;padding:6px 12px;border-radius:25px;color:#111;cursor:pointer;font-weight:bold;font-size:0.75rem;}
+        .btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:5px 10px;border-radius:25px;cursor:pointer;font-size:0.75rem;}
         .btn-danger{background:#ff4444;border:none;padding:6px 12px;border-radius:25px;color:#fff;cursor:pointer;font-size:0.75rem;}
         .filter-row{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap;}
-        .filter-row input,.filter-row select{flex:1;padding:8px;border-radius:20px;background:#1e1e2e;border:1px solid #2a2a3a;color:#fff;font-size:0.8rem;}
-        input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:10px;background:#1e1e2e;color:#fff;border:1px solid #2a2a3a;}
+        .filter-row input,.filter-row select{flex:1;padding:8px;border-radius:20px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-primary);font-size:0.8rem;}
+        input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:10px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);}
         .modal{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:10000;}
-        .modal-content{background:#1e1e2e;padding:20px;border-radius:16px;width:90%;max-width:500px;max-height:85vh;overflow-y:auto;}
+        .modal-content{background:var(--bg-card);padding:20px;border-radius:16px;width:90%;max-width:500px;max-height:85vh;overflow-y:auto;}
         .image-scroll{display:flex;overflow-x:auto;gap:8px;padding:8px 0;margin:8px 0;}
         .image-scroll img{width:100px;height:100px;object-fit:cover;border-radius:10px;cursor:pointer;}
         .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
         .image-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;}
-        .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;cursor:pointer;border:2px solid #00d4ff;object-fit:cover;}
+        .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;cursor:pointer;border:2px solid var(--accent);object-fit:cover;}
         .chat-messages{height:250px;overflow-y:auto;background:linear-gradient(135deg,#1a1a2a,#0f0f1a);border-radius:16px;padding:8px;margin-bottom:8px;}
-        .conversation-item{padding:12px;border-bottom:1px solid #2a2a3a;cursor:pointer;}
-        .conversation-item:hover{background:#2a2a3a;}
-        .auth-container{position:fixed;inset:0;background:#0f0f1a;display:flex;align-items:center;justify-content:center;z-index:10001;}
-        .auth-card{background:#1e1e2e;border-radius:25px;padding:25px;width:90%;max-width:350px;text-align:center;border:1px solid #00d4ff;}
+        .conversation-item{padding:12px;border-bottom:1px solid var(--border-color);cursor:pointer;}
+        .conversation-item:hover{background:var(--border-color);}
+        .auth-container{position:fixed;inset:0;background:var(--bg-body);display:flex;align-items:center;justify-content:center;z-index:10001;}
+        .auth-card{background:var(--bg-card);border-radius:25px;padding:25px;width:90%;max-width:350px;text-align:center;border:1px solid var(--accent);}
         .social-icons-row{display:flex;justify-content:center;gap:12px;margin:15px 0;}
-        .social-icons-row i{font-size:1.5rem;color:#00d4ff;animation:floatSocial 2s ease-in-out infinite;}
+        .social-icons-row i{font-size:1.5rem;color:var(--accent);animation:floatSocial 2s ease-in-out infinite;}
         @keyframes floatSocial{0%,100%{transform:translateY(0px);}50%{transform:translateY(-8px);}}
-        .auth-switch{margin-top:12px;color:#00d4ff;cursor:pointer;}
+        .auth-switch{margin-top:12px;color:var(--accent);cursor:pointer;}
         .success-check{color:#00ff88;font-size:2rem;animation:checkPop 0.5s ease;}
         @keyframes checkPop{0%{transform:scale(0);}80%{transform:scale(1.2);}100%{transform:scale(1);}}
         .edit-form-group{margin-bottom:10px;}
-        .edit-form-group label{display:block;font-size:0.8rem;margin-bottom:5px;color:#aaa;}
+        .edit-form-group label{display:block;font-size:0.8rem;margin-bottom:5px;color:var(--text-secondary);}
         .price-currency-row{display:flex;gap:8px;align-items:center;}
         .price-currency-row input{flex:2;}
         .price-currency-row select{width:auto;flex:1;}
@@ -63,11 +84,11 @@
         .about-3d{text-align:center;perspective:1000px;}
         .about-card-3d{background:linear-gradient(135deg,rgba(155,89,182,0.2),rgba(0,212,255,0.2));backdrop-filter:blur(10px);border-radius:40px;padding:40px 20px;transform-style:preserve-3d;transform:rotateY(5deg) rotateX(5deg);transition:0.4s;box-shadow:0 20px 40px rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);}
         .about-card-3d:hover{transform:rotateY(0deg) rotateX(0deg) scale(1.02);}
-        .about-shield-3d{font-size:5rem;text-shadow:0 0 20px #00d4ff;animation:float3d 3s ease-in-out infinite;}
+        .about-shield-3d{font-size:5rem;text-shadow:0 0 20px var(--accent);animation:float3d 3s ease-in-out infinite;}
         @keyframes float3d{0%,100%{transform:translateY(0px);}50%{transform:translateY(-15px);}}
         .developer-name{background:linear-gradient(45deg,#9b59b6,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.5rem;font-weight:bold;display:inline-block;animation:glow 2s ease-in-out infinite;}
         @keyframes glow{0%,100%{text-shadow:0 0 5px #9b59b6;}50%{text-shadow:0 0 20px #00d4ff;}}
-        .suggest-password{font-size:12px;color:#00d4ff;cursor:pointer;margin-top:-5px;margin-bottom:10px;text-align:left;}
+        .suggest-password{font-size:12px;color:var(--accent);cursor:pointer;margin-top:-5px;margin-bottom:10px;text-align:left;}
         @media(max-width:640px){.accounts-grid{grid-template-columns:1fr;}}
     </style>
 </head>
@@ -82,11 +103,12 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:20px; margin-bottom:20px;" data-i18n="menu">القائمة</div>
         <button onclick="window.showPage('home')" data-i18n="home">🏠 الرئيسية</button>
-        <button onclick="window.showPage('my-accounts')" data-i18n="myAccounts">📦 حساباتي</button>
+        <button onclick="window.showPage('my-accounts')" data-i18n="myAccounts">📦 حساباتي (لوحة التحكم)</button>
         <button onclick="window.showAddModal()" data-i18n="addAccount">➕ إضافة حساب</button>
         <button onclick="window.showPage('messages')" data-i18n="messages">💬 الرسائل</button>
         <button onclick="window.showPage('support')" data-i18n="support">🛠️ الدعم الفني</button>
         <button onclick="window.showPage('about')" data-i18n="about">ℹ️ عن التطبيق</button>
+        <button id="themeToggleSide" style="background:none; border:none; color:var(--text-primary); text-align:right;">🌙 الوضع الليلي/النهاري</button>
         <select id="langSelectSide" style="margin-top:10px;">
             <option value="ar">🇸🇦 العربية</option>
             <option value="en">🇺🇸 English</option>
@@ -110,7 +132,7 @@
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
-    <div id="myAccountsPage" class="page"><h2 data-i18n="myAccountsTitle">📦 حساباتي</h2><div id="myAccountsList" class="accounts-grid"></div></div>
+    <div id="myAccountsPage" class="page"><h2 data-i18n="myAccountsTitle">📦 حساباتي (لوحة التحكم)</h2><div id="myAccountsList" class="accounts-grid"></div></div>
     <div id="addAccountPage" class="page"></div>
     
     <div id="profilePage" class="page">
@@ -159,7 +181,7 @@
     <div id="aboutPage" class="page">
         <div class="about-3d"><div class="about-card-3d"><div class="about-shield-3d"><i class="fas fa-shield-alt"></i><i class="fas fa-shield-alt"></i></div>
         <h1>Social Accounts Market</h1><p>المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي</p>
-        <div style="display:flex;justify-content:center;gap:30px;margin:30px 0;"><div><i class="fas fa-lock" style="color:#00d4ff;font-size:2rem;"></i><br>آمن ومضمون</div><div><i class="fas fa-bolt" style="color:#00d4ff;font-size:2rem;"></i><br>فوري وسريع</div><div><i class="fas fa-headset" style="color:#00d4ff;font-size:2rem;"></i><br>دعم 24/7</div></div>
+        <div style="display:flex;justify-content:center;gap:30px;margin:30px 0;"><div><i class="fas fa-lock" style="color:var(--accent);font-size:2rem;"></i><br>آمن ومضمون</div><div><i class="fas fa-bolt" style="color:var(--accent);font-size:2rem;"></i><br>فوري وسريع</div><div><i class="fas fa-headset" style="color:var(--accent);font-size:2rem;"></i><br>دعم 24/7</div></div>
         <p>تم التطوير بواسطة</p><div class="developer-name">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</div><p>مطور ويب وتطبيقات</p></div></div>
     </div>
     
@@ -202,10 +224,10 @@
     let currentLang = "ar";
     
     const translations = {
-        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث..." },
-        en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", logout:"Logout", menu:"Menu", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Send", back:"Back", fullName:"Full Name", email:"Email", phone:"Phone", city:"City", zip:"Postal Code", typeMessage:"Type a message...", supportMessage:"Describe your issue...", attachImage:"Attach image (optional)", search:"Search..." },
-        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", logout:"Déconnexion", menu:"Menu", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer", back:"Retour", fullName:"Nom complet", email:"Email", phone:"Téléphone", city:"Ville", zip:"Code postal", typeMessage:"Écrivez...", supportMessage:"Décrivez votre problème...", attachImage:"Joindre une image", search:"Rechercher..." },
-        tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", logout:"Çıkış", menu:"Menü", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Destek", send:"Gönder", back:"Geri", fullName:"Tam Ad", email:"E-posta", phone:"Telefon", city:"Şehir", zip:"Posta Kodu", typeMessage:"Mesaj yaz...", supportMessage:"Sorununuzu yazın...", attachImage:"Resim ekle", search:"Ara..." }
+        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي (لوحة التحكم)", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث..." },
+        en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", logout:"Logout", menu:"Menu", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts (Control Panel)", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Send", back:"Back", fullName:"Full Name", email:"Email", phone:"Phone", city:"City", zip:"Postal Code", typeMessage:"Type a message...", supportMessage:"Describe your issue...", attachImage:"Attach image (optional)", search:"Search..." },
+        fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", logout:"Déconnexion", menu:"Menu", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes (Panneau de contrôle)", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer", back:"Retour", fullName:"Nom complet", email:"Email", phone:"Téléphone", city:"Ville", zip:"Code postal", typeMessage:"Écrivez...", supportMessage:"Décrivez votre problème...", attachImage:"Joindre une image", search:"Rechercher..." },
+        tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", logout:"Çıkış", menu:"Menü", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım (Kontrol Paneli)", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Destek", send:"Gönder", back:"Geri", fullName:"Tam Ad", email:"E-posta", phone:"Telefon", city:"Şehir", zip:"Posta Kodu", typeMessage:"Mesaj yaz...", supportMessage:"Sorununuzu yazın...", attachImage:"Resim ekle", search:"Ara..." }
     };
     function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
     function updateUI() {
@@ -223,7 +245,7 @@
         if (pageId === 'messages') {
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
-            loadConversations();
+            loadConversationsWithNotification();
             unreadCount = 0;
             document.getElementById('msgNotification').style.display = 'none';
         }
@@ -240,7 +262,7 @@
             <p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p>
             <p>💰 ${account.price} ${account.currency}</p>
             <p>👁️ ${account.views || 0} مشاهدة</p>
-            <p>🔗 <a href="${account.link}" target="_blank" style="color:#00d4ff;">${account.link}</a></p>
+            <p>🔗 <a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></p>
             <p>📝 ${account.description || ''}</p>
             ${imagesHtml}
             <button class="btn-primary" id="closeDetails">إغلاق</button>
@@ -265,7 +287,7 @@
         modal.innerHTML = `<div class="modal-content">
             <h3>💬 مراسلة: ${sellerName}</h3>
             <div id="chatArea_${uid}" style="height:250px; overflow-y:auto; background:linear-gradient(135deg,#1a1a2a,#0f0f1a); border-radius:16px; padding:8px; margin-bottom:8px;"></div>
-            <input type="text" id="chatInput_${uid}" placeholder="اكتب رسالتك..." style="width:100%; padding:8px; border-radius:20px; background:#1e1e2e; border:1px solid #2a2a3a; color:#fff;">
+            <input type="text" id="chatInput_${uid}" placeholder="اكتب رسالتك..." style="width:100%; padding:8px; border-radius:20px; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary);">
             <button id="sendBtn_${uid}" class="btn-primary" style="margin-top:8px;">إرسال</button>
             <button id="closeBtn_${uid}" class="btn-outline" style="margin-top:8px;">إغلاق</button>
         </div>`;
@@ -333,8 +355,8 @@
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     ${acc.images?.[0] ? `<img src="${acc.images[0]}">` : ''}
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn" data-id='${acc.id}' style="background:#00d4ff; border:none; padding:6px 12px; border-radius:25px; color:#111; cursor:pointer; font-weight:bold; font-size:0.75rem;">🔍 تفاصيل</button>
-                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid #00d4ff; color:#00d4ff; padding:5px 10px; border-radius:25px; cursor:pointer; font-size:0.75rem;">💬 مراسلة</button>
+                        <button class="details-btn" data-id='${acc.id}' style="background:var(--accent); border:none; padding:6px 12px; border-radius:25px; color:#111; cursor:pointer; font-weight:bold; font-size:0.75rem;">🔍 تفاصيل</button>
+                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; border-radius:25px; cursor:pointer; font-size:0.75rem;">💬 مراسلة</button>
                     </div>
                 </div>`;
             }
@@ -416,33 +438,40 @@
         } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; console.error(e); }
     }
     
-    async function loadConversations() {
+    async function loadConversationsWithNotification() {
         if (!currentUser) return;
         const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
         onSnapshot(q, async (snap) => {
             const container = document.getElementById('convList');
             if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
             let html = '';
+            let newUnreadCount = 0;
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
                 const otherId = conv.participants.find(id => id !== currentUser.uid);
                 const userSnap = await getDoc(doc(db, 'users', otherId));
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
-                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}</div>`;
+                const lastMsgQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), orderBy('timestamp'), limit(1));
+                const lastMsgSnap = await getDocs(lastMsgQuery);
+                let lastMsg = '';
+                let isFromOther = false;
+                if (!lastMsgSnap.empty) {
+                    const lastMsgData = lastMsgSnap.docs[0].data();
+                    lastMsg = lastMsgData.text;
+                    isFromOther = lastMsgData.senderId !== currentUser.uid;
+                }
+                if (isFromOther) newUnreadCount++;
+                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}<span style="font-size:0.7rem; color:var(--text-secondary); margin-right:10px;">${lastMsg ? lastMsg.substring(0,30) : ''}</span></div>`;
             }
             container.innerHTML = html;
-            document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
-            
-            // حساب عدد الرسائل غير المقروءة للمستخدم الحالي (من جميع المحادثات)
-            let totalUnread = 0;
-            for (const docSnap of snap.docs) {
-                const convId = docSnap.id;
-                const messagesSnap = await getDocs(query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp')));
-                let lastRead = 0; // يمكن تحسينه بحفظ آخر قراءة لكل مستخدم، لكننا سنبسطها: أي رسالة بعد آخر فتح للمحادثة
-                // هنا نعتبر أي رسالة غير مقروءة إذا كانت بعد آخر مرة فتح فيها المستخدم صفحة المحادثات
-                // للتبسيط، سنحسب عدد الرسائل التي أرسلها الطرف الآخر ولم يقرأها المستخدم بعد
-                // سنستخدم متغير عام unreadCount يتم تحديثه عند استلام رسائل جديدة في onSnapshot
+            if (newUnreadCount > 0 && document.getElementById('msgNotification')) {
+                document.getElementById('msgNotification').innerText = newUnreadCount;
+                document.getElementById('msgNotification').style.display = 'flex';
+                unreadCount = newUnreadCount;
+            } else {
+                document.getElementById('msgNotification').style.display = 'none';
             }
+            document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
         });
     }
     
@@ -457,11 +486,6 @@
             snap.forEach(msg => {
                 const data = msg.data();
                 const isMe = data.senderId === currentUser.uid;
-                // إشعار: إذا كانت الرسالة ليست مني ولم يتم فتح المحادثة بعد، نزيد العداد
-                if (!isMe && document.getElementById('msgNotification').style.display !== 'none') {
-                    // هذا سيزداد كل مرة تصل رسالة جديدة أثناء وجودك في الصفحة الرئيسية
-                    // لكننا نتعامل معه في onSnapshot في loadConversations
-                }
                 div.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${data.text}</span></div>`;
             });
             div.scrollTop = div.scrollHeight;
@@ -473,80 +497,8 @@
             await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
             inp.value = '';
         };
-        document.getElementById('backConv').onclick = () => { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); };
+        document.getElementById('backConv').onclick = () => { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversationsWithNotification(); };
     }
-    
-    // تحسين الإشعارات: مراقبة وصول رسائل جديدة في الخلفية
-    let unreadMessagesListener = null;
-    function setupUnreadListener() {
-        if (!currentUser) return;
-        if (unreadMessagesListener) unreadMessagesListener();
-        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
-        unreadMessagesListener = onSnapshot(q, async (snap) => {
-            let count = 0;
-            for (const docSnap of snap.docs) {
-                const convId = docSnap.id;
-                const lastMsgSnap = await getDocs(query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'), limit(1)));
-                // تبسيط: سنعتبر أي رسالة غير مقروءة إذا لم تكن من المستخدم الحالي وآخر مرة فتح فيها المحادثة
-                // سنستخدم متغير آخر قراءة لكل محادثة مخزّن في localStorage أو في Firestore
-                // للتبسيط، سنعتمد على أن المستخدم يقرأ الرسائل عند فتح المحادثة، وسنصفر العداد عند فتح صفحة المحادثات
-                // هنا سنقوم بزيادة العداد عند وصول رسالة جديدة من الطرف الآخر
-                // سنستخدم onSnapshot على رسائل كل محادثة
-            }
-            // بدلاً من التعقيد، سنستخدم طريقة أبسط: عند استلام أي رسالة جديدة في أي محادثة، نزيد العداد
-            // لكن هذا قد يسبب مضاعفة، لذلك سنستخدم علم بأن العداد يزداد فقط عندما تكون نافذة الدردشة غير مفتوحة
-        });
-    }
-    
-    // طريقة مبسطة للإشعارات: عند تحميل قائمة المحادثات، نحسب عدد الرسائل غير المقروءة
-    // سنضيف حقل `lastRead` في وثيقة المحادثة لكل مستخدم، ولكن للتبسيط سنستخدم طريقة أقل دقة ولكنها تعمل:
-    // كل رسالة جديدة تزيد العداد، وعند فتح صفحة المحادثات يتم تصفير العداد.
-    // سنقوم بذلك عن طريق الاستماع إلى onSnapshot على رسائل المحادثات عند عدم وجود المستخدم في صفحة المحادثات.
-    
-    // سنقوم بتعديل دالة loadConversations لتراقب وصول رسائل جديدة وتحديث العداد
-    let conversationsUnsubscribe = null;
-    async function loadConversationsWithNotification() {
-        if (!currentUser) return;
-        if (conversationsUnsubscribe) conversationsUnsubscribe();
-        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
-        conversationsUnsubscribe = onSnapshot(q, async (snap) => {
-            const container = document.getElementById('convList');
-            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
-            let html = '';
-            let newUnreadCount = 0;
-            for (const docSnap of snap.docs) {
-                const conv = docSnap.data();
-                const otherId = conv.participants.find(id => id !== currentUser.uid);
-                const userSnap = await getDoc(doc(db, 'users', otherId));
-                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
-                // جلب آخر رسالة في المحادثة
-                const lastMsgQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), orderBy('timestamp'), limit(1));
-                const lastMsgSnap = await getDocs(lastMsgQuery);
-                let lastMsg = '';
-                let isFromOther = false;
-                if (!lastMsgSnap.empty) {
-                    const lastMsgData = lastMsgSnap.docs[0].data();
-                    lastMsg = lastMsgData.text;
-                    isFromOther = lastMsgData.senderId !== currentUser.uid;
-                }
-                // إذا كانت آخر رسالة من الطرف الآخر، نعتبرها غير مقروءة (يمكن تحسينها بحفظ آخر قراءة)
-                if (isFromOther) newUnreadCount++;
-                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}<span style="font-size:0.7rem; color:#aaa; margin-right:10px;">${lastMsg ? lastMsg.substring(0,30) : ''}</span></div>`;
-            }
-            container.innerHTML = html;
-            if (newUnreadCount > 0 && document.getElementById('msgNotification')) {
-                document.getElementById('msgNotification').innerText = newUnreadCount;
-                document.getElementById('msgNotification').style.display = 'flex';
-                unreadCount = newUnreadCount;
-            } else {
-                document.getElementById('msgNotification').style.display = 'none';
-            }
-            document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
-        });
-    }
-    
-    // استبدال loadConversations بـ loadConversationsWithNotification
-    window.loadConversations = loadConversationsWithNotification;
     
     window.showAddModal = function() {
         let currentImageFiles = [];
@@ -678,6 +630,7 @@
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
     document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); loadMyAccounts(); loadConversationsWithNotification(); } };
+    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
     
     let authContainer = null;
     function generateStrongPassword() { return Math.random().toString(36).slice(-12) + "!@#"; }
@@ -747,7 +700,6 @@
         if (user) {
             splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
             await loadProfile(); populateSelectors(); await loadAccounts(); await loadMyAccounts(); 
-            window.loadConversations = loadConversationsWithNotification;
             await loadConversationsWithNotification();
             window.showPage('home');
         } else {
