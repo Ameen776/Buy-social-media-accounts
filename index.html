@@ -137,7 +137,7 @@
             <h2 data-i18n="myAccountsTitle">📦 حساباتي (لوحة التحكم)</h2>
             <button id="refreshMyAccounts" class="btn-outline" style="padding:4px 12px;">🔄 تحديث</button>
         </div>
-        <div id="myAccountsList" class="accounts-grid"></div>
+        <div id="myAccountsList" class="accounts-grid">جار التحميل...</div>
     </div>
     <div id="addAccountPage" class="page"></div>
     
@@ -249,6 +249,8 @@
         document.getElementById('sidebar').classList.remove('open');
         if (pageId === 'home') loadAccounts();
         if (pageId === 'my-accounts') {
+            // إعادة تحميل لوحة التحكم بشكل مباشر عند فتح الصفحة
+            if (myAccountsUnsubscribe) myAccountsUnsubscribe();
             loadMyAccountsRealtime();
         }
         if (pageId === 'messages') {
