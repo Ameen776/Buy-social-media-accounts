@@ -101,21 +101,21 @@
 
 <div id="app" style="display:none;">
     <div class="sidebar" id="sidebar">
-        <div style="font-size:20px; margin-bottom:20px;" data-i18n="menu">القائمة</div>
-        <button onclick="window.showPage('home')" data-i18n="home">🏠 الرئيسية</button>
-        <button onclick="window.showPage('my-accounts')" data-i18n="myAccounts">📦 حساباتي (لوحة التحكم)</button>
-        <button onclick="window.showAddModal()" data-i18n="addAccount">➕ إضافة حساب</button>
-        <button onclick="window.showPage('messages')" data-i18n="messages">💬 الرسائل</button>
-        <button onclick="window.showPage('support')" data-i18n="support">🛠️ الدعم الفني</button>
-        <button onclick="window.showPage('about')" data-i18n="about">ℹ️ عن التطبيق</button>
-        <button id="themeToggleSide" style="background:none; border:none; color:var(--text-primary); text-align:right;">🌙 الوضع الليلي/النهاري</button>
+        <div style="font-size:20px; margin-bottom:20px;">القائمة</div>
+        <button onclick="window.showPage('home')">🏠 الرئيسية</button>
+        <button onclick="window.showPage('my-accounts')">📦 حساباتي (لوحة التحكم)</button>
+        <button onclick="window.showAddModal()">➕ إضافة حساب</button>
+        <button onclick="window.showPage('messages')">💬 الرسائل</button>
+        <button onclick="window.showPage('support')">🛠️ الدعم الفني</button>
+        <button onclick="window.showPage('about')">ℹ️ عن التطبيق</button>
+        <button id="themeToggleSide">🌙 الوضع الليلي/النهاري</button>
         <select id="langSelectSide" style="margin-top:10px;">
             <option value="ar">🇸🇦 العربية</option>
             <option value="en">🇺🇸 English</option>
             <option value="fr">🇫🇷 Français</option>
             <option value="tr">🇹🇷 Türkçe</option>
         </select>
-        <button id="logoutBtnSide" data-i18n="logout">🚪 تسجيل الخروج</button>
+        <button id="logoutBtnSide">🚪 تسجيل الخروج</button>
     </div>
     
     <div class="header">
@@ -125,16 +125,16 @@
     </div>
     
     <div id="homePage" class="page active-page">
-        <h2 data-i18n="availableAccounts">🔥 الحسابات المتاحة</h2>
+        <h2>🔥 الحسابات المتاحة</h2>
         <div class="filter-row">
-            <input type="text" id="searchInput" placeholder="بحث..." data-i18n-placeholder="search">
+            <input type="text" id="searchInput" placeholder="بحث...">
             <select id="platformFilter"><option value="all">الكل</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
     <div id="myAccountsPage" class="page">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 data-i18n="myAccountsTitle">📦 حساباتي (لوحة التحكم)</h2>
+            <h2>📦 حساباتي (لوحة التحكم)</h2>
             <button id="refreshMyAccounts" class="btn-outline" style="padding:4px 12px;">🔄 تحديث</button>
         </div>
         <div id="myAccountsList" class="accounts-grid">جار التحميل...</div>
@@ -142,30 +142,30 @@
     <div id="addAccountPage" class="page"></div>
     
     <div id="profilePage" class="page">
-        <h2 data-i18n="profile">👤 الملف الشخصي</h2>
+        <h2>👤 الملف الشخصي</h2>
         <div style="text-align:center;">
             <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/80">
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
             <div style="background:#9b59b6; display:inline-block; padding:3px 10px; border-radius:30px; margin-top:8px;">🆔 <span id="userId"></span></div>
         </div>
         <form id="profileForm">
-            <input id="pName" placeholder="الاسم" data-i18n-placeholder="fullName">
-            <input id="pEmail" placeholder="البريد الإلكتروني" data-i18n-placeholder="email">
+            <input id="pName" placeholder="الاسم الكامل">
+            <input id="pEmail" placeholder="البريد الإلكتروني">
             <div style="display:flex; gap:8px;">
                 <select id="phoneCode" style="width:35%;"></select>
-                <input id="pPhone" placeholder="رقم الهاتف" style="flex:1" data-i18n-placeholder="phone">
+                <input id="pPhone" placeholder="رقم الهاتف" style="flex:1">
             </div>
-            <input id="pCity" placeholder="المدينة" data-i18n-placeholder="city">
+            <input id="pCity" placeholder="المدينة">
             <select id="pCountry"><option value="">اختر الدولة</option></select>
-            <input id="pZip" placeholder="الرمز البريدي (اختياري)" data-i18n-placeholder="zip">
-            <button type="submit" class="btn-primary" data-i18n="save">حفظ المعلومات</button>
+            <input id="pZip" placeholder="الرمز البريدي (اختياري)">
+            <button type="submit" class="btn-primary">حفظ المعلومات</button>
         </form>
     </div>
     
-    <div id="messagesPage" class="page"><h2 data-i18n="conversations">💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMessages" class="chat-messages"></div><input id="messageInput" placeholder="رسالة..." data-i18n-placeholder="typeMessage"><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
+    <div id="messagesPage" class="page"><h2>💬 المحادثات</h2><div id="convList"></div><div id="chatBox" style="display:none"><div id="chatMessages" class="chat-messages"></div><input id="messageInput" placeholder="رسالة..."><button id="sendMsg" class="btn-primary">إرسال</button><button id="backConv" class="btn-outline">رجوع</button></div></div>
     
     <div id="supportPage" class="page">
-        <h2 data-i18n="techSupport">📞 الدعم الفني</h2>
+        <h2>📞 الدعم الفني</h2>
         <form id="supportForm">
             <select id="issueType">
                 <option value="purchase">مشكلة في الشراء</option>
@@ -174,13 +174,13 @@
                 <option value="suggestion">اقتراح</option>
                 <option value="other">أخرى</option>
             </select>
-            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..." data-i18n-placeholder="supportMessage"></textarea>
+            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..."></textarea>
             <div class="support-attachment">
-                <label data-i18n="attachImage">إرفاق صورة (اختياري)</label>
+                <label>إرفاق صورة (اختياري)</label>
                 <input type="file" id="supportImage" accept="image/*">
                 <div id="supportImagePreview"></div>
             </div>
-            <button type="submit" class="btn-primary" data-i18n="send">إرسال</button>
+            <button type="submit" class="btn-primary">إرسال</button>
         </form>
     </div>
     
@@ -192,9 +192,9 @@
     </div>
     
     <div class="bottom-nav">
-        <button onclick="window.showPage('home')" id="navHomeBtn"><i class="fas fa-home"></i><span data-i18n="home">الرئيسية</span></button>
-        <button onclick="window.showAddModal()" id="navAddBtn"><i class="fas fa-plus-circle"></i><span data-i18n="addAccount">نشر</span></button>
-        <button onclick="window.showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span data-i18n="messages">الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
+        <button onclick="window.showPage('home')"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
+        <button onclick="window.showPage('messages')"><i class="fas fa-comment-dots"></i><span>الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
     </div>
 </div>
 
@@ -203,14 +203,17 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, onSnapshot, increment, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
+    // Firebase Config (من كود التهيئة الذي أرسلته)
     const firebaseConfig = {
         apiKey: "AIzaSyB3mtcnmHD-rPYxLXLFVhg6VPrNMPIetaw",
         authDomain: "selling-accounts-90d8e.firebaseapp.com",
+        databaseURL: "https://selling-accounts-90d8e-default-rtdb.firebaseio.com",
         projectId: "selling-accounts-90d8e",
         storageBucket: "selling-accounts-90d8e.firebasestorage.app",
         messagingSenderId: "433974982968",
         appId: "1:433974982968:web:203c8ee4f0f9c7670e69cd"
     };
+    
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -226,9 +229,8 @@
     }
     
     let currentUser = null;
-    let unreadCount = 0;
-    let currentLang = "ar";
     let myAccountsUnsubscribe = null;
+    let currentLang = "ar";
     
     const translations = {
         ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي (لوحة التحكم)", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث..." },
@@ -248,17 +250,11 @@
         document.getElementById(pageId + 'Page').classList.add('active-page');
         document.getElementById('sidebar').classList.remove('open');
         if (pageId === 'home') loadAccounts();
-        if (pageId === 'my-accounts') {
-            // إعادة تحميل لوحة التحكم بشكل مباشر عند فتح الصفحة
-            if (myAccountsUnsubscribe) myAccountsUnsubscribe();
-            loadMyAccountsRealtime();
-        }
+        if (pageId === 'my-accounts') loadMyAccountsRealtime();
         if (pageId === 'messages') {
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
-            loadConversationsWithNotification();
-            unreadCount = 0;
-            document.getElementById('msgNotification').style.display = 'none';
+            loadConversations();
         }
     };
     
@@ -366,8 +362,8 @@
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     ${acc.images?.[0] ? `<img src="${acc.images[0]}">` : ''}
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn" data-id='${acc.id}' style="background:var(--accent); border:none; padding:6px 12px; border-radius:25px; color:#111; cursor:pointer; font-weight:bold; font-size:0.75rem;">🔍 تفاصيل</button>
-                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; border-radius:25px; cursor:pointer; font-size:0.75rem;">💬 مراسلة</button>
+                        <button class="details-btn" data-id='${acc.id}' class="btn-primary">🔍 تفاصيل</button>
+                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 مراسلة</button>
                     </div>
                 </div>`;
             }
@@ -417,14 +413,13 @@
                 images: imageUrls
             });
             alert("تم التحديث"); modal.remove(); 
-            // تحديث لوحة التحكم والصفحة الرئيسية
-            if (myAccountsUnsubscribe) loadMyAccountsRealtime();
+            loadMyAccountsRealtime();
             loadAccounts();
         };
         modal.querySelector('#cancelEditBtn').onclick = () => modal.remove();
     }
     
-    // دالة حية (realtime) لجلب حسابات المستخدم الحالي وتحديثها تلقائياً
+    // ========== لوحة التحكم - جلب الحسابات المنشورة للمستخدم الحالي ==========
     function loadMyAccountsRealtime() {
         if (!currentUser) {
             document.getElementById('myAccountsList').innerHTML = '<div class="card">تسجيل الدخول مطلوب</div>';
@@ -433,7 +428,10 @@
         if (myAccountsUnsubscribe) myAccountsUnsubscribe();
         const container = document.getElementById('myAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
+        
+        // استعلام لجلب الحسابات التي sellerId == currentUser.uid
         const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
+        
         myAccountsUnsubscribe = onSnapshot(q, (snap) => {
             if (snap.empty) {
                 container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
@@ -454,47 +452,42 @@
                 </div>`;
             });
             container.innerHTML = html;
-            document.querySelectorAll('.full-edit-btn').forEach(btn => { btn.onclick = () => { const acc = JSON.parse(btn.dataset.account); showFullEditModal(btn.dataset.id, acc); }; });
-            document.querySelectorAll('.delete-btn').forEach(btn => { btn.onclick = async () => { if(confirm("حذف الحساب نهائياً؟")){ await deleteDoc(doc(db, 'accounts', btn.dataset.id)); alert("تم الحذف"); } }; });
+            
+            document.querySelectorAll('.full-edit-btn').forEach(btn => { 
+                btn.onclick = () => { 
+                    const acc = JSON.parse(btn.dataset.account); 
+                    showFullEditModal(btn.dataset.id, acc); 
+                }; 
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => { 
+                btn.onclick = async () => { 
+                    if(confirm("حذف الحساب نهائياً؟")){ 
+                        await deleteDoc(doc(db, 'accounts', btn.dataset.id)); 
+                        alert("تم الحذف"); 
+                    } 
+                }; 
+            });
         }, (error) => {
             console.error("خطأ في الاستماع لحساباتي:", error);
             container.innerHTML = '<div class="card">خطأ في التحميل</div>';
         });
     }
     
-    async function loadConversationsWithNotification() {
+    async function loadConversations() {
         if (!currentUser) return;
         const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
         onSnapshot(q, async (snap) => {
             const container = document.getElementById('convList');
             if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
             let html = '';
-            let newUnreadCount = 0;
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
                 const otherId = conv.participants.find(id => id !== currentUser.uid);
                 const userSnap = await getDoc(doc(db, 'users', otherId));
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
-                const lastMsgQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), orderBy('timestamp'), limit(1));
-                const lastMsgSnap = await getDocs(lastMsgQuery);
-                let lastMsg = '';
-                let isFromOther = false;
-                if (!lastMsgSnap.empty) {
-                    const lastMsgData = lastMsgSnap.docs[0].data();
-                    lastMsg = lastMsgData.text;
-                    isFromOther = lastMsgData.senderId !== currentUser.uid;
-                }
-                if (isFromOther) newUnreadCount++;
-                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}<span style="font-size:0.7rem; color:var(--text-secondary); margin-right:10px;">${lastMsg ? lastMsg.substring(0,30) : ''}</span></div>`;
+                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}</div>`;
             }
             container.innerHTML = html;
-            if (newUnreadCount > 0 && document.getElementById('msgNotification')) {
-                document.getElementById('msgNotification').innerText = newUnreadCount;
-                document.getElementById('msgNotification').style.display = 'flex';
-                unreadCount = newUnreadCount;
-            } else {
-                document.getElementById('msgNotification').style.display = 'none';
-            }
             document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
         });
     }
@@ -521,7 +514,11 @@
             await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
             inp.value = '';
         };
-        document.getElementById('backConv').onclick = () => { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversationsWithNotification(); };
+        document.getElementById('backConv').onclick = () => {
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
+            loadConversations();
+        };
     }
     
     window.showAddModal = function() {
@@ -577,8 +574,7 @@
                     description: document.getElementById('addDesc').value, images: urls, sellerId: user.uid,
                     views: 0, createdAt: Date.now()
                 });
-                alert("تم النشر"); modal.remove(); loadAccounts(); 
-                if (myAccountsUnsubscribe) loadMyAccountsRealtime();
+                alert("تم النشر"); modal.remove(); loadAccounts(); loadMyAccountsRealtime();
             } catch(err) { alert("خطأ: "+err.message); }
             finally { btn.disabled = false; btn.textContent = "نشر"; }
         });
@@ -654,9 +650,9 @@
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); if(myAccountsUnsubscribe) loadMyAccountsRealtime(); loadConversationsWithNotification(); } };
+    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); loadMyAccountsRealtime(); loadConversations(); } };
     document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
-    document.getElementById('refreshMyAccounts')?.addEventListener('click', () => { if(myAccountsUnsubscribe) loadMyAccountsRealtime(); });
+    document.getElementById('refreshMyAccounts')?.addEventListener('click', () => { loadMyAccountsRealtime(); });
     
     let authContainer = null;
     function generateStrongPassword() { return Math.random().toString(36).slice(-12) + "!@#"; }
@@ -727,8 +723,8 @@
             console.log("✅ مستخدم مسجل:", user.email, "UID:", user.uid);
             splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
             await loadProfile(); populateSelectors(); await loadAccounts(); 
-            if (myAccountsUnsubscribe) loadMyAccountsRealtime();
-            await loadConversationsWithNotification();
+            loadMyAccountsRealtime();
+            loadConversations();
             window.showPage('home');
         } else {
             appDiv.style.display = 'none'; splash.style.display = 'flex'; splash.style.opacity = '1';
