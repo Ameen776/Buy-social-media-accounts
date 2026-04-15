@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - إدارة الحسابات</title>
+    <title>لوحة التحكم - استعراض الحسابات المنشورة</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
         body{background:#0f0f1a;color:#fff;padding:20px;}
         .container{max-width:1200px;margin:0 auto;}
-        h1{color:#00d4ff;margin-bottom:20px;}
-        .btn-primary{background:#00d4ff;border:none;padding:8px 16px;border-radius:30px;color:#111;cursor:pointer;font-weight:bold;}
+        h1{color:#00d4ff;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
         .btn-outline{background:transparent;border:1px solid #00d4ff;color:#00d4ff;padding:6px 12px;border-radius:30px;cursor:pointer;}
+        .btn-primary{background:#00d4ff;border:none;padding:8px 16px;border-radius:30px;color:#111;cursor:pointer;font-weight:bold;}
         .btn-danger{background:#ff4444;border:none;padding:6px 12px;border-radius:30px;color:#fff;cursor:pointer;}
         .accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:20px;}
         .card{background:#1e1e2e;padding:16px;border-radius:16px;border:1px solid #2a2a3a;}
@@ -34,6 +34,7 @@
         @keyframes checkPop{0%{transform:scale(0);}80%{transform:scale(1.2);}100%{transform:scale(1);}}
         .error-box{background:#ff4444;color:#fff;padding:10px;border-radius:8px;margin:10px 0;display:none;}
         .loading{text-align:center;padding:40px;}
+        .header-actions{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;}
     </style>
 </head>
 <body>
@@ -41,11 +42,12 @@
 
 <div id="dashboard" style="display:none;">
     <div class="container">
-        <h1>📦 لوحة التحكم - حساباتي المنشورة</h1>
-        <div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button id="refreshBtn" class="btn-outline">🔄 تحديث</button>
-            <button id="addBtn" class="btn-primary">➕ إضافة حساب</button>
-            <button id="logoutBtn" class="btn-outline">🚪 تسجيل خروج</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+            <h1><i class="fas fa-chalkboard-user"></i> لوحة التحكم - حساباتي المنشورة</h1>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn-outline"><i class="fas fa-sync-alt"></i> تحديث</button>
+                <button id="logoutBtn" class="btn-outline"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
+            </div>
         </div>
         <div id="errorBox" class="error-box"></div>
         <div id="accountsList" class="loading">جار التحميل...</div>
@@ -94,39 +96,42 @@
         setTimeout(() => box.style.display = 'none', 5000);
     }
     
-    // تحميل الحسابات المنشورة (بدون orderBy لتجنب الحاجة إلى index)
+    // تحميل الحسابات المنشورة من Firebase (بدون إضافة حساب جديد)
     async function loadMyAccounts() {
         if (!currentUser) return;
         const container = document.getElementById('accountsList');
-        container.innerHTML = '<div class="loading">جار التحميل...</div>';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> جار التحميل...</div>';
         try {
-            // إزالة orderBy لتجنب طلب إنشاء index
+            // جلب الحسابات التي sellerId == معرف المستخدم الحالي
             const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
             const snap = await getDocs(q);
-            console.log("عدد الحسابات:", snap.size);
+            console.log("عدد الحسابات المنشورة:", snap.size);
+            
             if (snap.empty) {
-                container.innerHTML = '<div class="card" style="text-align:center;">📭 لا توجد حسابات منشورة. اضغط "إضافة حساب" لنشر حسابك الأول.</div>';
+                container.innerHTML = '<div class="card" style="text-align:center;">📭 لا توجد حسابات منشورة. قم بنشر حساب من التطبيق الرئيسي أولاً.</div>';
                 return;
             }
+            
             let html = '';
             snap.forEach(docSnap => {
                 const acc = docSnap.data();
                 html += `<div class="card">
                     <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h3>
-                    <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
+                    <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()} متابع</p>
                     <p>💰 ${acc.price} ${acc.currency}</p>
                     <p>👁️ ${acc.views || 0} مشاهدة</p>
                     <p>🔗 <a href="${acc.link}" target="_blank" style="color:#00d4ff;">${acc.link}</a></p>
                     <p>📝 ${acc.description || ''}</p>
                     ${acc.images?.[0] ? `<img src="${acc.images[0]}" style="width:100%; height:120px; object-fit:cover; border-radius:10px; margin-top:8px;">` : ''}
                     <div class="card-actions">
-                        <button class="edit-btn btn-primary" data-id="${docSnap.id}" data-account='${JSON.stringify(acc)}'>✏️ تعديل</button>
-                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ حذف</button>
+                        <button class="edit-btn btn-primary" data-id="${docSnap.id}" data-account='${JSON.stringify(acc)}'><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="delete-btn btn-danger" data-id="${docSnap.id}"><i class="fas fa-trash"></i> حذف</button>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
             
+            // ربط أزرار التعديل
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = () => {
                     const acc = JSON.parse(btn.dataset.account);
@@ -134,11 +139,12 @@
                 };
             });
             
+            // ربط أزرار الحذف
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.onclick = async () => {
                     if (confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) {
                         await deleteDoc(doc(db, 'accounts', btn.dataset.id));
-                        alert("تم حذف الحساب");
+                        alert("✅ تم حذف الحساب");
                         loadMyAccounts();
                     }
                 };
@@ -150,18 +156,19 @@
         }
     }
     
+    // تعديل الحساب (سعر، رابط، وصف، متابعين، صور)
     async function showEditModal(accountId, currentData) {
         let newImageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
-            <h3>✏️ تعديل الحساب</h3>
+            <h3><i class="fas fa-edit"></i> تعديل الحساب</h3>
             <div><label>اسم الحساب</label><input type="text" id="editName" value="${currentData.name.replace(/"/g, '&quot;')}"></div>
             <div><label>رابط الحساب</label><input type="url" id="editLink" value="${currentData.link}"></div>
             <div><label>عدد المتابعين</label><input type="number" id="editFollowers" value="${currentData.followers}"></div>
             <div><label>السعر والعملة</label><div class="price-currency-row"><input type="number" id="editPrice" value="${currentData.price}"><select id="editCurrency"><option ${currentData.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${currentData.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${currentData.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div></div>
             <div><label>وصف الحساب</label><textarea id="editDesc">${(currentData.description || '').replace(/"/g, '&quot;')}</textarea></div>
             <div><label>إضافة صور جديدة (اختياري، حد أقصى 3)</label><input type="file" id="editImages" multiple accept="image/*"><div id="editPreview" class="image-preview"></div></div>
-            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEditBtn">💾 حفظ</button><button class="btn-outline" id="cancelEditBtn">إلغاء</button></div>
+            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEditBtn"><i class="fas fa-save"></i> حفظ التعديلات</button><button class="btn-outline" id="cancelEditBtn"><i class="fas fa-times"></i> إلغاء</button></div>
         </div>`;
         document.body.appendChild(modal);
         const previewDiv = modal.querySelector('#editPreview');
@@ -187,70 +194,14 @@
                 description: modal.querySelector('#editDesc').value,
                 images: imageUrls
             });
-            alert("تم التحديث"); modal.remove(); loadMyAccounts();
+            alert("✅ تم تحديث الحساب بنجاح");
+            modal.remove();
+            loadMyAccounts();
         };
         modal.querySelector('#cancelEditBtn').onclick = () => modal.remove();
     }
     
-    function showAddModal() {
-        let currentImageFiles = [];
-        const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ نشر حساب جديد</h3>
-            <form id="addForm">
-                <select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
-                <input id="addName" placeholder="اسم الحساب" required>
-                <input id="addFollowers" placeholder="عدد المتابعين" type="number" required>
-                <div class="price-currency-row"><input id="addPrice" placeholder="السعر" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div>
-                <input id="addLink" placeholder="رابط الحساب" required>
-                <textarea id="addDesc" placeholder="وصف الحساب"></textarea>
-                <label>صور الإثبات (حد أقصى 3)</label><input type="file" id="addImages" multiple accept="image/*"><button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ إضافة صورة أخرى</button>
-                <div id="previewImages" class="image-preview"></div>
-                <button type="submit" class="btn-primary">نشر</button>
-                <button type="button" id="cancelModal" class="btn-outline">إلغاء</button>
-            </form></div>`;
-        document.body.appendChild(modal);
-        const previewDiv = modal.querySelector('#previewImages');
-        const imagesInput = modal.querySelector('#addImages');
-        function updatePreview() {
-            previewDiv.innerHTML = '';
-            currentImageFiles.slice(0,3).forEach((file, idx) => {
-                const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; wrapper.style.display = 'inline-block'; wrapper.style.margin = '5px';
-                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '60px'; img.style.height = '60px'; img.style.borderRadius = '8px';
-                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.border = 'none'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '18px'; removeBtn.style.height = '18px'; removeBtn.style.color = 'white'; removeBtn.style.cursor = 'pointer';
-                removeBtn.onclick = () => { currentImageFiles.splice(idx,1); updatePreview(); };
-                wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper);
-            });
-        }
-        imagesInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { if (currentImageFiles.length >= 3) alert("الحد الأقصى 3 صور"); else { currentImageFiles.push(file); updatePreview(); } }
-            imagesInput.value = '';
-        });
-        modal.querySelector('#addImageBtn').onclick = () => imagesInput.click();
-        const form = modal.querySelector('#addForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) return alert("تسجيل الدخول مطلوب");
-            if (currentImageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
-            const btn = form.querySelector('button[type="submit"]');
-            btn.disabled = true; btn.textContent = "جاري الرفع...";
-            try {
-                const urls = [];
-                for (let i=0; i<currentImageFiles.length; i++) urls.push(await uploadToImgBB(currentImageFiles[i]));
-                await addDoc(collection(db, 'accounts'), {
-                    name: document.getElementById('addName').value, link: document.getElementById('addLink').value,
-                    platform: document.getElementById('addPlatform').value, followers: parseInt(document.getElementById('addFollowers').value),
-                    price: parseFloat(document.getElementById('addPrice').value), currency: document.getElementById('addCurrency').value,
-                    description: document.getElementById('addDesc').value, images: urls, sellerId: currentUser.uid,
-                    views: 0, createdAt: Date.now()
-                });
-                alert("تم النشر"); modal.remove(); loadMyAccounts();
-            } catch(err) { alert("خطأ: "+err.message); }
-            finally { btn.disabled = false; btn.textContent = "نشر"; }
-        });
-        modal.querySelector('#cancelModal').onclick = () => modal.remove();
-    }
-    
+    // ========== واجهات تسجيل الدخول ==========
     const authContainer = document.getElementById('authContainer');
     function showLoginScreen() {
         authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>🔐 تسجيل الدخول</h2><input id="loginEmail" placeholder="البريد الإلكتروني"><input id="loginPassword" type="password" placeholder="كلمة المرور"><button id="doLogin" class="btn-primary" style="width:100%;margin-top:10px;">دخول</button><div class="auth-switch" id="toRegister">إنشاء حساب جديد</div><button id="googleLogin" class="btn-outline" style="width:100%;margin-top:10px;"><i class="fab fa-google"></i> Google</button><div id="loginError" style="color:red;margin-top:8px;"></div></div>`;
@@ -281,6 +232,7 @@
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         if (user) {
+            console.log("✅ مستخدم مسجل:", user.email);
             authContainer.style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             await loadMyAccounts();
@@ -292,7 +244,6 @@
     });
     
     document.getElementById('refreshBtn').onclick = () => loadMyAccounts();
-    document.getElementById('addBtn').onclick = () => showAddModal();
     document.getElementById('logoutBtn').onclick = () => signOut(auth);
 </script>
 </body>
