@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سوق الحسابات</title>
+    <title>سوق الحسابات - النسخة النهائية</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -180,13 +180,28 @@
     }
     
     window.openChat = async function(sellerId, sellerName) {
-        if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
-        if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
+        console.log("===== بدء محاولة فتح المحادثة =====");
+        console.log("sellerId:", sellerId);
+        console.log("sellerName:", sellerName);
+        console.log("currentUser:", currentUser?.uid);
+        
+        if (!currentUser) { 
+            alert("تسجيل الدخول مطلوب"); 
+            return; 
+        }
+        if (sellerId === currentUser.uid) { 
+            alert("لا يمكن مراسلة نفسك"); 
+            return; 
+        }
         
         const convId = [currentUser.uid, sellerId].sort().join('_');
+        console.log("convId:", convId);
+        
         const convRef = doc(db, 'conversations', convId);
-        if (!(await getDoc(convRef)).exists()) {
+        const convSnap = await getDoc(convRef);
+        if (!convSnap.exists()) {
             await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
+            console.log("تم إنشاء محادثة جديدة");
         }
         
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -227,13 +242,18 @@
         sendBtn.onclick = async () => {
             const txt = inputField.value.trim();
             if (!txt) return;
-            // ✅ استخدام addDoc بدلاً من setDoc
-            await addDoc(collection(db, 'conversations', convId, 'messages'), {
-                text: txt,
-                senderId: currentUser.uid,
-                timestamp: Date.now()
-            });
-            inputField.value = '';
+            try {
+                await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                    text: txt,
+                    senderId: currentUser.uid,
+                    timestamp: Date.now()
+                });
+                inputField.value = '';
+                console.log("تم إرسال الرسالة");
+            } catch(e) {
+                console.error("خطأ في إرسال الرسالة:", e);
+                alert("خطأ في الإرسال: " + e.message);
+            }
         };
         
         closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
@@ -285,6 +305,9 @@
     }
     
     async function loadMyAccounts() {
+        console.log("===== loadMyAccounts =====");
+        console.log("currentUser:", currentUser?.uid);
+        
         if (!currentUser) { 
             document.getElementById('myAccountsList').innerHTML = '<div class="card" style="text-align:center;">تسجيل الدخول مطلوب</div>'; 
             return; 
@@ -385,12 +408,14 @@
             const inp = document.getElementById('messageInput');
             const txt = inp.value.trim();
             if (!txt) return;
-            await addDoc(collection(db, 'conversations', convId, 'messages'), {
-                text: txt,
-                senderId: currentUser.uid,
-                timestamp: Date.now()
-            });
-            inp.value = '';
+            try {
+                await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                    text: txt,
+                    senderId: currentUser.uid,
+                    timestamp: Date.now()
+                });
+                inp.value = '';
+            } catch(e) { console.error("خطأ في الإرسال:", e); alert("خطأ: " + e.message); }
         };
         document.getElementById('backConv').onclick = () => {
             document.getElementById('chatBox').style.display = 'none';
@@ -429,10 +454,8 @@
         const form = modal.querySelector('#addForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // ✅ استخدام auth.currentUser للتأكد من وجود UID
             const user = auth.currentUser;
             if (!user) return alert("تسجيل الدخول مطلوب");
-            console.log("UID وقت النشر:", user.uid);
             const files = Array.from(imagesInput.files);
             if (files.length === 0) return alert("ارفع صورة");
             const btn = form.querySelector('button[type="submit"]');
