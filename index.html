@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>سوق الحسابات - النسخة النهائية مع لوحة التحكم</title>
+    <title>سوق الحسابات - لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
@@ -36,10 +36,9 @@
         .sidebar button{display:block;width:100%;text-align:right;padding:12px;margin:5px 0;background:none;border:none;color:var(--text-primary);font-size:15px;cursor:pointer;border-radius:8px;}
         .sidebar button:hover{background:var(--border-color);}
         .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg-header);display:flex;justify-content:space-around;padding:10px;z-index:100;border-top:1px solid var(--border-color);}
-        .bottom-nav button{background:none;border:none;color:#888;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
+        .bottom-nav button{background:none;border:none;color:#888;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
         .bottom-nav button i{font-size:20px;}
         .bottom-nav button.active{color:var(--accent);}
-        .notification-badge{position:absolute;top:-5px;right:-10px;background:#ff4444;color:#fff;border-radius:50%;min-width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
         .page{display:none;padding:15px;}
         .active-page{display:block;}
         .accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;}
@@ -62,7 +61,6 @@
         .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;cursor:pointer;border:2px solid var(--accent);object-fit:cover;}
         .chat-messages{height:250px;overflow-y:auto;background:linear-gradient(135deg,#1a1a2a,#0f0f1a);border-radius:16px;padding:8px;margin-bottom:8px;}
         .conversation-item{padding:12px;border-bottom:1px solid var(--border-color);cursor:pointer;}
-        .conversation-item:hover{background:var(--border-color);}
         .auth-container{position:fixed;inset:0;background:var(--bg-body);display:flex;align-items:center;justify-content:center;z-index:10001;}
         .auth-card{background:var(--bg-card);border-radius:25px;padding:25px;width:90%;max-width:350px;text-align:center;border:1px solid var(--accent);}
         .social-icons-row{display:flex;justify-content:center;gap:12px;margin:15px 0;}
@@ -75,8 +73,6 @@
         .price-currency-row{display:flex;gap:8px;align-items:center;}
         .price-currency-row input{flex:2;}
         .price-currency-row select{width:auto;flex:1;}
-        .support-attachment{margin:10px 0;}
-        .support-attachment img{max-width:100px;border-radius:10px;margin-top:5px;}
         .about-3d{text-align:center;perspective:1000px;}
         .about-card-3d{background:linear-gradient(135deg,rgba(155,89,182,0.2),rgba(0,212,255,0.2));backdrop-filter:blur(10px);border-radius:40px;padding:40px 20px;transform-style:preserve-3d;transform:rotateY(5deg) rotateX(5deg);transition:0.4s;box-shadow:0 20px 40px rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);}
         .about-card-3d:hover{transform:rotateY(0deg) rotateX(0deg) scale(1.02);}
@@ -84,7 +80,6 @@
         @keyframes float3d{0%,100%{transform:translateY(0px);}50%{transform:translateY(-15px);}}
         .developer-name{background:linear-gradient(45deg,#9b59b6,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.5rem;font-weight:bold;display:inline-block;animation:glow 2s ease-in-out infinite;}
         @keyframes glow{0%,100%{text-shadow:0 0 5px #9b59b6;}50%{text-shadow:0 0 20px #00d4ff;}}
-        .suggest-password{font-size:12px;color:var(--accent);cursor:pointer;margin-top:-5px;margin-bottom:10px;text-align:left;}
         @media(max-width:640px){.accounts-grid{grid-template-columns:1fr;}}
     </style>
 </head>
@@ -207,7 +202,6 @@
     
     let currentUser = null;
     
-    // ========== دوال التنقل ==========
     window.showPage = function(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(pageId + 'Page').classList.add('active-page');
@@ -221,7 +215,7 @@
         }
     };
     
-    // ========== عرض تفاصيل الحساب ==========
+    // عرض تفاصيل الحساب
     async function showDetails(account) {
         const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
@@ -243,7 +237,7 @@
         await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
     }
     
-    // ========== مراسلة ==========
+    // مراسلة
     window.openChat = async function(sellerId, sellerName) {
         if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
         if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
@@ -296,7 +290,7 @@
         closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
     };
     
-    // ========== الصفحة الرئيسية (جلب كل الحسابات) ==========
+    // الصفحة الرئيسية (كل الحسابات)
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
         container.innerHTML = 'جار التحميل...';
@@ -348,6 +342,7 @@
         const container = document.getElementById('myAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
+            // جلب الحسابات التي sellerId == معرف المستخدم الحالي
             const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
             const snap = await getDocs(q);
             if (snap.empty) {
@@ -369,6 +364,7 @@
             });
             container.innerHTML = html;
             
+            // ربط أزرار التعديل
             document.querySelectorAll('.edit-account-btn').forEach(btn => {
                 btn.onclick = () => {
                     const acc = JSON.parse(btn.dataset.account);
@@ -376,6 +372,7 @@
                 };
             });
             
+            // ربط أزرار الحذف
             document.querySelectorAll('.delete-account-btn').forEach(btn => {
                 btn.onclick = async () => {
                     if (confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) {
@@ -392,7 +389,7 @@
         }
     }
     
-    // ========== تعديل الحساب (من لوحة التحكم) ==========
+    // نافذة تعديل الحساب (من لوحة التحكم)
     async function showEditModal(accountId, currentData) {
         let newImageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -435,7 +432,7 @@
         modal.querySelector('#cancelEditBtn').onclick = () => modal.remove();
     }
     
-    // ========== المحادثات ==========
+    // المحادثات
     async function loadConversations() {
         if (!currentUser) return;
         const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
@@ -480,7 +477,7 @@
         document.getElementById('backConv').onclick = () => { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); };
     }
     
-    // ========== إضافة حساب جديد ==========
+    // إضافة حساب جديد
     window.showAddModal = function() {
         let currentImageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -540,7 +537,7 @@
         modal.querySelector('#cancelModal').onclick = () => modal.remove();
     };
     
-    // ========== الملف الشخصي ==========
+    // الملف الشخصي
     const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973","+218","+213","+212","+249","+252","+253","+1","+44","+49","+33","+34","+39","+61","+81","+86"];
     const arabCountries = ["السعودية","اليمن","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","ليبيا","الجزائر","المغرب","تونس","السودان","الصومال","جيبوتي","موريتانيا","فلسطين","لبنان","سوريا","العراق"];
     function populateSelectors() {
@@ -591,7 +588,7 @@
         alert("تم حفظ الملف الشخصي");
     });
     
-    // ========== الدعم الفني ==========
+    // الدعم الفني
     document.getElementById('supportImage')?.addEventListener('change', (e) => {
         const f = e.target.files[0];
         if (f) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImagePreview').appendChild(img); }
@@ -607,7 +604,7 @@
         document.getElementById('supportMsg').value = ''; document.getElementById('supportImagePreview').innerHTML = ''; document.getElementById('supportImage').value = '';
     });
     
-    // ========== أحداث الواجهة ==========
+    // أحداث الواجهة
     document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
     document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
@@ -615,7 +612,7 @@
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
     
-    // ========== تسجيل الدخول ==========
+    // تسجيل الدخول
     let authContainer = null;
     function showLoginScreen() {
         if (authContainer) authContainer.remove();
