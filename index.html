@@ -202,7 +202,7 @@
     let currentLang = "ar";
     
     const translations = {
-        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث...", aboutText:"المنصة الأولى..." },
+        ar: { home:"الرئيسية", myAccounts:"حساباتي", addAccount:"إضافة حساب", messages:"الرسائل", support:"الدعم الفني", about:"عن التطبيق", logout:"تسجيل الخروج", menu:"القائمة", availableAccounts:"🔥 الحسابات المتاحة", myAccountsTitle:"📦 حساباتي", profile:"👤 الملف الشخصي", save:"حفظ المعلومات", conversations:"💬 المحادثات", techSupport:"📞 الدعم الفني", send:"إرسال", back:"رجوع", fullName:"الاسم الكامل", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", zip:"الرمز البريدي", typeMessage:"اكتب رسالة...", supportMessage:"اكتب مشكلتك بالتفصيل...", attachImage:"إرفاق صورة (اختياري)", search:"بحث..." },
         en: { home:"Home", myAccounts:"My Accounts", addAccount:"Add Account", messages:"Messages", support:"Support", about:"About", logout:"Logout", menu:"Menu", availableAccounts:"🔥 Available Accounts", myAccountsTitle:"📦 My Accounts", profile:"👤 Profile", save:"Save", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Send", back:"Back", fullName:"Full Name", email:"Email", phone:"Phone", city:"City", zip:"Postal Code", typeMessage:"Type a message...", supportMessage:"Describe your issue...", attachImage:"Attach image (optional)", search:"Search..." },
         fr: { home:"Accueil", myAccounts:"Mes comptes", addAccount:"Ajouter", messages:"Messages", support:"Aide", about:"À propos", logout:"Déconnexion", menu:"Menu", availableAccounts:"🔥 Comptes disponibles", myAccountsTitle:"📦 Mes comptes", profile:"👤 Profil", save:"Enregistrer", conversations:"💬 Conversations", techSupport:"📞 Support", send:"Envoyer", back:"Retour", fullName:"Nom complet", email:"Email", phone:"Téléphone", city:"Ville", zip:"Code postal", typeMessage:"Écrivez...", supportMessage:"Décrivez votre problème...", attachImage:"Joindre une image", search:"Rechercher..." },
         tr: { home:"Ana Sayfa", myAccounts:"Hesaplarım", addAccount:"Hesap Ekle", messages:"Mesajlar", support:"Destek", about:"Hakkında", logout:"Çıkış", menu:"Menü", availableAccounts:"🔥 Mevcut Hesaplar", myAccountsTitle:"📦 Hesaplarım", profile:"👤 Profil", save:"Kaydet", conversations:"💬 Sohbetler", techSupport:"📞 Destek", send:"Gönder", back:"Geri", fullName:"Tam Ad", email:"E-posta", phone:"Telefon", city:"Şehir", zip:"Posta Kodu", typeMessage:"Mesaj yaz...", supportMessage:"Sorununuzu yazın...", attachImage:"Resim ekle", search:"Ara..." }
@@ -432,6 +432,17 @@
             }
             container.innerHTML = html;
             document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
+            
+            // حساب عدد الرسائل غير المقروءة للمستخدم الحالي (من جميع المحادثات)
+            let totalUnread = 0;
+            for (const docSnap of snap.docs) {
+                const convId = docSnap.id;
+                const messagesSnap = await getDocs(query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp')));
+                let lastRead = 0; // يمكن تحسينه بحفظ آخر قراءة لكل مستخدم، لكننا سنبسطها: أي رسالة بعد آخر فتح للمحادثة
+                // هنا نعتبر أي رسالة غير مقروءة إذا كانت بعد آخر مرة فتح فيها المستخدم صفحة المحادثات
+                // للتبسيط، سنحسب عدد الرسائل التي أرسلها الطرف الآخر ولم يقرأها المستخدم بعد
+                // سنستخدم متغير عام unreadCount يتم تحديثه عند استلام رسائل جديدة في onSnapshot
+            }
         });
     }
     
@@ -446,10 +457,10 @@
             snap.forEach(msg => {
                 const data = msg.data();
                 const isMe = data.senderId === currentUser.uid;
+                // إشعار: إذا كانت الرسالة ليست مني ولم يتم فتح المحادثة بعد، نزيد العداد
                 if (!isMe && document.getElementById('msgNotification').style.display !== 'none') {
-                    unreadCount++;
-                    document.getElementById('msgNotification').innerText = unreadCount;
-                    document.getElementById('msgNotification').style.display = 'flex';
+                    // هذا سيزداد كل مرة تصل رسالة جديدة أثناء وجودك في الصفحة الرئيسية
+                    // لكننا نتعامل معه في onSnapshot في loadConversations
                 }
                 div.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${data.text}</span></div>`;
             });
@@ -464,6 +475,78 @@
         };
         document.getElementById('backConv').onclick = () => { document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); };
     }
+    
+    // تحسين الإشعارات: مراقبة وصول رسائل جديدة في الخلفية
+    let unreadMessagesListener = null;
+    function setupUnreadListener() {
+        if (!currentUser) return;
+        if (unreadMessagesListener) unreadMessagesListener();
+        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
+        unreadMessagesListener = onSnapshot(q, async (snap) => {
+            let count = 0;
+            for (const docSnap of snap.docs) {
+                const convId = docSnap.id;
+                const lastMsgSnap = await getDocs(query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'), limit(1)));
+                // تبسيط: سنعتبر أي رسالة غير مقروءة إذا لم تكن من المستخدم الحالي وآخر مرة فتح فيها المحادثة
+                // سنستخدم متغير آخر قراءة لكل محادثة مخزّن في localStorage أو في Firestore
+                // للتبسيط، سنعتمد على أن المستخدم يقرأ الرسائل عند فتح المحادثة، وسنصفر العداد عند فتح صفحة المحادثات
+                // هنا سنقوم بزيادة العداد عند وصول رسالة جديدة من الطرف الآخر
+                // سنستخدم onSnapshot على رسائل كل محادثة
+            }
+            // بدلاً من التعقيد، سنستخدم طريقة أبسط: عند استلام أي رسالة جديدة في أي محادثة، نزيد العداد
+            // لكن هذا قد يسبب مضاعفة، لذلك سنستخدم علم بأن العداد يزداد فقط عندما تكون نافذة الدردشة غير مفتوحة
+        });
+    }
+    
+    // طريقة مبسطة للإشعارات: عند تحميل قائمة المحادثات، نحسب عدد الرسائل غير المقروءة
+    // سنضيف حقل `lastRead` في وثيقة المحادثة لكل مستخدم، ولكن للتبسيط سنستخدم طريقة أقل دقة ولكنها تعمل:
+    // كل رسالة جديدة تزيد العداد، وعند فتح صفحة المحادثات يتم تصفير العداد.
+    // سنقوم بذلك عن طريق الاستماع إلى onSnapshot على رسائل المحادثات عند عدم وجود المستخدم في صفحة المحادثات.
+    
+    // سنقوم بتعديل دالة loadConversations لتراقب وصول رسائل جديدة وتحديث العداد
+    let conversationsUnsubscribe = null;
+    async function loadConversationsWithNotification() {
+        if (!currentUser) return;
+        if (conversationsUnsubscribe) conversationsUnsubscribe();
+        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
+        conversationsUnsubscribe = onSnapshot(q, async (snap) => {
+            const container = document.getElementById('convList');
+            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
+            let html = '';
+            let newUnreadCount = 0;
+            for (const docSnap of snap.docs) {
+                const conv = docSnap.data();
+                const otherId = conv.participants.find(id => id !== currentUser.uid);
+                const userSnap = await getDoc(doc(db, 'users', otherId));
+                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
+                // جلب آخر رسالة في المحادثة
+                const lastMsgQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), orderBy('timestamp'), limit(1));
+                const lastMsgSnap = await getDocs(lastMsgQuery);
+                let lastMsg = '';
+                let isFromOther = false;
+                if (!lastMsgSnap.empty) {
+                    const lastMsgData = lastMsgSnap.docs[0].data();
+                    lastMsg = lastMsgData.text;
+                    isFromOther = lastMsgData.senderId !== currentUser.uid;
+                }
+                // إذا كانت آخر رسالة من الطرف الآخر، نعتبرها غير مقروءة (يمكن تحسينها بحفظ آخر قراءة)
+                if (isFromOther) newUnreadCount++;
+                html += `<div class="conversation-item" data-convid="${docSnap.id}">💬 ${name}<span style="font-size:0.7rem; color:#aaa; margin-right:10px;">${lastMsg ? lastMsg.substring(0,30) : ''}</span></div>`;
+            }
+            container.innerHTML = html;
+            if (newUnreadCount > 0 && document.getElementById('msgNotification')) {
+                document.getElementById('msgNotification').innerText = newUnreadCount;
+                document.getElementById('msgNotification').style.display = 'flex';
+                unreadCount = newUnreadCount;
+            } else {
+                document.getElementById('msgNotification').style.display = 'none';
+            }
+            document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => loadConversation(el.dataset.convid); });
+        });
+    }
+    
+    // استبدال loadConversations بـ loadConversationsWithNotification
+    window.loadConversations = loadConversationsWithNotification;
     
     window.showAddModal = function() {
         let currentImageFiles = [];
@@ -594,7 +677,7 @@
     document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); loadMyAccounts(); loadConversations(); } };
+    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; updateUI(); populateSelectors(); if(currentUser){ loadAccounts(); loadMyAccounts(); loadConversationsWithNotification(); } };
     
     let authContainer = null;
     function generateStrongPassword() { return Math.random().toString(36).slice(-12) + "!@#"; }
@@ -663,7 +746,10 @@
         const appDiv = document.getElementById('app');
         if (user) {
             splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
-            await loadProfile(); populateSelectors(); await loadAccounts(); await loadMyAccounts(); window.showPage('home');
+            await loadProfile(); populateSelectors(); await loadAccounts(); await loadMyAccounts(); 
+            window.loadConversations = loadConversationsWithNotification;
+            await loadConversationsWithNotification();
+            window.showPage('home');
         } else {
             appDiv.style.display = 'none'; splash.style.display = 'flex'; splash.style.opacity = '1';
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
