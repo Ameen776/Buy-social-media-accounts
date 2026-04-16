@@ -260,10 +260,10 @@
     let currentProfileUserId = null;
     
     const translations = {
-        ar: { home:"🔥 الحسابات المتاحة", profile:"👤 الملف الشخصي", addAccount:"➕ إضافة حساب", messages:"💬 المحادثات", support:"🛠️ الدعم الفني", about:"ℹ️ عن التطبيق", logout:"🚪 تسجيل الخروج", menu:"القائمة", myAccounts:"📦 حساباتي المنشورة", save:"حفظ", settings:"الإعدادات", editProfile:"تعديل الملف الشخصي", name:"الاسم", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", country:"الدولة", zip:"الرمز البريدي", follow:"متابعة", unfollow:"إلغاء المتابعة", followers:"متابع", following:"يتابع", call:"اتصال", whatsapp:"واتساب", details:"تفاصيل", chat:"مراسلة", edit:"تعديل", delete:"حذف", refresh:"تحديث", search:"بحث...", all:"الكل", send:"إرسال", back:"رجوع", attach:"إرفاق صورة", aboutText:"المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure:"آمن ومضمون", fast:"فوري وسريع", support247:"دعم 24/7", developer:"تم التطوير بواسطة", forgot:"نسيت كلمة المرور?", resetSent:"تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" },
-        en: { home:"🔥 Available Accounts", profile:"👤 Profile", addAccount:"➕ Add Account", messages:"💬 Messages", support:"🛠️ Support", about:"ℹ️ About", logout:"🚪 Logout", menu:"Menu", myAccounts:"📦 My Published Accounts", save:"Save", settings:"Settings", editProfile:"Edit Profile", name:"Name", email:"Email", phone:"Phone", city:"City", country:"Country", zip:"Postal Code", follow:"Follow", unfollow:"Unfollow", followers:"Followers", following:"Following", call:"Call", whatsapp:"WhatsApp", details:"Details", chat:"Chat", edit:"Edit", delete:"Delete", refresh:"Refresh", search:"Search...", all:"All", send:"Send", back:"Back", attach:"Attach image", aboutText:"The first platform to buy and sell social media accounts", secure:"Secure & Guaranteed", fast:"Instant & Fast", support247:"24/7 Support", developer:"Developed by", forgot:"Forgot password?", resetSent:"Password reset email sent to your inbox" },
-        fr: { home:"🔥 Comptes disponibles", profile:"👤 Profil", addAccount:"➕ Ajouter", messages:"💬 Messages", support:"🛠️ Support", about:"ℹ️ À propos", logout:"🚪 Déconnexion", menu:"Menu", myAccounts:"📦 Mes comptes publiés", save:"Enregistrer", settings:"Paramètres", editProfile:"Modifier le profil", name:"Nom", email:"Email", phone:"Téléphone", city:"Ville", country:"Pays", zip:"Code postal", follow:"Suivre", unfollow:"Ne plus suivre", followers:"Abonnés", following:"Abonnements", call:"Appeler", whatsapp:"WhatsApp", details:"Détails", chat:"Discuter", edit:"Modifier", delete:"Supprimer", refresh:"Actualiser", search:"Rechercher...", all:"Tous", send:"Envoyer", back:"Retour", attach:"Joindre une image", aboutText:"La première plateforme pour acheter et vendre des comptes de réseaux sociaux", secure:"Sécurisé", fast:"Rapide", support247:"Support 24/7", developer:"Développé par", forgot:"Mot de passe oublié?", resetSent:"Email de réinitialisation envoyé" },
-        tr: { home:"🔥 Mevcut Hesaplar", profile:"👤 Profil", addAccount:"➕ Hesap Ekle", messages:"💬 Mesajlar", support:"🛠️ Destek", about:"ℹ️ Hakkında", logout:"🚪 Çıkış", menu:"Menü", myAccounts:"📦 Yayınlanan Hesaplarım", save:"Kaydet", settings:"Ayarlar", editProfile:"Profili Düzenle", name:"İsim", email:"E-posta", phone:"Telefon", city:"Şehir", country:"Ülke", zip:"Posta Kodu", follow:"Takip Et", unfollow:"Takibi Bırak", followers:"Takipçi", following:"Takip Edilen", call:"Ara", whatsapp:"WhatsApp", details:"Detaylar", chat:"Mesaj", edit:"Düzenle", delete:"Sil", refresh:"Yenile", search:"Ara...", all:"Tümü", send:"Gönder", back:"Geri", attach:"Resim ekle", aboutText:"Sosyal medya hesaplarını alıp satmak için ilk platform", secure:"Güvenli", fast:"Hızlı", support247:"7/24 Destek", developer:"Geliştiren", forgot:"Şifremi unuttum?", resetSent:"Şifre sıfırlama e-postası gönderildi" }
+        ar: { home:"🔥 الحسابات المتاحة", profile:"👤 الملف الشخصي", addAccount:"➕ إضافة حساب", messages:"💬 المحادثات", support:"🛠️ الدعم الفني", about:"ℹ️ عن التطبيق", logout:"🚪 تسجيل الخروج", menu:"القائمة", myAccounts:"📦 حساباتي المنشورة", save:"حفظ", settings:"الإعدادات", editProfile:"تعديل الملف الشخصي", name:"الاسم", email:"البريد الإلكتروني", phone:"رقم الهاتف", city:"المدينة", country:"الدولة", zip:"الرمز البريدي", follow:"متابعة", unfollow:"إلغاء المتابعة", followers:"متابع", following:"يتابع", call:"اتصال", whatsapp:"واتساب", details:"تفاصيل", chat:"مراسلة", edit:"تعديل", delete:"حذف", refresh:"تحديث", search:"بحث...", all:"الكل", send:"إرسال", back:"رجوع", attach:"إرفاق صورة", aboutText:"المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure:"آمن ومضمون", fast:"فوري وسريع", support247:"دعم 24/7", developer:"تم التطوير بواسطة", forgot:"نسيت كلمة المرور؟", resetSent:"تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني", login:"تسجيل الدخول", register:"إنشاء حساب", password:"كلمة المرور", price:"السعر", description:"الوصف", uploadImages:"صور الإثبات", link:"رابط الحساب", accountName:"اسم الحساب", followersNumber:"عدد المتابعين" },
+        en: { home:"🔥 Available Accounts", profile:"👤 Profile", addAccount:"➕ Add Account", messages:"💬 Messages", support:"🛠️ Support", about:"ℹ️ About", logout:"🚪 Logout", menu:"Menu", myAccounts:"📦 My Published Accounts", save:"Save", settings:"Settings", editProfile:"Edit Profile", name:"Name", email:"Email", phone:"Phone", city:"City", country:"Country", zip:"Postal Code", follow:"Follow", unfollow:"Unfollow", followers:"Followers", following:"Following", call:"Call", whatsapp:"WhatsApp", details:"Details", chat:"Chat", edit:"Edit", delete:"Delete", refresh:"Refresh", search:"Search...", all:"All", send:"Send", back:"Back", attach:"Attach image", aboutText:"The first platform to buy and sell social media accounts", secure:"Secure & Guaranteed", fast:"Instant & Fast", support247:"24/7 Support", developer:"Developed by", forgot:"Forgot password?", resetSent:"Password reset email sent to your inbox", login:"Login", register:"Register", password:"Password", price:"Price", description:"Description", uploadImages:"Proof Images", link:"Account link", accountName:"Account name", followersNumber:"Followers" },
+        fr: { home:"🔥 Comptes disponibles", profile:"👤 Profil", addAccount:"➕ Ajouter", messages:"💬 Messages", support:"🛠️ Support", about:"ℹ️ À propos", logout:"🚪 Déconnexion", menu:"Menu", myAccounts:"📦 Mes comptes publiés", save:"Enregistrer", settings:"Paramètres", editProfile:"Modifier le profil", name:"Nom", email:"Email", phone:"Téléphone", city:"Ville", country:"Pays", zip:"Code postal", follow:"Suivre", unfollow:"Ne plus suivre", followers:"Abonnés", following:"Abonnements", call:"Appeler", whatsapp:"WhatsApp", details:"Détails", chat:"Discuter", edit:"Modifier", delete:"Supprimer", refresh:"Actualiser", search:"Rechercher...", all:"Tous", send:"Envoyer", back:"Retour", attach:"Joindre une image", aboutText:"La première plateforme pour acheter et vendre des comptes de réseaux sociaux", secure:"Sécurisé", fast:"Rapide", support247:"Support 24/7", developer:"Développé par", forgot:"Mot de passe oublié?", resetSent:"Email de réinitialisation envoyé", login:"Connexion", register:"Inscription", password:"Mot de passe", price:"Prix", description:"Description", uploadImages:"Preuves", link:"Lien", accountName:"Nom du compte", followersNumber:"Abonnés" },
+        tr: { home:"🔥 Mevcut Hesaplar", profile:"👤 Profil", addAccount:"➕ Hesap Ekle", messages:"💬 Mesajlar", support:"🛠️ Destek", about:"ℹ️ Hakkında", logout:"🚪 Çıkış", menu:"Menü", myAccounts:"📦 Yayınlanan Hesaplarım", save:"Kaydet", settings:"Ayarlar", editProfile:"Profili Düzenle", name:"İsim", email:"E-posta", phone:"Telefon", city:"Şehir", country:"Ülke", zip:"Posta Kodu", follow:"Takip Et", unfollow:"Takibi Bırak", followers:"Takipçi", following:"Takip Edilen", call:"Ara", whatsapp:"WhatsApp", details:"Detaylar", chat:"Mesaj", edit:"Düzenle", delete:"Sil", refresh:"Yenile", search:"Ara...", all:"Tümü", send:"Gönder", back:"Geri", attach:"Resim ekle", aboutText:"Sosyal medya hesaplarını alıp satmak için ilk platform", secure:"Güvenli", fast:"Hızlı", support247:"7/24 Destek", developer:"Geliştiren", forgot:"Şifremi unuttum?", resetSent:"Şifre sıfırlama e-postası gönderildi", login:"Giriş", register:"Kayıt", password:"Şifre", price:"Fiyat", description:"Açıklama", uploadImages:"Kanıt Resimleri", link:"Hesap linki", accountName:"Hesap adı", followersNumber:"Takipçi" }
     };
     function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
     function updateUI() {
@@ -350,7 +350,7 @@
             }
             loadFollowersData(profileUserId);
             renderFollowButton(profileUserId);
-            loadAccounts(); // تحديث الصفحة الرئيسية لإظهار منشورات المتابعين الجدد
+            loadAccounts();
         };
     }
     
@@ -504,12 +504,10 @@
         closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
     };
     
-    // تحميل الحسابات (الصفحة الرئيسية) - تشمل منشورات المتابعين أولاً
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
         container.innerHTML = 'جار التحميل...';
         try {
-            // جلب حسابات المستخدمين الذين يتابعهم المستخدم الحالي أولاً
             let followingIds = [];
             if (currentUser) {
                 const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
@@ -521,7 +519,6 @@
             let accounts = [];
             snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
             
-            // ترتيب: حسابات المتابعين أولاً، ثم الباقي
             accounts.sort((a, b) => {
                 const aFollowing = followingIds.includes(a.sellerId);
                 const bFollowing = followingIds.includes(b.sellerId);
@@ -606,9 +603,9 @@
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
             <h3>✏️ ${t('edit')}</h3>
-            <div class="edit-form-group"><label>${t('name')}</label><input type="text" id="editName" value="${currentData.name.replace(/"/g, '&quot;')}"></div>
+            <div class="edit-form-group"><label>${t('accountName')}</label><input type="text" id="editName" value="${currentData.name.replace(/"/g, '&quot;')}"></div>
             <div class="edit-form-group"><label>${t('link')}</label><input type="url" id="editLink" value="${currentData.link}"></div>
-            <div class="edit-form-group"><label>${t('followers')}</label><input type="number" id="editFollowers" value="${currentData.followers}"></div>
+            <div class="edit-form-group"><label>${t('followersNumber')}</label><input type="number" id="editFollowers" value="${currentData.followers}"></div>
             <div class="edit-form-group"><label>${t('price')}</label><div class="price-currency-row"><input type="number" id="editPrice" value="${currentData.price}"><select id="editCurrency"><option ${currentData.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${currentData.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${currentData.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div></div>
             <div class="edit-form-group"><label>${t('description')}</label><textarea id="editDesc">${(currentData.description || '').replace(/"/g, '&quot;')}</textarea></div>
             <div class="edit-form-group"><label>${t('uploadImages')}</label><input type="file" id="editImages" multiple accept="image/*"><div id="editPreview" class="image-preview"></div></div>
@@ -708,8 +705,8 @@
         modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('addAccount')}</h3>
             <form id="addForm">
                 <select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
-                <input id="addName" placeholder="${t('name')}" required>
-                <input id="addFollowers" placeholder="${t('followers')}" type="number" required>
+                <input id="addName" placeholder="${t('accountName')}" required>
+                <input id="addFollowers" placeholder="${t('followersNumber')}" type="number" required>
                 <div class="price-currency-row"><input id="addPrice" placeholder="${t('price')}" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div>
                 <input id="addLink" placeholder="${t('link')}" required>
                 <textarea id="addDesc" placeholder="${t('description')}"></textarea>
@@ -761,7 +758,6 @@
         modal.querySelector('#cancelModal').onclick = () => modal.remove();
     };
     
-    // عناصر عرض المعلومات
     if (!document.getElementById('displayName')) {
         const infoContainer = document.createElement('div');
         infoContainer.style.display = 'none';
@@ -780,6 +776,7 @@
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     
     let authContainer = null;
+    
     function showForgotPasswordModal() {
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
@@ -798,7 +795,10 @@
                 modal.querySelector('#resetMsg').innerHTML = t('resetSent');
                 setTimeout(() => modal.remove(), 3000);
             } catch(e) {
-                modal.querySelector('#resetMsg').innerHTML = e.message;
+                let errorMsg = e.message;
+                if (errorMsg.includes('auth/user-not-found')) errorMsg = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                else if (errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد الإلكتروني غير صحيح';
+                modal.querySelector('#resetMsg').innerHTML = errorMsg;
             }
         };
         modal.querySelector('#closeResetBtn').onclick = () => modal.remove();
@@ -809,7 +809,7 @@
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
         authContainer.innerHTML = `<div class="auth-card">
             <div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div>
-            <h2>🔐 تسجيل الدخول</h2>
+            <h2>🔐 ${t('login')}</h2>
             <input id="loginEmail" placeholder="${t('email')}" style="width:100%; margin:10px 0;">
             <input id="loginPassword" type="password" placeholder="${t('password')}" style="width:100%; margin:10px 0;">
             <div class="forgot-password" id="forgotPasswordBtn">${t('forgot')}</div>
@@ -820,7 +820,19 @@
         </div>`;
         document.body.appendChild(authContainer);
         document.getElementById('doLogin').onclick = async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); } catch(e) { document.getElementById('loginError').innerText = e.message; }
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                authContainer.remove();
+            } catch(e) {
+                let errorMsg = e.message;
+                if (errorMsg.includes('auth/wrong-password')) errorMsg = 'كلمة المرور غير صحيحة';
+                else if (errorMsg.includes('auth/user-not-found')) errorMsg = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                else if (errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد الإلكتروني غير صحيح';
+                else if (errorMsg.includes('auth/too-many-requests')) errorMsg = 'تم تعطيل الحساب مؤقتاً بسبب كثرة المحاولات الفاشلة';
+                document.getElementById('loginError').innerText = errorMsg;
+            }
         };
         document.getElementById('toRegister').onclick = () => showRegisterScreen();
         document.getElementById('googleLogin').onclick = async () => {
@@ -845,7 +857,7 @@
         document.body.appendChild(authContainer);
         document.getElementById('doRegister').onclick = async () => {
             const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, pass = document.getElementById('regPassword').value;
-            if (!name || !email || !pass) { document.getElementById('regError').innerText = "املأ الحقول"; return; }
+            if (!name || !email || !pass) { document.getElementById('regError').innerText = "يرجى ملء جميع الحقول"; return; }
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 await updateProfile(userCred.user, { displayName: name });
@@ -855,7 +867,13 @@
                 btn.innerHTML = '<span class="success-check">✓</span> تم!';
                 btn.disabled = true;
                 setTimeout(() => { showLoginScreen(); }, 1500);
-            } catch(e) { document.getElementById('regError').innerText = e.message; }
+            } catch(e) {
+                let errorMsg = e.message;
+                if (errorMsg.includes('auth/email-already-in-use')) errorMsg = 'البريد الإلكتروني مستخدم بالفعل';
+                else if (errorMsg.includes('auth/weak-password')) errorMsg = 'كلمة المرور ضعيفة، يجب أن تكون 6 أحرف على الأقل';
+                else if (errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد الإلكتروني غير صحيح';
+                document.getElementById('regError').innerText = errorMsg;
+            }
         };
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
