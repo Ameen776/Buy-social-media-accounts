@@ -118,6 +118,12 @@
         .loading-spinner { width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; display:inline-block; margin-right:5px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .success-check{color:#00ff88;font-size:2rem;}
+        
+        .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
+        .image-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;}
+        .price-currency-row{display:flex;gap:8px;align-items:center;}
+        .price-currency-row input{flex:2;}
+        .price-currency-row select{width:auto;flex:1;}
     </style>
 </head>
 <body>
@@ -252,24 +258,6 @@
         return data.data.url;
     }
     
-    // ============ الترجمة ============
-    const translations = {
-        ar: { home: "الرئيسية", add: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark: "الوضع الليلي", logout: "تسجيل الخروج", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", publish: "نشر" },
-        en: { home: "Home", add: "Add Account", messages: "Messages", support: "Support", about: "About", dark: "Dark Mode", logout: "Logout", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", publish: "Publish" },
-        fr: { home: "Accueil", add: "Ajouter", messages: "Messages", support: "Support", about: "À propos", dark: "Mode nuit", logout: "Déconnexion", search: "Rechercher...", all: "Tous", profile: "Profil", followers: "Abonnés", following: "Abonnements", posts: "Annonces", edit: "Modifier", delete: "Supprimer", chat: "Discuter", details: "Détails", follow: "Suivre", unfollow: "Ne plus suivre", settings: "Paramètres", name: "Nom", email: "Email", phone: "Téléphone", city: "Ville", country: "Pays", zip: "Code postal", save: "Enregistrer", cancel: "Annuler", confirm_delete: "Supprimer ?", deleted: "Supprimé", updated: "Mis à jour", login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte", platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", publish: "Publier" },
-        tr: { home: "Ana Sayfa", add: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında", dark: "Gece Modu", logout: "Çıkış", search: "Ara...", all: "Tümü", profile: "Profil", followers: "Takipçi", following: "Takip", posts: "İlanlar", edit: "Düzenle", delete: "Sil", chat: "Sohbet", details: "Detaylar", follow: "Takip Et", unfollow: "Takibi Bırak", settings: "Ayarlar", name: "İsim", email: "E-posta", phone: "Telefon", city: "Şehir", country: "Ülke", zip: "Posta kodu", save: "Kaydet", cancel: "İptal", confirm_delete: "Silmek istediğinize emin misiniz?", deleted: "Silindi", updated: "Güncellendi", login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur", platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", publish: "Yayınla" }
-    };
-    let currentLang = localStorage.getItem('lang') || 'ar';
-    function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
-    function applyLanguage() {
-        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(k) el.innerText = t(k); });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if(k) el.placeholder = t(k); });
-        document.getElementById('langSelectSide').value = currentLang;
-        if(window.currentPage === 'home') loadAccounts();
-        else if(window.currentPage === 'profile' && window.currentProfileUserId) refreshProfilePage();
-    }
-    
     let currentUser = null;
     let currentProfileUserId = null;
     let currentPage = 'home';
@@ -290,8 +278,8 @@
         await loadUserAccounts(currentProfileUserId);
         await loadFollowStats(currentProfileUserId);
         const isOwnProfile = (currentUser && currentProfileUserId === currentUser.uid);
-        document.getElementById('profileTitle').innerText = isOwnProfile ? t('profile') : `@${document.getElementById('userName').innerText || 'مستخدم'}`;
-        document.getElementById('userPostsTitle').innerText = t('posts');
+        document.getElementById('profileTitle').innerText = isOwnProfile ? 'الملف الشخصي' : `@${document.getElementById('userName').innerText || 'مستخدم'}`;
+        document.getElementById('userPostsTitle').innerText = 'المنشورات';
         const settingsIcon = document.getElementById('settingsIcon');
         if (settingsIcon) {
             if (isOwnProfile) settingsIcon.classList.remove('hidden');
@@ -336,7 +324,7 @@
         const currentUserRef = doc(db, 'users', currentUser.uid);
         const currentSnap = await getDoc(currentUserRef);
         const isFollowing = currentSnap.data()?.following?.includes(userId) || false;
-        container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="followBtn">${isFollowing ? t('unfollow') : t('follow')}</button>`;
+        container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="followBtn">${isFollowing ? 'إلغاء المتابعة' : 'متابعة'}</button>`;
         document.getElementById('followBtn')?.addEventListener('click', async () => {
             if (isFollowing) {
                 await updateDoc(currentUserRef, { following: arrayRemove(userId) });
@@ -350,14 +338,19 @@
         });
     }
     
-    // ============ عرض منشورات المستخدم (تم إصلاحها) ============
+    // ============ عرض منشورات المستخدم (تم إصلاحها بالكامل) ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
+            console.log("جاري تحميل منشورات المستخدم:", userId);
+            
             // استعلام لجلب حسابات المستخدم فقط
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
+            const accountsRef = collection(db, 'accounts');
+            const q = query(accountsRef, where("sellerId", "==", userId), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
+            
+            console.log("عدد المنشورات التي تم العثور عليها:", querySnapshot.size);
             
             if (querySnapshot.empty) {
                 container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
@@ -369,33 +362,58 @@
             
             for (const docSnap of querySnapshot.docs) {
                 const acc = docSnap.data();
-                html += `<div class="my-account-card">
-                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
-                    <p>💰 ${acc.price} ${acc.currency} | 👥 ${acc.followers?.toLocaleString()}</p>
+                const accountId = docSnap.id;
+                
+                html += `<div class="my-account-card" data-id="${accountId}">
+                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
+                    <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>✏️ ${t('edit')}</button>
-                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ ${t('delete')}</button>` : ''}
-                        <button onclick="window.openChat('${acc.sellerId}', '${acc.name.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
-                        <button class="details-btn btn-outline" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${accountId}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ تعديل</button>
+                        <button class="delete-account-btn btn-danger" data-id="${accountId}">🗑️ حذف</button>` : ''}
+                        <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 مراسلة</button>
+                        <button class="details-account-btn btn-outline" data-id="${accountId}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 تفاصيل</button>
                     </div>
                 </div>`;
             }
             container.innerHTML = html;
             
             // إضافة أحداث الأزرار
-            document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc));
+            document.querySelectorAll('.details-account-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const acc = {
+                        name: btn.dataset.name,
+                        platform: btn.dataset.platform,
+                        followers: parseInt(btn.dataset.followers),
+                        price: parseFloat(btn.dataset.price),
+                        currency: btn.dataset.currency,
+                        link: btn.dataset.link,
+                        description: btn.dataset.desc,
+                        views: parseInt(btn.dataset.views),
+                        images: JSON.parse(btn.dataset.images)
+                    };
+                    showDetails(acc, btn.dataset.id);
+                };
             });
             
             if(isOwner) {
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.onclick = () => showEditModal(btn.dataset.id, JSON.parse(btn.dataset.acc));
+                document.querySelectorAll('.edit-account-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const acc = {
+                            name: btn.dataset.name,
+                            link: btn.dataset.link,
+                            followers: parseInt(btn.dataset.followers),
+                            price: parseFloat(btn.dataset.price),
+                            currency: btn.dataset.currency,
+                            description: btn.dataset.desc
+                        };
+                        showEditModal(btn.dataset.id, acc);
+                    };
                 });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
+                document.querySelectorAll('.delete-account-btn').forEach(btn => {
                     btn.onclick = async () => {
-                        if(confirm(t('confirm_delete'))) {
+                        if(confirm('هل أنت متأكد من حذف هذا الحساب نهائياً؟')) {
                             await deleteDoc(doc(db, 'accounts', btn.dataset.id));
-                            alert(t('deleted'));
+                            alert('تم حذف الحساب');
                             loadUserAccounts(userId);
                             loadAccounts();
                         }
@@ -404,36 +422,42 @@
             }
         } catch(e) {
             console.error("خطأ في تحميل المنشورات:", e);
-            container.innerHTML = '<div class="card">خطأ في تحميل المنشورات</div>';
+            container.innerHTML = '<div class="card">خطأ في تحميل المنشورات: ' + e.message + '</div>';
         }
     }
     
-    async function showDetails(account) {
+    async function showDetails(account, accountId) {
         const modal = document.createElement('div'); modal.className = 'modal';
+        let imagesHtml = '';
+        if (account.images && account.images.length) {
+            imagesHtml = `<div style="display:flex; gap:8px; margin-top:10px; overflow-x:auto;">${account.images.map(img => `<img src="${img}" style="width:80px; height:80px; border-radius:8px; object-fit:cover; cursor:pointer;" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
+        }
         modal.innerHTML = `<div class="modal-content">
             <h3>${account.name}</h3>
             <p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p>
             <p>💰 ${account.price} ${account.currency} | 👁️ ${account.views || 0}</p>
-            <p>🔗 <a href="${account.link}" target="_blank">${account.link}</a></p>
-            <p>📝 ${account.description || ''}</p>
-            ${account.images && account.images[0] ? `<img src="${account.images[0]}" style="width:100%; border-radius:10px; margin-top:10px;">` : ''}
-            <button class="btn-primary" id="closeModal" style="margin-top:15px;">${t('details')}</button>
+            <p>🔗 <a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></p>
+            <p>📝 ${account.description || 'لا يوجد وصف'}</p>
+            ${imagesHtml}
+            <button class="btn-primary" id="closeModal" style="margin-top:15px;">إغلاق</button>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeModal').onclick = () => modal.remove();
-        await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
+        if (accountId) {
+            await updateDoc(doc(db, 'accounts', accountId), { views: increment(1) });
+        }
     }
     
     async function showEditModal(accountId, acc) {
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
-            <h3>✏️ ${t('edit')}</h3>
-            <input type="text" id="editName" value="${acc.name.replace(/"/g, '"')}" placeholder="${t('name')}">
-            <input type="url" id="editLink" value="${acc.link}" placeholder="${t('link')}">
-            <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
-            <div class="price-currency-row" style="display:flex; gap:8px;"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}" style="flex:2;"><select id="editCurrency" style="flex:1;"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
-            <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
-            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">${t('save')}</button><button class="btn-outline" id="cancelEdit">${t('cancel')}</button></div>
+            <h3>✏️ تعديل الحساب</h3>
+            <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="اسم الحساب">
+            <input type="url" id="editLink" value="${acc.link}" placeholder="الرابط">
+            <input type="number" id="editFollowers" value="${acc.followers}" placeholder="عدد المتابعين">
+            <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="السعر"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
+            <textarea id="editDesc" placeholder="الوصف">${acc.description || ''}</textarea>
+            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">حفظ</button><button class="btn-outline" id="cancelEdit">إلغاء</button></div>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#saveEdit').onclick = async () => {
@@ -445,7 +469,7 @@
                 currency: modal.querySelector('#editCurrency').value,
                 description: modal.querySelector('#editDesc').value
             });
-            alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
+            alert('تم التحديث'); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
         };
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
@@ -463,22 +487,27 @@
             const snap = await getDocs(q);
             let accounts = [];
             snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+            
             accounts.sort((a,b) => {
                 const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId);
                 if(aF && !bF) return -1;
                 if(!aF && bF) return 1;
-                return b.createdAt - a.createdAt;
+                return (b.createdAt || 0) - (a.createdAt || 0);
             });
+            
             const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
             const platform = document.getElementById('platformFilter')?.value || "all";
             let filtered = accounts.filter(a => (a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search)) && (platform === "all" || a.platform === platform));
+            
             if (filtered.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+            
             let html = '';
             for (const acc of filtered) {
                 let sellerName = "مستخدم", sellerAvatar = null;
                 const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
                 if (userSnap.exists()) { sellerName = userSnap.data().name || sellerName; sellerAvatar = userSnap.data().avatar; }
                 const isFollowing = followingIds.includes(acc.sellerId);
+                
                 html += `<div class="card">
                     <div style="display:flex; align-items:center; gap:10px;">
                         ${sellerAvatar ? `<img src="${sellerAvatar}" class="profile-thumb" onclick="window.viewOtherProfile('${acc.sellerId}')">` : '<div class="profile-thumb" style="background:#555; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}
@@ -490,16 +519,30 @@
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
-                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
+                        <button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 تفاصيل</button>
+                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 محادثة</button>
                     </div>
                 </div>`;
             }
             container.innerHTML = html;
+            
             document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc));
+                btn.onclick = () => {
+                    const acc = {
+                        name: btn.dataset.name,
+                        platform: btn.dataset.platform,
+                        followers: parseInt(btn.dataset.followers),
+                        price: parseFloat(btn.dataset.price),
+                        currency: btn.dataset.currency,
+                        link: btn.dataset.link,
+                        description: btn.dataset.desc,
+                        views: parseInt(btn.dataset.views),
+                        images: JSON.parse(btn.dataset.images)
+                    };
+                    showDetails(acc, btn.dataset.id);
+                };
             });
-        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; }
+        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
     }
     
     window.viewOtherProfile = function(userId) {
@@ -515,7 +558,7 @@
         const convRef = doc(db, 'conversations', convId);
         if (!(await getDoc(convRef)).exists()) await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>💬 محادثة: ${sellerName}</h3><div id="chatArea" style="height:250px; overflow-y:auto; background:#1a1a2a; border-radius:16px; padding:8px; margin-bottom:8px;"></div><input type="text" id="chatInput" placeholder="${t('chat')}..." style="width:100%;"><button id="sendChatBtn" class="btn-primary" style="margin-top:8px;">${t('send')}</button><button id="closeChatBtn" class="btn-outline" style="margin-top:8px;">${t('cancel')}</button></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>💬 محادثة: ${sellerName}</h3><div id="chatArea" style="height:250px; overflow-y:auto; background:#1a1a2a; border-radius:16px; padding:8px; margin-bottom:8px;"></div><input type="text" id="chatInput" placeholder="اكتب رسالة..." style="width:100%;"><button id="sendChatBtn" class="btn-primary" style="margin-top:8px;">إرسال</button><button id="closeChatBtn" class="btn-outline" style="margin-top:8px;">إغلاق</button></div>`;
         document.body.appendChild(modal);
         const messagesDiv = modal.querySelector('#chatArea');
         const inputField = modal.querySelector('#chatInput');
@@ -581,33 +624,54 @@
     window.showAddModal = function() {
         let imageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('add')}</h3><form id="addForm"><select id="addPlatform" required><option value="">${t('platform')}</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="${t('name')}" required><input id="addFollowers" placeholder="${t('followers')}" type="number" required><div style="display:flex; gap:8px;"><input id="addPrice" placeholder="${t('price')}" type="number" required style="flex:2;"><select id="addCurrency" style="flex:1;"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="${t('link')}" required><textarea id="addDesc" placeholder="${t('description')}"></textarea><label>${t('images')}</label><input type="file" id="addImages" accept="image/*"><div id="preview"></div><button type="submit" class="btn-primary">${t('publish')}</button><button type="button" id="cancelAdd" class="btn-outline">${t('cancel')}</button></form></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>➕ إضافة حساب</h3><form id="addForm"><select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="اسم الحساب" required><input id="addFollowers" placeholder="عدد المتابعين" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="السعر" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="الرابط" required><textarea id="addDesc" placeholder="الوصف"></textarea><label>صور الإثبات (حد أقصى 3)</label><input type="file" id="addImages" multiple accept="image/*"><div id="previewImages" class="image-preview"></div><button type="submit" class="btn-primary">نشر الحساب</button><button type="button" id="cancelModal" class="btn-outline">إلغاء</button></form></div>`;
         document.body.appendChild(modal);
-        const preview = modal.querySelector('#preview');
-        modal.querySelector('#addImages').onchange = (e) => {
-            const file = e.target.files[0];
-            if(file) { imageFiles = [file]; preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:60px; height:60px; border-radius:8px;">`; }
-        };
-        modal.querySelector('#addForm').onsubmit = async (e) => {
+        const previewDiv = modal.querySelector('#previewImages');
+        const imagesInput = modal.querySelector('#addImages');
+        
+        function updatePreview() {
+            previewDiv.innerHTML = '';
+            imageFiles.slice(0,3).forEach((file, idx) => {
+                const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; wrapper.style.display = 'inline-block'; wrapper.style.margin = '5px';
+                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '60px'; img.style.height = '60px'; img.style.borderRadius = '8px';
+                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.border = 'none'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '18px'; removeBtn.style.height = '18px'; removeBtn.style.color = 'white'; removeBtn.style.cursor = 'pointer';
+                removeBtn.onclick = () => { imageFiles.splice(idx,1); updatePreview(); };
+                wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper);
+            });
+        }
+        
+        imagesInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (imageFiles.length >= 3) alert("الحد الأقصى 3 صور");
+                else { imageFiles.push(file); updatePreview(); }
+            });
+            imagesInput.value = '';
+        });
+        
+        const form = modal.querySelector('#addForm');
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser) return alert("تسجيل الدخول مطلوب");
-            if(imageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
-            const btn = modal.querySelector('button[type="submit"]');
+            if (!currentUser) return alert("تسجيل الدخول مطلوب");
+            if (imageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
+            const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true; btn.textContent = "جاري النشر...";
             try {
-                const url = await uploadToImgBB(imageFiles[0]);
+                const urls = [];
+                for (let i=0; i<imageFiles.length; i++) urls.push(await uploadToImgBB(imageFiles[i]));
                 await addDoc(collection(db, 'accounts'), {
-                    name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value,
-                    platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value),
-                    price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value,
-                    description: modal.querySelector('#addDesc').value, images: [url], sellerId: currentUser.uid,
+                    name: document.getElementById('addName').value, link: document.getElementById('addLink').value,
+                    platform: document.getElementById('addPlatform').value, followers: parseInt(document.getElementById('addFollowers').value),
+                    price: parseFloat(document.getElementById('addPrice').value), currency: document.getElementById('addCurrency').value,
+                    description: document.getElementById('addDesc').value, images: urls, sellerId: currentUser.uid,
                     views: 0, createdAt: Date.now()
                 });
-                alert("تم النشر بنجاح"); modal.remove(); loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
+                alert("تم نشر الحساب بنجاح"); modal.remove(); loadAccounts(); 
+                if (currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
             } catch(err) { alert("خطأ: "+err.message); }
-            finally { btn.disabled = false; btn.textContent = t('publish'); }
-        };
-        modal.querySelector('#cancelAdd').onclick = () => modal.remove();
+            finally { btn.disabled = false; btn.textContent = 'نشر الحساب'; }
+        });
+        modal.querySelector('#cancelModal').onclick = () => modal.remove();
     };
     
     async function changeAvatar() {
@@ -629,7 +693,7 @@
     function showSettingsModal() {
         if (!currentUser || currentProfileUserId !== currentUser.uid) { alert("لا يمكنك تعديل إعدادات مستخدم آخر"); return; }
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>⚙️ ${t('settings')}</h3><input type="text" id="setName" placeholder="${t('name')}"><input type="email" id="setEmail" placeholder="${t('email')}"><div style="display:flex; gap:8px;"><select id="setPhoneCode" style="width:35%;"><option>+966</option><option>+967</option><option>+20</option><option>+971</option><option>+962</option></select><input type="tel" id="setPhone" placeholder="${t('phone')}" style="flex:1"></div><input type="text" id="setCity" placeholder="${t('city')}"><select id="setCountry"><option value="">${t('country')}</option><option>السعودية</option><option>مصر</option><option>الإمارات</option><option>الكويت</option><option>قطر</option></select><input type="text" id="setZip" placeholder="${t('zip')}"><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveSettings">${t('save')}</button><button class="btn-outline" id="closeSettings">${t('cancel')}</button></div></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>⚙️ الإعدادات - تعديل الملف الشخصي</h3><input type="text" id="setName" placeholder="الاسم"><input type="email" id="setEmail" placeholder="البريد الإلكتروني"><div style="display:flex; gap:8px;"><select id="setPhoneCode" style="width:35%;"><option>+966</option><option>+967</option><option>+20</option><option>+971</option><option>+962</option></select><input type="tel" id="setPhone" placeholder="رقم الهاتف" style="flex:1"></div><input type="text" id="setCity" placeholder="المدينة"><select id="setCountry"><option value="">الدولة</option><option>السعودية</option><option>مصر</option><option>الإمارات</option><option>الكويت</option><option>قطر</option></select><input type="text" id="setZip" placeholder="الرمز البريدي"><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveSettings">💾 حفظ</button><button class="btn-outline" id="closeSettings">إلغاء</button></div></div>`;
         document.body.appendChild(modal);
         modal.querySelector('#saveSettings').onclick = async () => {
             await updateDoc(doc(db, 'users', currentUser.uid), {
@@ -638,7 +702,7 @@
                 city: modal.querySelector('#setCity').value, country: modal.querySelector('#setCountry').value,
                 zip: modal.querySelector('#setZip').value
             });
-            alert(t('updated')); modal.remove(); refreshProfilePage();
+            alert("تم حفظ التعديلات"); modal.remove(); refreshProfilePage();
         };
         modal.querySelector('#closeSettings').onclick = () => modal.remove();
     }
@@ -648,7 +712,7 @@
     function showLoginScreen() {
         if(authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><h2>🔐 ${t('login')}</h2><input id="loginEmail" placeholder="${t('email')}"><input id="loginPassword" type="password" placeholder="${t('password')}"><button id="doLogin" class="btn-primary">${t('login')}</button><div class="auth-switch" id="toRegister">${t('create_account')}</div><div id="loginError" style="color:red; margin-top:10px;"></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><h2>🔐 تسجيل الدخول</h2><input id="loginEmail" placeholder="البريد الإلكتروني"><input id="loginPassword" type="password" placeholder="كلمة المرور"><button id="doLogin" class="btn-primary">تسجيل الدخول</button><div class="auth-switch" id="toRegister">إنشاء حساب جديد</div><div id="loginError" style="color:red; margin-top:10px;"></div></div>`;
         document.body.appendChild(authContainer);
         document.getElementById('doLogin').onclick = async () => {
             try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); }
@@ -660,7 +724,7 @@
     function showRegisterScreen() {
         if(authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><h2>📝 ${t('register')}</h2><input id="regName" placeholder="${t('name')}"><input id="regEmail" placeholder="${t('email')}"><input id="regPassword" type="password" placeholder="${t('password')}"><select id="regCountry"><option value="">${t('country')}</option><option>السعودية</option><option>مصر</option><option>الإمارات</option><option>الكويت</option><option>قطر</option></select><button id="doRegister" class="btn-primary">${t('register')}</button><div class="auth-switch" id="toLogin">${t('login')}</div><div id="regError" style="color:red; margin-top:10px;"></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><h2>📝 إنشاء حساب</h2><input id="regName" placeholder="الاسم"><input id="regEmail" placeholder="البريد الإلكتروني"><input id="regPassword" type="password" placeholder="كلمة المرور"><select id="regCountry"><option value="">اختر الدولة</option><option>السعودية</option><option>مصر</option><option>الإمارات</option><option>الكويت</option><option>قطر</option></select><button id="doRegister" class="btn-primary">إنشاء حساب</button><div class="auth-switch" id="toLogin">تسجيل الدخول</div><div id="regError" style="color:red; margin-top:10px;"></div></div>`;
         document.body.appendChild(authContainer);
         document.getElementById('doRegister').onclick = async () => {
             const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, pass = document.getElementById('regPassword').value, country = document.getElementById('regCountry').value;
@@ -673,7 +737,7 @@
                 await setDoc(doc(db, 'users', userCred.user.uid), { userIdRandom: Math.floor(1e9 + Math.random()*9e9), email, name, country, createdAt: Date.now(), followers: [], following: [] });
                 btn.innerHTML = '<span class="success-check">✓</span> تم إنشاء الحساب';
                 setTimeout(() => { authContainer.remove(); }, 1500);
-            } catch(e) { btn.disabled = false; btn.innerHTML = t('register'); document.getElementById('regError').innerText = e.message.includes('auth/email-already-in-use') ? 'البريد مستخدم بالفعل' : 'خطأ في التسجيل'; }
+            } catch(e) { btn.disabled = false; btn.innerHTML = 'إنشاء حساب'; document.getElementById('regError').innerText = e.message.includes('auth/email-already-in-use') ? 'البريد مستخدم بالفعل' : 'خطأ في التسجيل'; }
         };
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
@@ -685,7 +749,13 @@
     document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('langSelectSide').addEventListener('change', (e) => { currentLang = e.target.value; localStorage.setItem('lang', currentLang); applyLanguage(); });
+    document.getElementById('langSelectSide').addEventListener('change', (e) => { 
+        // تبسيط الترجمة للعربية فقط حالياً
+        const lang = e.target.value;
+        localStorage.setItem('lang', lang);
+        if (lang === 'ar') location.reload();
+        else alert('الترجمة الكاملة قيد التطوير، سيتم تحديث الصفحة');
+    });
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     
     onAuthStateChanged(auth, async (user) => {
@@ -698,7 +768,6 @@
             await refreshProfilePage();
             await loadAccounts();
             showPage('home');
-            applyLanguage();
         } else {
             appDiv.style.display = 'none';
             splash.style.display = 'flex';
