@@ -338,16 +338,16 @@
         });
     }
     
-    // ============ عرض منشورات المستخدم (تم إصلاحها بالكامل) ============
+    // ============ عرض منشورات المستخدم (تم إصلاح مشكلة الفهرس) ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
             console.log("جاري تحميل منشورات المستخدم:", userId);
             
-            // استعلام لجلب حسابات المستخدم فقط
+            // الحل: نجلب جميع الحسابات ثم نقوم بتصفيتها في الكود (بدون استخدام orderBy مع where)
             const accountsRef = collection(db, 'accounts');
-            const q = query(accountsRef, where("sellerId", "==", userId), orderBy("createdAt", "desc"));
+            const q = query(accountsRef, where("sellerId", "==", userId));
             const querySnapshot = await getDocs(q);
             
             console.log("عدد المنشورات التي تم العثور عليها:", querySnapshot.size);
@@ -357,21 +357,25 @@
                 return;
             }
             
+            // ترتيب النتائج يدوياً حسب createdAt (تنازلي)
+            let accounts = [];
+            querySnapshot.forEach(docSnap => {
+                accounts.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            accounts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
             const isOwner = (currentUser && currentUser.uid === userId);
             let html = '';
             
-            for (const docSnap of querySnapshot.docs) {
-                const acc = docSnap.data();
-                const accountId = docSnap.id;
-                
-                html += `<div class="my-account-card" data-id="${accountId}">
+            for (const acc of accounts) {
+                html += `<div class="my-account-card" data-id="${acc.id}">
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
                     <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${accountId}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ تعديل</button>
-                        <button class="delete-account-btn btn-danger" data-id="${accountId}">🗑️ حذف</button>` : ''}
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${acc.id}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ تعديل</button>
+                        <button class="delete-account-btn btn-danger" data-id="${acc.id}">🗑️ حذف</button>` : ''}
                         <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 مراسلة</button>
-                        <button class="details-account-btn btn-outline" data-id="${accountId}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 تفاصيل</button>
+                        <button class="details-account-btn btn-outline" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 تفاصيل</button>
                     </div>
                 </div>`;
             }
@@ -488,6 +492,7 @@
             let accounts = [];
             snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
             
+            // ترتيب الحسابات حسب المتابعة أولاً ثم التاريخ
             accounts.sort((a,b) => {
                 const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId);
                 if(aF && !bF) return -1;
@@ -750,11 +755,10 @@
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
     document.getElementById('langSelectSide').addEventListener('change', (e) => { 
-        // تبسيط الترجمة للعربية فقط حالياً
         const lang = e.target.value;
         localStorage.setItem('lang', lang);
         if (lang === 'ar') location.reload();
-        else alert('الترجمة الكاملة قيد التطوير، سيتم تحديث الصفحة');
+        else alert('الترجمة الكاملة قيد التطوير');
     });
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     
