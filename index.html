@@ -69,8 +69,8 @@
         .btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:5px 10px;border-radius:25px;cursor:pointer;font-size:0.7rem;}
         .btn-danger{background:#ff4444;border:none;padding:6px 12px;border-radius:25px;color:#fff;cursor:pointer;font-size:0.7rem;}
         
-        .btn-follow-blue {
-            background: #2196F3;
+        .btn-follow-green {
+            background: var(--follow-green);
             border: none;
             padding: 8px 20px;
             border-radius: 25px;
@@ -80,13 +80,13 @@
             font-size: 0.9rem;
             min-width: 110px;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(33,150,243,0.3);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
         }
-        .btn-follow-blue.unfollow {
+        .btn-follow-green.unfollow {
             background: #555;
             box-shadow: none;
         }
-        .btn-follow-blue:hover {
+        .btn-follow-green:hover {
             opacity: 0.9;
             transform: scale(1.02);
         }
@@ -103,8 +103,10 @@
         .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
         .image-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;}
         
-        .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;cursor:pointer;border:2px solid var(--accent);object-fit:cover;transition: all 0.3s;}
-        .profile-avatar:hover{opacity:0.8;border-color:#2196F3;}
+        .profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 10px;display:block;border:2px solid var(--accent);object-fit:cover;}
+        .profile-avatar.own-profile{cursor:pointer;}
+        .profile-avatar.own-profile:hover{opacity:0.8;border-color:#2196F3;}
+        .profile-avatar.other-profile{cursor:default;}
         
         .profile-stats-container {
             display: flex;
@@ -171,6 +173,7 @@
         .my-account-card p{font-size:0.7rem;}
         
         .settings-icon{position:absolute;top:5px;left:15px;font-size:22px;cursor:pointer;color:var(--accent);}
+        .settings-icon.hidden{display:none;}
         .profile-header{position:relative;}
         
         datalist {
@@ -197,11 +200,11 @@
 <div id="app" style="display:none;">
     <div class="sidebar" id="sidebar">
         <div style="font-size:20px; margin-bottom:20px; font-weight:bold;">القائمة</div>
-        <button onclick="showPage('home')"><i class="fas fa-home" style="margin-left:8px;"></i> الرئيسية</button>
-        <button onclick="showAddModal()"><i class="fas fa-plus-circle" style="margin-left:8px;"></i> إضافة حساب</button>
-        <button onclick="showPage('messages')"><i class="fas fa-comment-dots" style="margin-left:8px;"></i> الرسائل</button>
-        <button onclick="showPage('support')"><i class="fas fa-headset" style="margin-left:8px;"></i> الدعم الفني</button>
-        <button onclick="showPage('about')"><i class="fas fa-info-circle" style="margin-left:8px;"></i> عن التطبيق</button>
+        <button onclick="window.showPage('home')"><i class="fas fa-home" style="margin-left:8px;"></i> الرئيسية</button>
+        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle" style="margin-left:8px;"></i> إضافة حساب</button>
+        <button onclick="window.showPage('messages')"><i class="fas fa-comment-dots" style="margin-left:8px;"></i> الرسائل</button>
+        <button onclick="window.showPage('support')"><i class="fas fa-headset" style="margin-left:8px;"></i> الدعم الفني</button>
+        <button onclick="window.showPage('about')"><i class="fas fa-info-circle" style="margin-left:8px;"></i> عن التطبيق</button>
         <button id="themeToggleSide"><i class="fas fa-moon" style="margin-left:8px;"></i> الوضع الليلي</button>
         <select id="langSelectSide" style="margin-top:10px;">
             <option value="ar">🇸🇦 العربية</option>
@@ -219,7 +222,7 @@
     </div>
     
     <div id="homePage" class="page active-page">
-        <h2 id="homeTitle">الحسابات المتاحة</h2>
+        <h2>الحسابات المتاحة</h2>
         <div class="filter-row">
             <input type="text" id="searchInput" placeholder="بحث...">
             <select id="platformFilter"><option value="all">الكل</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
@@ -241,11 +244,11 @@
                 <div class="profile-stats-inline">
                     <div class="profile-stat" id="followersStat">
                         <span id="followersCount">0</span>
-                        <small id="followersText">متابع</small>
+                        <small>متابع</small>
                     </div>
                     <div class="profile-stat" id="followingStat">
                         <span id="followingCount">0</span>
-                        <small id="followingText">يتابع</small>
+                        <small>يتابع</small>
                     </div>
                 </div>
                 <div id="followButtonContainerProfile"></div>
@@ -253,14 +256,14 @@
         </div>
         
         <div style="margin-top:20px;">
-            <h3 id="myAccountsTitle">حساباتي المنشورة</h3>
-            <div id="myAccountsList" class="my-accounts-grid">جار التحميل...</div>
+            <h3 id="userPostsTitle">المنشورات</h3>
+            <div id="userAccountsList" class="my-accounts-grid">جار التحميل...</div>
             <button id="refreshMyAccounts" class="btn-outline" style="margin-top:10px;"><i class="fas fa-sync-alt" style="margin-left:5px;"></i> تحديث</button>
         </div>
     </div>
     
     <div id="messagesPage" class="page">
-        <h2 id="messagesTitle">المحادثات</h2>
+        <h2>المحادثات</h2>
         <div id="convList"></div>
         <div id="chatBox" style="display:none">
             <div id="chatMessages" class="chat-messages"></div>
@@ -273,7 +276,7 @@
     <div id="addAccountPage" class="page"></div>
     
     <div id="supportPage" class="page">
-        <h2 id="supportTitle">الدعم الفني</h2>
+        <h2>الدعم الفني</h2>
         <form id="supportForm">
             <select id="issueType"><option>مشكلة في الشراء</option><option>مشكلة في البيع</option><option>مشكلة في الدردشة</option><option>اقتراح</option><option>أخرى</option></select>
             <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..."></textarea>
@@ -284,15 +287,15 @@
     
     <div id="aboutPage" class="page">
         <div class="about-3d"><div class="about-card-3d"><div class="about-shield-3d"><i class="fas fa-shield-alt"></i></div>
-        <h1>Social Accounts Market</h1><p id="aboutText">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي</p>
-        <div style="display:flex;justify-content:center;gap:30px;margin:30px 0;"><div><i class="fas fa-lock" style="color:var(--accent);font-size:2rem;"></i><br id="aboutSecure">آمن ومضمون</div><div><i class="fas fa-bolt" style="color:var(--accent);font-size:2rem;"></i><br id="aboutFast">فوري وسريع</div><div><i class="fas fa-headset" style="color:var(--accent);font-size:2rem;"></i><br id="aboutSupport">دعم 24/7</div></div>
-        <p id="aboutDeveloper">تم التطوير بواسطة</p><div class="developer-name">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</div><p>مطور ويب وتطبيقات</p></div></div>
+        <h1>Social Accounts Market</h1><p>المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي</p>
+        <div style="display:flex;justify-content:center;gap:30px;margin:30px 0;"><div><i class="fas fa-lock" style="color:var(--accent);font-size:2rem;"></i><br>آمن ومضمون</div><div><i class="fas fa-bolt" style="color:var(--accent);font-size:2rem;"></i><br>فوري وسريع</div><div><i class="fas fa-headset" style="color:var(--accent);font-size:2rem;"></i><br>دعم 24/7</div></div>
+        <p>تم التطوير بواسطة</p><div class="developer-name">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</div><p>مطور ويب وتطبيقات</p></div></div>
     </div>
     
     <div class="bottom-nav">
-        <button onclick="showPage('home')" id="navHomeBtn"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button onclick="showAddModal()" id="navAddBtn"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
-        <button onclick="showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span>الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
+        <button onclick="window.showPage('home')" id="navHomeBtn"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button onclick="window.showAddModal()" id="navAddBtn"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
+        <button onclick="window.showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span>الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
     </div>
 </div>
 
@@ -324,25 +327,28 @@
     }
     
     let currentUser = null;
-    let currentLang = "ar";
-    let currentProfileUserId = null;
-    
-    const arabCountriesList = [
-        "السعودية", "مصر", "الإمارات", "الأردن", "الكويت", "عمان", "قطر", "البحرين",
-        "اليمن", "العراق", "سوريا", "لبنان", "فلسطين", "ليبيا", "تونس", "الجزائر",
-        "المغرب", "موريتانيا", "السودان", "الصومال", "جيبوتي", "جزر القمر"
-    ];
+    let viewedUserId = null;
+    let currentPage = 'home';
     
     window.showPage = function(pageId) {
+        currentPage = pageId;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(pageId + 'Page').classList.add('active-page');
         document.getElementById('sidebar').classList.remove('open');
         if (pageId === 'home') loadAccounts();
         if (pageId === 'profile') { 
-            currentProfileUserId = currentUser?.uid;
-            loadProfileData(currentProfileUserId);
-            loadMyAccounts(); 
-            loadFollowersData(currentProfileUserId);
+            if(!viewedUserId) viewedUserId = currentUser?.uid;
+            loadProfileData(viewedUserId);
+            loadUserAccounts(viewedUserId);
+            loadFollowersData(viewedUserId);
+            const isOwnProfile = (viewedUserId === currentUser?.uid);
+            document.getElementById('profileTitle').innerText = isOwnProfile ? 'الملف الشخصي' : 'ملف المستخدم';
+            document.getElementById('userPostsTitle').innerText = isOwnProfile ? 'حساباتي المنشورة' : 'منشورات المستخدم';
+            const settingsIcon = document.getElementById('settingsIcon');
+            if (settingsIcon) {
+                if (isOwnProfile) settingsIcon.classList.remove('hidden');
+                else settingsIcon.classList.add('hidden');
+            }
         }
         if (pageId === 'messages') {
             document.getElementById('chatBox').style.display = 'none';
@@ -360,29 +366,33 @@
             document.getElementById('userId').innerText = data?.userIdRandom || userId.slice(0,10);
             document.getElementById('avatarImg').src = data?.avatar || 'https://via.placeholder.com/80';
         }
+        // التحكم في إمكانية تغيير الصورة: فقط للمستخدم الحالي
+        const avatarImg = document.getElementById('avatarImg');
+        const isOwnProfile = (userId === currentUser?.uid);
+        if (isOwnProfile) {
+            avatarImg.classList.add('own-profile');
+            avatarImg.classList.remove('other-profile');
+            avatarImg.onclick = changeAvatar;
+        } else {
+            avatarImg.classList.add('other-profile');
+            avatarImg.classList.remove('own-profile');
+            avatarImg.onclick = null;
+        }
     }
     
     async function renderProfileFollowButton(profileUserId) {
         const container = document.getElementById('followButtonContainerProfile');
         if (!container) return;
-        
-        if (!currentUser) {
-            container.innerHTML = `<button class="btn-follow-blue" onclick="alert('يجب تسجيل الدخول أولاً')">متابعة</button>`;
-            return;
-        }
-        
-        if (profileUserId === currentUser.uid) {
+        // لا نعرض زر المتابعة إذا كان المستخدم يشاهد ملفه الشخصي
+        if (!currentUser || profileUserId === currentUser.uid) {
             container.innerHTML = '';
             return;
         }
-        
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         const following = userSnap.data()?.following || [];
         const isFollowing = following.includes(profileUserId);
-        
-        container.innerHTML = `<button class="btn-follow-blue ${isFollowing ? 'unfollow' : ''}" id="profileFollowBtn">${isFollowing ? 'إلغاء المتابعة' : 'متابعة'}</button>`;
-        
+        container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="profileFollowBtn">${isFollowing ? 'إلغاء المتابعة' : 'متابعة'}</button>`;
         const btn = document.getElementById('profileFollowBtn');
         if (btn) {
             btn.onclick = async () => {
@@ -396,7 +406,7 @@
                 }
                 loadFollowersData(profileUserId);
                 renderProfileFollowButton(profileUserId);
-                loadAccounts();
+                if(currentPage === 'home') loadAccounts();
             };
         }
     }
@@ -408,267 +418,37 @@
         const data = snap.data() || {};
         document.getElementById('followersCount').innerText = data.followers?.length || 0;
         document.getElementById('followingCount').innerText = data.following?.length || 0;
-        
         await renderProfileFollowButton(userId);
     }
     
-    async function changeAvatar() {
-        if (!currentUser) {
-            alert("يجب تسجيل الدخول أولاً");
-            return;
-        }
-        
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            try {
-                const url = await uploadToImgBB(file);
-                await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
-                document.getElementById('avatarImg').src = url;
-                alert("تم تحديث الصورة بنجاح");
-            } catch (err) {
-                alert("خطأ في رفع الصورة: " + err.message);
-            }
-        };
-        input.click();
-    }
-    
-    function showSettingsModal() {
-        const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content">
-            <h3>⚙️ الإعدادات - تعديل الملف الشخصي</h3>
-            <input type="text" id="settingsName" placeholder="الاسم">
-            <input type="email" id="settingsEmail" placeholder="البريد الإلكتروني">
-            <div style="display:flex; gap:8px;">
-                <select id="settingsPhoneCode" style="width:35%;"></select>
-                <input type="tel" id="settingsPhone" placeholder="رقم الهاتف" style="flex:1">
-            </div>
-            <input type="text" id="settingsCity" placeholder="المدينة">
-            <select id="settingsCountry"><option value="">الدولة</option></select>
-            <input type="text" id="settingsZip" placeholder="الرمز البريدي">
-            <div style="display:flex; gap:8px; margin-top:15px;">
-                <button class="btn-primary" id="saveSettingsBtn">💾 حفظ</button>
-                <button class="btn-outline" id="closeSettingsBtn">رجوع</button>
-            </div>
-        </div>`;
-        document.body.appendChild(modal);
-        
-        const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973"];
-        const phoneSelect = modal.querySelector('#settingsPhoneCode');
-        phoneSelect.innerHTML = '';
-        phoneCodes.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); });
-        const countrySelect = modal.querySelector('#settingsCountry');
-        countrySelect.innerHTML = '<option value="">اختر الدولة</option>';
-        arabCountriesList.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); });
-        
-        modal.querySelector('#saveSettingsBtn').onclick = async () => {
-            const code = modal.querySelector('#settingsPhoneCode').value;
-            const number = modal.querySelector('#settingsPhone').value;
-            await updateDoc(doc(db, 'users', currentUser.uid), {
-                name: modal.querySelector('#settingsName').value,
-                email: modal.querySelector('#settingsEmail').value,
-                phone: code + ' ' + number,
-                city: modal.querySelector('#settingsCity').value,
-                country: modal.querySelector('#settingsCountry').value,
-                zip: modal.querySelector('#settingsZip').value
-            });
-            alert("تم حفظ التعديلات");
-            modal.remove();
-            loadProfileData(currentUser.uid);
-        };
-        modal.querySelector('#closeSettingsBtn').onclick = () => modal.remove();
-    }
-    
-    async function showDetails(account) {
-        const modal = document.createElement('div'); modal.className = 'modal';
-        let imagesHtml = '';
-        if (account.images && account.images.length) {
-            imagesHtml = `<div class="image-scroll">${account.images.map(img => `<img src="${img}" class="detail-img" data-src="${img}">`).join('')}</div>`;
-        }
-        let sellerPhone = account.phone || '';
-        modal.innerHTML = `<div class="modal-content">
-            <h3>${account.name}</h3>
-            <p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p>
-            <p>💰 ${account.price} ${account.currency}</p>
-            <p>👁️ ${account.views || 0} مشاهدة</p>
-            <p>🔗 <a href="${account.link}" target="_blank" style="color:#00d4ff;">${account.link}</a></p>
-            <p>📝 ${account.description || ''}</p>
-            ${imagesHtml}
-            <div class="horizontal-buttons">
-                ${sellerPhone ? `<a href="tel:${sellerPhone}" class="btn-outline" style="text-decoration:none;"><i class="fas fa-phone"></i> اتصال</a>` : ''}
-                ${sellerPhone ? `<a href="https://wa.me/${sellerPhone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-outline" style="text-decoration:none;"><i class="fab fa-whatsapp"></i> واتساب</a>` : ''}
-                <button class="btn-primary" id="closeDetails">تفاصيل</button>
-            </div>
-        </div>`;
-        document.body.appendChild(modal);
-        modal.querySelectorAll('.detail-img').forEach(img => {
-            img.onclick = () => showFullImage(img.dataset.src);
-        });
-        modal.querySelector('#closeDetails').onclick = () => modal.remove();
-        await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
-    }
-    
-    function showFullImage(src) {
-        const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content" style="text-align:center;"><img src="${src}" class="fullscreen-img"><button class="btn-primary" id="closeFullImg" style="margin-top:15px;">رجوع</button></div>`;
-        document.body.appendChild(modal);
-        modal.querySelector('#closeFullImg').onclick = () => modal.remove();
-    }
-    
-    window.openChat = async function(sellerId, sellerName) {
-        if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
-        if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
-        const convId = [currentUser.uid, sellerId].sort().join('_');
-        const convRef = doc(db, 'conversations', convId);
-        if (!(await getDoc(convRef)).exists()) {
-            await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
-        }
-        const modal = document.createElement('div'); modal.className = 'modal';
-        const uid = Date.now();
-        modal.innerHTML = `<div class="modal-content">
-            <h3>💬 محادثة: ${sellerName}</h3>
-            <div id="chatArea_${uid}" style="height:250px; overflow-y:auto; background:var(--chat-bg); border-radius:16px; padding:8px; margin-bottom:8px;"></div>
-            <input type="text" id="chatInput_${uid}" placeholder="اكتب رسالة..." style="width:100%; padding:8px; border-radius:20px; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary);">
-            <button id="sendBtn_${uid}" class="btn-primary" style="margin-top:8px;">إرسال</button>
-            <button id="closeBtn_${uid}" class="btn-outline" style="margin-top:8px;">رجوع</button>
-        </div>`;
-        document.body.appendChild(modal);
-        const messagesDiv = modal.querySelector(`#chatArea_${uid}`);
-        const inputField = modal.querySelector(`#chatInput_${uid}`);
-        const sendBtn = modal.querySelector(`#sendBtn_${uid}`);
-        const closeBtn = modal.querySelector(`#closeBtn_${uid}`);
-        const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
-        const unsubscribe = onSnapshot(q, (snap) => {
-            messagesDiv.innerHTML = '';
-            if (snap.empty) { messagesDiv.innerHTML = '<div style="text-align:center;color:#aaa; padding:20px;">ابدأ المحادثة 👇</div>'; return; }
-            snap.forEach(msgDoc => {
-                const data = msgDoc.data();
-                const isMe = data.senderId === currentUser.uid;
-                messagesDiv.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;">
-                    <span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${data.text}</span>
-                </div>`;
-            });
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        });
-        sendBtn.onclick = async () => {
-            const txt = inputField.value.trim();
-            if (!txt) return;
-            await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
-            inputField.value = '';
-        };
-        closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
-    };
-    
-    async function loadAccounts() {
-        const container = document.getElementById('accountsList');
-        container.innerHTML = 'جار التحميل...';
-        try {
-            let followingIds = [];
-            if (currentUser) {
-                const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
-                followingIds = userSnap.data()?.following || [];
-            }
-            
-            const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
-            const snap = await getDocs(q);
-            let accounts = [];
-            snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-            
-            accounts.sort((a, b) => {
-                const aFollowing = followingIds.includes(a.sellerId);
-                const bFollowing = followingIds.includes(b.sellerId);
-                if (aFollowing && !bFollowing) return -1;
-                if (!aFollowing && bFollowing) return 1;
-                return b.createdAt - a.createdAt;
-            });
-            
-            const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
-            const platform = document.getElementById('platformFilter')?.value || "all";
-            let filtered = accounts.filter(a => {
-                const matchSearch = a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search);
-                const matchPlatform = platform === "all" || a.platform === platform;
-                return matchSearch && matchPlatform;
-            });
-            if (filtered.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
-            let html = '';
-            for (const acc of filtered) {
-                let sellerName = "مستخدم";
-                let sellerAvatar = null;
-                const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
-                if (userSnap.exists()) {
-                    const userData = userSnap.data();
-                    sellerName = userData.name || sellerName;
-                    sellerAvatar = userData.avatar || null;
-                }
-                const isFollowing = followingIds.includes(acc.sellerId);
-                const avatarHtml = sellerAvatar 
-                    ? `<img src="${sellerAvatar}" class="profile-thumb" alt="صورة البائع" onclick="window.showPage('profile'); window.currentProfileUserId='${acc.sellerId}'; window.loadProfileData('${acc.sellerId}'); window.loadFollowersData('${acc.sellerId}');">` 
-                    : '';
-                html += `<div class="card">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        ${avatarHtml}
-                        <div style="flex:1;">
-                            <h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name} ${isFollowing ? '<span style="font-size:0.6rem;color:#2ecc71;">● يتابع</span>' : ''}</h3>
-                            <p style="margin:0;">${sellerName}</p>
-                        </div>
-                    </div>
-                    <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
-                    <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
-                    ${acc.images?.[0] ? `<img src="${acc.images[0]}" class="account-img" data-images='${JSON.stringify(acc.images)}' style="width:100%; height:100px; object-fit:cover; border-radius:10px; margin-top:8px; cursor:pointer;">` : ''}
-                    <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-id='${acc.id}'>🔍 تفاصيل</button>
-                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 محادثة</button>
-                    </div>
-                </div>`;
-            }
-            container.innerHTML = html;
-            const accountsMap = {};
-            accounts.forEach(acc => accountsMap[acc.id] = acc);
-            document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => showDetails(accountsMap[btn.dataset.id]); });
-            document.querySelectorAll('.account-img').forEach(img => {
-                img.onclick = (e) => { e.stopPropagation(); const images = JSON.parse(img.dataset.images); if(images && images.length) showFullImage(images[0]); };
-            });
-        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
-    }
-    
-    async function loadMyAccounts() {
-        if (!currentUser) { document.getElementById('myAccountsList').innerHTML = '<div class="card">تسجيل الدخول مطلوب</div>'; return; }
-        const container = document.getElementById('myAccountsList');
+    async function loadUserAccounts(userId) {
+        if (!userId) { document.getElementById('userAccountsList').innerHTML = '<div class="card">تسجيل الدخول مطلوب</div>'; return; }
+        const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', currentUser.uid));
+            const q = query(collection(db, 'accounts'), where('sellerId', '==', userId));
             const snap = await getDocs(q);
             if (snap.empty) { container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>'; return; }
             let html = '';
+            const isOwner = (currentUser && currentUser.uid === userId);
             snap.forEach(docSnap => {
                 const acc = docSnap.data();
                 html += `<div class="my-account-card">
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
                     <p>💰 ${acc.price} ${acc.currency} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <div style="display:flex; gap:8px; margin-top:8px;">
-                        <button class="edit-account-btn btn-primary" data-id="${docSnap.id}" data-account='${JSON.stringify(acc)}'>✏️ تعديل</button>
-                        <button class="delete-account-btn btn-danger" data-id="${docSnap.id}">🗑️ حذف</button>
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${docSnap.id}" data-account='${JSON.stringify(acc)}'>✏️ تعديل</button>
+                        <button class="delete-account-btn btn-danger" data-id="${docSnap.id}">🗑️ حذف</button>` : ''}
+                        <button onclick="window.openChat('${acc.sellerId}', '${(acc.name).replace(/'/g, "\\'")}')" class="btn-outline">💬 مراسلة</button>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
-            document.querySelectorAll('.edit-account-btn').forEach(btn => {
-                btn.onclick = () => { const acc = JSON.parse(btn.dataset.account); showEditModal(btn.dataset.id, acc); };
-            });
-            document.querySelectorAll('.delete-account-btn').forEach(btn => {
-                btn.onclick = async () => {
-                    if (confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) {
-                        await deleteDoc(doc(db, 'accounts', btn.dataset.id));
-                        alert("تم حذف الحساب");
-                        loadMyAccounts(); loadAccounts();
-                    }
-                };
-            });
-        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; console.error(e); }
+            if(isOwner) {
+                document.querySelectorAll('.edit-account-btn').forEach(btn => { btn.onclick = () => { const acc = JSON.parse(btn.dataset.account); showEditModal(btn.dataset.id, acc); }; });
+                document.querySelectorAll('.delete-account-btn').forEach(btn => { btn.onclick = async () => { if(confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")){ await deleteDoc(doc(db, 'accounts', btn.dataset.id)); alert("تم حذف الحساب"); loadUserAccounts(userId); loadAccounts(); } }; });
+            }
+        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; }
     }
     
     async function showEditModal(accountId, currentData) {
@@ -708,10 +488,96 @@
                 description: modal.querySelector('#editDesc').value,
                 images: imageUrls
             });
-            alert("تم التحديث"); modal.remove(); loadMyAccounts(); loadAccounts();
+            alert("تم التحديث"); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
         };
         modal.querySelector('#cancelEditBtn').onclick = () => modal.remove();
     }
+    
+    async function loadAccounts() {
+        const container = document.getElementById('accountsList');
+        container.innerHTML = 'جار التحميل...';
+        try {
+            let followingIds = [];
+            if (currentUser) {
+                const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+                followingIds = userSnap.data()?.following || [];
+            }
+            const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            let accounts = [];
+            snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+            accounts.sort((a,b) => { const aF=followingIds.includes(a.sellerId), bF=followingIds.includes(b.sellerId); if(aF&&!bF) return -1; if(!aF&&bF) return 1; return b.createdAt-a.createdAt; });
+            const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
+            const platform = document.getElementById('platformFilter')?.value || "all";
+            let filtered = accounts.filter(a => (a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search)) && (platform === "all" || a.platform === platform));
+            if (filtered.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+            let html = '';
+            for (const acc of filtered) {
+                let sellerName = "مستخدم";
+                let sellerAvatar = null;
+                const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
+                if (userSnap.exists()) { sellerName = userSnap.data().name || sellerName; sellerAvatar = userSnap.data().avatar || null; }
+                const isFollowing = followingIds.includes(acc.sellerId);
+                const avatarHtml = sellerAvatar ? `<img src="${sellerAvatar}" class="profile-thumb" alt="صورة البائع" onclick="window.viewedUserId='${acc.sellerId}'; window.showPage('profile');">` : '';
+                html += `<div class="card"><div style="display:flex; align-items:center; gap:10px;">${avatarHtml}<div style="flex:1;"><h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name} ${isFollowing ? '<span style="font-size:0.6rem;color:#2ecc71;">● يتابع</span>' : ''}</h3><p style="margin:0;">${sellerName}</p></div></div>
+                <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p><p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
+                ${acc.images?.[0] ? `<img src="${acc.images[0]}" class="account-img" data-images='${JSON.stringify(acc.images)}' style="width:100%; height:100px; object-fit:cover; border-radius:10px; margin-top:8px; cursor:pointer;">` : ''}
+                <div style="display:flex; gap:8px; margin-top:10px;"><button class="details-btn btn-primary" data-id='${acc.id}'>🔍 تفاصيل</button><button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 محادثة</button></div></div>`;
+            }
+            container.innerHTML = html;
+            const accountsMap = {}; accounts.forEach(acc => accountsMap[acc.id] = acc);
+            document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => showDetails(accountsMap[btn.dataset.id]); });
+            document.querySelectorAll('.account-img').forEach(img => { img.onclick = () => { const images = JSON.parse(img.dataset.images); if(images?.length) showFullImage(images[0]); }; });
+        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; }
+    }
+    
+    async function showDetails(account) {
+        const modal = document.createElement('div'); modal.className = 'modal';
+        let imagesHtml = '';
+        if (account.images && account.images.length) imagesHtml = `<div class="image-scroll">${account.images.map(img => `<img src="${img}" class="detail-img" data-src="${img}">`).join('')}</div>`;
+        let sellerPhone = account.phone || '';
+        modal.innerHTML = `<div class="modal-content"><h3>${account.name}</h3><p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p><p>💰 ${account.price} ${account.currency}</p><p>👁️ ${account.views || 0} مشاهدة</p><p>🔗 <a href="${account.link}" target="_blank" style="color:#00d4ff;">${account.link}</a></p><p>📝 ${account.description || ''}</p>${imagesHtml}<div class="horizontal-buttons">${sellerPhone ? `<a href="tel:${sellerPhone}" class="btn-outline" style="text-decoration:none;"><i class="fas fa-phone"></i> اتصال</a><a href="https://wa.me/${sellerPhone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-outline" style="text-decoration:none;"><i class="fab fa-whatsapp"></i> واتساب</a>` : ''}<button class="btn-primary" id="closeDetails">تفاصيل</button></div></div>`;
+        document.body.appendChild(modal);
+        modal.querySelectorAll('.detail-img').forEach(img => { img.onclick = () => showFullImage(img.dataset.src); });
+        modal.querySelector('#closeDetails').onclick = () => modal.remove();
+        await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
+    }
+    
+    function showFullImage(src) {
+        const modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content" style="text-align:center;"><img src="${src}" class="fullscreen-img"><button class="btn-primary" id="closeFullImg" style="margin-top:15px;">رجوع</button></div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('#closeFullImg').onclick = () => modal.remove();
+    }
+    
+    window.openChat = async function(sellerId, sellerName) {
+        if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
+        if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
+        const convId = [currentUser.uid, sellerId].sort().join('_');
+        const convRef = doc(db, 'conversations', convId);
+        if (!(await getDoc(convRef)).exists()) await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
+        const modal = document.createElement('div'); modal.className = 'modal';
+        const uid = Date.now();
+        modal.innerHTML = `<div class="modal-content"><h3>💬 محادثة: ${sellerName}</h3><div id="chatArea_${uid}" style="height:250px; overflow-y:auto; background:var(--chat-bg); border-radius:16px; padding:8px; margin-bottom:8px;"></div><input type="text" id="chatInput_${uid}" placeholder="اكتب رسالة..." style="width:100%; padding:8px; border-radius:20px; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary);"><button id="sendBtn_${uid}" class="btn-primary" style="margin-top:8px;">إرسال</button><button id="closeBtn_${uid}" class="btn-outline" style="margin-top:8px;">رجوع</button></div>`;
+        document.body.appendChild(modal);
+        const messagesDiv = modal.querySelector(`#chatArea_${uid}`);
+        const inputField = modal.querySelector(`#chatInput_${uid}`);
+        const sendBtn = modal.querySelector(`#sendBtn_${uid}`);
+        const closeBtn = modal.querySelector(`#closeBtn_${uid}`);
+        const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
+        const unsubscribe = onSnapshot(q, (snap) => {
+            messagesDiv.innerHTML = '';
+            if (snap.empty) { messagesDiv.innerHTML = '<div style="text-align:center;color:#aaa; padding:20px;">ابدأ المحادثة 👇</div>'; return; }
+            snap.forEach(msgDoc => {
+                const data = msgDoc.data();
+                const isMe = data.senderId === currentUser.uid;
+                messagesDiv.innerHTML += `<div style="text-align:${isMe ? 'right' : 'left'}; margin:8px;"><span style="background:${isMe ? '#9b59b6' : '#2a2a4a'}; padding:8px 12px; border-radius:18px; display:inline-block;">${data.text}</span></div>`;
+            });
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+        sendBtn.onclick = async () => { const txt = inputField.value.trim(); if(txt) { await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() }); inputField.value = ''; } };
+        closeBtn.onclick = () => { unsubscribe(); modal.remove(); };
+    };
     
     async function loadConversations() {
         if (!currentUser) return;
@@ -760,19 +626,7 @@
     window.showAddModal = function() {
         let currentImageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ إضافة حساب</h3>
-            <form id="addForm">
-                <select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
-                <input id="addName" placeholder="اسم الحساب" required>
-                <input id="addFollowers" placeholder="عدد المتابعين" type="number" required>
-                <div class="price-currency-row"><input id="addPrice" placeholder="السعر" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div>
-                <input id="addLink" placeholder="الرابط" required>
-                <textarea id="addDesc" placeholder="الوصف"></textarea>
-                <label>صور الإثبات (حد أقصى 3)</label><input type="file" id="addImages" multiple accept="image/*"><button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ إضافة صورة أخرى</button>
-                <div id="previewImages" class="image-preview"></div>
-                <button type="submit" class="btn-primary">نشر الحساب</button>
-                <button type="button" id="cancelModal" class="btn-outline">رجوع</button>
-            </form></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>➕ إضافة حساب</h3><form id="addForm"><select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="اسم الحساب" required><input id="addFollowers" placeholder="عدد المتابعين" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="السعر" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="الرابط" required><textarea id="addDesc" placeholder="الوصف"></textarea><label>صور الإثبات (حد أقصى 3)</label><input type="file" id="addImages" multiple accept="image/*"><button type="button" id="addImageBtn" class="btn-outline" style="margin-top:5px;">➕ إضافة صورة أخرى</button><div id="previewImages" class="image-preview"></div><button type="submit" class="btn-primary">نشر الحساب</button><button type="button" id="cancelModal" class="btn-outline">رجوع</button></form></div>`;
         document.body.appendChild(modal);
         const previewDiv = modal.querySelector('#previewImages');
         const imagesInput = modal.querySelector('#addImages');
@@ -809,177 +663,158 @@
                     description: document.getElementById('addDesc').value, images: urls, sellerId: currentUser.uid,
                     views: 0, createdAt: Date.now()
                 });
-                alert("تم نشر الحساب بنجاح"); modal.remove(); loadAccounts(); loadMyAccounts();
+                alert("تم نشر الحساب بنجاح"); modal.remove(); loadAccounts(); loadUserAccounts(currentUser.uid);
             } catch(err) { alert("خطأ: "+err.message); }
             finally { btn.disabled = false; btn.textContent = 'نشر الحساب'; }
         });
         modal.querySelector('#cancelModal').onclick = () => modal.remove();
     };
     
-    document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('profileIcon').onclick = () => showPage('profile');
-    document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
-    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
-    document.getElementById('refreshMyAccounts')?.addEventListener('click', () => loadMyAccounts());
-    document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
-    document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
-    document.getElementById('langSelectSide').onchange = (e) => { currentLang = e.target.value; };
-    document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
-    document.getElementById('avatarImg').addEventListener('click', changeAvatar);
+    async function changeAvatar() {
+        if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
+        // التأكد من أن المستخدم الحالي هو صاحب الملف الشخصي المعروض حالياً
+        if (viewedUserId !== currentUser.uid) {
+            alert("لا يمكنك تغيير صورة مستخدم آخر");
+            return;
+        }
+        const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                const url = await uploadToImgBB(file);
+                await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
+                document.getElementById('avatarImg').src = url;
+                alert("تم تحديث الصورة بنجاح");
+            } catch(err) { alert("خطأ في رفع الصورة: " + err.message); }
+        };
+        input.click();
+    }
     
+    function showSettingsModal() {
+        // التأكد من أن المستخدم الحالي هو صاحب الملف الشخصي المعروض
+        if (viewedUserId !== currentUser?.uid) {
+            alert("لا يمكنك تعديل إعدادات مستخدم آخر");
+            return;
+        }
+        const modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content">
+            <h3>⚙️ الإعدادات - تعديل الملف الشخصي</h3>
+            <input type="text" id="settingsName" placeholder="الاسم">
+            <input type="email" id="settingsEmail" placeholder="البريد الإلكتروني">
+            <div style="display:flex; gap:8px;">
+                <select id="settingsPhoneCode" style="width:35%;"></select>
+                <input type="tel" id="settingsPhone" placeholder="رقم الهاتف" style="flex:1">
+            </div>
+            <input type="text" id="settingsCity" placeholder="المدينة">
+            <select id="settingsCountry"><option value="">الدولة</option></select>
+            <input type="text" id="settingsZip" placeholder="الرمز البريدي">
+            <div style="display:flex; gap:8px; margin-top:15px;">
+                <button class="btn-primary" id="saveSettingsBtn">💾 حفظ</button>
+                <button class="btn-outline" id="closeSettingsBtn">رجوع</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+        const phoneCodes = ["+966","+967","+20","+971","+962","+965","+968","+974","+973"];
+        const phoneSelect = modal.querySelector('#settingsPhoneCode');
+        phoneSelect.innerHTML = ''; phoneCodes.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; phoneSelect.appendChild(opt); });
+        const countrySelect = modal.querySelector('#settingsCountry');
+        const arabCountriesList = ["السعودية","مصر","الإمارات","الأردن","الكويت","عمان","قطر","البحرين","اليمن","العراق","سوريا","لبنان","فلسطين","ليبيا","تونس","الجزائر","المغرب","موريتانيا","السودان","الصومال","جيبوتي","جزر القمر"];
+        countrySelect.innerHTML = '<option value="">اختر الدولة</option>'; arabCountriesList.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; countrySelect.appendChild(opt); });
+        modal.querySelector('#saveSettingsBtn').onclick = async () => {
+            const code = modal.querySelector('#settingsPhoneCode').value;
+            const number = modal.querySelector('#settingsPhone').value;
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                name: modal.querySelector('#settingsName').value, email: modal.querySelector('#settingsEmail').value,
+                phone: code + ' ' + number, city: modal.querySelector('#settingsCity').value,
+                country: modal.querySelector('#settingsCountry').value, zip: modal.querySelector('#settingsZip').value
+            });
+            alert("تم حفظ التعديلات"); modal.remove(); loadProfileData(currentUser.uid);
+        };
+        modal.querySelector('#closeSettingsBtn').onclick = () => modal.remove();
+    }
+    
+    // Auth screens
     let authContainer = null;
-    
     function showLoginScreen() {
         if (authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card">
-            <div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div>
-            <h2>🔐 تسجيل الدخول</h2>
-            <input id="loginEmail" placeholder="البريد الإلكتروني" list="emailSuggestions" style="width:100%; margin:10px 0;">
-            <datalist id="emailSuggestions"></datalist>
-            <input id="loginPassword" type="password" placeholder="كلمة المرور" style="width:100%; margin:10px 0;">
-            <button id="doLogin" class="btn-primary" style="width:100%; margin-top:10px;">تسجيل الدخول</button>
-            <div class="auth-switch" id="toRegister">إنشاء حساب جديد</div>
-            <button id="googleLogin" class="btn-outline" style="width:100%; margin-top:10px;"><i class="fab fa-google"></i> Google</button>
-            <div id="loginError" style="color:red; margin-top:10px;"></div>
-        </div>`;
+        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>🔐 تسجيل الدخول</h2><input id="loginEmail" placeholder="البريد الإلكتروني" list="emailSuggestions" style="width:100%; margin:10px 0;"><datalist id="emailSuggestions"></datalist><input id="loginPassword" type="password" placeholder="كلمة المرور" style="width:100%; margin:10px 0;"><button id="doLogin" class="btn-primary" style="width:100%; margin-top:10px;">تسجيل الدخول</button><div class="auth-switch" id="toRegister">إنشاء حساب جديد</div><button id="googleLogin" class="btn-outline" style="width:100%; margin-top:10px;"><i class="fab fa-google"></i> Google</button><div id="loginError" style="color:red; margin-top:10px;"></div></div>`;
         document.body.appendChild(authContainer);
-        
-        const emailInput = document.getElementById('loginEmail');
-        const datalist = document.getElementById('emailSuggestions');
-        
-        emailInput.addEventListener('input', async () => {
-            const val = emailInput.value.toLowerCase();
-            if (val.length < 2) return;
-            
-            try {
-                const q = query(collection(db, 'users'), where('email', '>=', val), where('email', '<=', val + '\uf8ff'), limit(5));
-                const snap = await getDocs(q);
-                datalist.innerHTML = '';
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    if (data.email) {
-                        const option = document.createElement('option');
-                        option.value = data.email;
-                        datalist.appendChild(option);
-                    }
-                });
-            } catch(e) {}
-        });
-        
         document.getElementById('doLogin').onclick = async () => {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                authContainer.remove();
-            } catch(e) {
-                let errorMsg = e.message;
-                if (errorMsg.includes('auth/wrong-password')) errorMsg = 'كلمة المرور غير صحيحة';
-                else if (errorMsg.includes('auth/user-not-found')) errorMsg = 'لا يوجد حساب بهذا البريد الإلكتروني';
-                else if (errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد الإلكتروني غير صحيح';
-                document.getElementById('loginError').innerText = errorMsg;
-            }
+            try { await signInWithEmailAndPassword(auth, email, password); authContainer.remove(); } 
+            catch(e) { let errorMsg = e.message; if(errorMsg.includes('auth/wrong-password')) errorMsg = 'كلمة المرور غير صحيحة'; else if(errorMsg.includes('auth/user-not-found')) errorMsg = 'لا يوجد حساب بهذا البريد'; else if(errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد غير صحيح'; document.getElementById('loginError').innerText = errorMsg; }
         };
         document.getElementById('toRegister').onclick = () => showRegisterScreen();
-        document.getElementById('googleLogin').onclick = async () => {
-            try { await signInWithPopup(auth, provider); authContainer.remove(); } catch(e) { document.getElementById('loginError').innerText = e.message; }
-        };
+        document.getElementById('googleLogin').onclick = async () => { try { await signInWithPopup(auth, provider); authContainer.remove(); } catch(e) { document.getElementById('loginError').innerText = e.message; } };
     }
     
     function showRegisterScreen() {
         if (authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card">
-            <div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div>
-            <h2>📝 إنشاء حساب</h2>
-            <input id="regName" placeholder="الاسم" style="width:100%; margin:10px 0;">
-            <input id="regEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%; margin:10px 0;">
-            <input id="regPassword" type="password" placeholder="كلمة المرور" style="width:100%; margin:10px 0;">
-            <select id="regCountry" style="width:100%; margin:10px 0; padding:10px; border-radius:10px; background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border-color);">
-                <option value="">اختر الدولة</option>
-                ${arabCountriesList.map(c => `<option value="${c}">${c}</option>`).join('')}
-            </select>
-            <button id="doRegister" class="btn-primary" style="width:100%; margin-top:10px;">إنشاء حساب</button>
-            <div class="auth-switch" id="toLogin">تسجيل الدخول</div>
-            <div id="regError" style="color:red; margin-top:10px;"></div>
-        </div>`;
+        authContainer.innerHTML = `<div class="auth-card"><div class="social-icons-row"><i class="fab fa-tiktok"></i><i class="fab fa-instagram"></i><i class="fab fa-youtube"></i><i class="fab fa-snapchat"></i><i class="fab fa-twitter"></i></div><h2>📝 إنشاء حساب</h2><input id="regName" placeholder="الاسم" style="width:100%; margin:10px 0;"><input id="regEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%; margin:10px 0;"><input id="regPassword" type="password" placeholder="كلمة المرور" style="width:100%; margin:10px 0;"><select id="regCountry" style="width:100%; margin:10px 0; padding:10px; border-radius:10px; background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">اختر الدولة</option><option>السعودية</option><option>مصر</option><option>الإمارات</option><option>الكويت</option><option>قطر</option><option>عمان</option><option>البحرين</option></select><button id="doRegister" class="btn-primary" style="width:100%; margin-top:10px;">إنشاء حساب</button><div class="auth-switch" id="toLogin">تسجيل الدخول</div><div id="regError" style="color:red; margin-top:10px;"></div></div>`;
         document.body.appendChild(authContainer);
-        
         document.getElementById('doRegister').onclick = async () => {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPassword').value;
             const country = document.getElementById('regCountry').value;
-            
-            if (!name || !email || !pass || !country) { 
-                document.getElementById('regError').innerText = "يرجى ملء جميع الحقول"; 
-                return; 
-            }
-            if (pass.length < 6) {
-                document.getElementById('regError').innerText = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
-                return;
-            }
-            
-            const btn = document.getElementById('doRegister');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="loading-spinner"></span> جاري إنشاء الحساب...`;
-            
+            if (!name || !email || !pass || !country) { document.getElementById('regError').innerText = "يرجى ملء جميع الحقول"; return; }
+            if (pass.length < 6) { document.getElementById('regError').innerText = "كلمة المرور 6 أحرف على الأقل"; return; }
+            const btn = document.getElementById('doRegister'); btn.disabled = true; btn.innerHTML = `<span class="loading-spinner"></span> جاري إنشاء الحساب...`;
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 await updateProfile(userCred.user, { displayName: name });
                 const rid = Math.floor(1e9 + Math.random()*9e9);
-                await setDoc(doc(db, 'users', userCred.user.uid), { 
-                    userIdRandom: rid, 
-                    email, 
-                    name, 
-                    country,
-                    createdAt: Date.now(),
-                    followers: [],
-                    following: []
-                });
-                
-                btn.innerHTML = '<span class="success-check">✓</span> تم إنشاء حسابك بنجاح';
-                btn.disabled = true;
-                
-                setTimeout(() => { 
-                    authContainer.remove();
-                    showLoginScreen(); 
-                }, 1500);
-            } catch(e) {
-                btn.disabled = false;
-                btn.innerHTML = 'إنشاء حساب';
-                let errorMsg = e.message;
-                if (errorMsg.includes('auth/email-already-in-use')) errorMsg = 'البريد الإلكتروني مستخدم بالفعل';
-                else if (errorMsg.includes('auth/weak-password')) errorMsg = 'كلمة المرور ضعيفة';
-                else if (errorMsg.includes('auth/invalid-email')) errorMsg = 'البريد الإلكتروني غير صحيح';
-                document.getElementById('regError').innerText = errorMsg;
-            }
+                await setDoc(doc(db, 'users', userCred.user.uid), { userIdRandom: rid, email, name, country, createdAt: Date.now(), followers: [], following: [] });
+                btn.innerHTML = '<span class="success-check">✓</span> تم إنشاء حسابك بنجاح'; btn.disabled = true;
+                setTimeout(() => { authContainer.remove(); showLoginScreen(); }, 1500);
+            } catch(e) { btn.disabled = false; btn.innerHTML = 'إنشاء حساب'; let errorMsg = e.message; if(errorMsg.includes('auth/email-already-in-use')) errorMsg = 'البريد مستخدم'; else if(errorMsg.includes('auth/weak-password')) errorMsg = 'كلمة المرور ضعيفة'; else if(errorMsg.includes('auth/invalid-email')) errorMsg = 'بريد غير صحيح'; document.getElementById('regError').innerText = errorMsg; }
         };
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
     
+    // Event listeners
+    document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('profileIcon').onclick = () => { viewedUserId = currentUser?.uid; showPage('profile'); };
+    document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
+    document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
+    document.getElementById('refreshMyAccounts').onclick = () => { if(viewedUserId) loadUserAccounts(viewedUserId); };
+    document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
+    document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
+    document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
+    // لا نضيف حدث changeAvatar هنا لأنه يضاف ديناميكياً في loadProfileData
+    
+    // Auth state
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const splash = document.getElementById('splash');
         const appDiv = document.getElementById('app');
         if (user) {
-            splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 500);
+            splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 400);
+            viewedUserId = user.uid;
             await loadProfileData(user.uid);
-            await loadAccounts(); 
-            await loadMyAccounts(); 
+            await loadAccounts();
+            await loadUserAccounts(user.uid);
             showPage('home');
         } else {
-            appDiv.style.display = 'none'; splash.style.display = 'flex'; splash.style.opacity = '1';
-            setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
+            appDiv.style.display = 'none';
+            splash.style.display = 'flex';
+            splash.style.opacity = '1';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                showLoginScreen();
+            }, 800);
         }
     });
     
-    setTimeout(() => { 
-        if (!currentUser && document.getElementById('splash').style.display !== 'none') { 
-            document.getElementById('splash').style.opacity = '0'; 
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; showLoginScreen(); }, 500); 
-        } 
+    setTimeout(() => {
+        if (!currentUser && document.getElementById('splash').style.display !== 'none') {
+            document.getElementById('splash').style.display = 'none';
+            showLoginScreen();
+        }
     }, 2000);
 </script>
 </body>
