@@ -135,7 +135,7 @@
             z-index: 99;
         }
 
-        .header-left {
+        .header-right {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -881,13 +881,12 @@
 
         <!-- الهيدر -->
         <div class="header">
-            <div class="header-left">
-                <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
-                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
-                <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
-            </div>
             <div class="logo" data-i18n="app_name">سوق الحسابات</div>
-            <div style="width: 40px;"></div> <!-- للحفاظ على التوازن -->
+            <div class="header-right">
+                <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
+                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+            </div>
         </div>
 
         <!-- شريط البحث المنبثق -->
@@ -1015,14 +1014,19 @@
         import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // ============ مفاتيح Firebase و ImgBB الصحيحة ============
         const firebaseConfig = {
             apiKey: "AIzaSyB3mtcnmHD-rPYxLXLFVhg6VPrNMPIetaw",
             authDomain: "selling-accounts-90d8e.firebaseapp.com",
+            databaseURL: "https://selling-accounts-90d8e-default-rtdb.firebaseio.com",
             projectId: "selling-accounts-90d8e",
             storageBucket: "selling-accounts-90d8e.firebasestorage.app",
             messagingSenderId: "433974982968",
             appId: "1:433974982968:web:203c8ee4f0f9c7670e69cd"
         };
+        
+        const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
+
         const firebaseApp = initializeApp(firebaseConfig);
         const auth = getAuth(firebaseApp);
         const db = getFirestore(firebaseApp);
@@ -1147,6 +1151,23 @@
             } catch (e) {
                 console.log("صوت غير مدعوم");
             }
+        }
+
+        // دالة رفع الصور إلى ImgBB (كبديل لـ Firebase Storage للصور المؤقتة)
+        async function uploadToImgBB(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('key', IMGBB_KEY);
+            
+            const response = await fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error?.message || 'فشل رفع الصورة');
+            }
+            return data.data.url;
         }
 
         // عرض الصفحات
@@ -1605,7 +1626,7 @@
             loadConversation(convId);
         };
 
-        // إضافة حساب
+        // إضافة حساب (تم إصلاح مشكلة النشر باستخدام ImgBB)
         window.showAddModal = function() {
             let imageFiles = [];
             const modal = document.createElement('div');
@@ -1698,14 +1719,14 @@
                 submitBtn.textContent = "جاري النشر...";
 
                 try {
-                    const urls = [];
+                    // رفع الصور إلى ImgBB
+                    const imageUrls = [];
                     for (let i = 0; i < imageFiles.length; i++) {
-                        const storageRef = ref(storage, `accounts/${currentUser.uid}_${Date.now()}_${i}`);
-                        await uploadBytes(storageRef, imageFiles[i]);
-                        const url = await getDownloadURL(storageRef);
-                        urls.push(url);
+                        const url = await uploadToImgBB(imageFiles[i]);
+                        imageUrls.push(url);
                     }
 
+                    // حفظ بيانات الحساب في Firestore
                     await addDoc(collection(db, 'accounts'), {
                         name: document.getElementById('addName').value,
                         link: document.getElementById('addLink').value,
@@ -1714,7 +1735,7 @@
                         price: parseFloat(document.getElementById('addPrice').value),
                         currency: document.getElementById('addCurrency').value,
                         description: document.getElementById('addDesc').value,
-                        images: urls,
+                        images: imageUrls,
                         sellerId: currentUser.uid,
                         views: 0,
                         createdAt: Date.now()
@@ -1726,7 +1747,8 @@
                     loadAccounts();
                     if (currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
                 } catch (err) {
-                    alert("❌ خطأ: " + err.message);
+                    console.error("خطأ في النشر:", err);
+                    alert("❌ خطأ في النشر: " + err.message);
                     submitBtn.disabled = false;
                     submitBtn.textContent = t('publish');
                 }
@@ -1735,7 +1757,7 @@
             modal.querySelector('#cancelModal').onclick = () => modal.remove();
         };
 
-        // تغيير الصورة الرمزية (تم إصلاحها)
+        // تغيير الصورة الرمزية
         async function changeAvatar() {
             if (!currentUser || currentProfileUserId !== currentUser.uid) {
                 alert("لا يمكنك تغيير صورة مستخدم آخر");
@@ -1749,19 +1771,18 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
-                // إظهار مؤشر تحميل
                 const avatarImg = document.getElementById('avatarImg');
                 const originalSrc = avatarImg.src;
                 avatarImg.style.opacity = '0.5';
 
                 try {
-                    const storageRef = ref(storage, `avatars/${currentUser.uid}`);
-                    await uploadBytes(storageRef, file);
-                    const url = await getDownloadURL(storageRef);
+                    // رفع الصورة إلى ImgBB
+                    const url = await uploadToImgBB(file);
                     await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
                     avatarImg.src = url;
                     alert("✅ تم تحديث الصورة بنجاح");
                 } catch (err) {
+                    console.error("خطأ في تغيير الصورة:", err);
                     alert("❌ خطأ: " + err.message);
                     avatarImg.src = originalSrc;
                 } finally {
@@ -1779,7 +1800,6 @@
             }
             const modal = document.createElement('div');
             modal.className = 'modal';
-            // قائمة الدول العربية
             const arabCountries = [
                 "السعودية", "مصر", "الإمارات", "الأردن", "الكويت", "عمان", "قطر", "البحرين",
                 "اليمن", "العراق", "سوريا", "لبنان", "فلسطين", "ليبيا", "تونس", "الجزائر",
@@ -1805,7 +1825,6 @@
             </div>`;
             document.body.appendChild(modal);
 
-            // جلب البيانات الحالية
             const userRef = doc(db, 'users', currentUser.uid);
             getDoc(userRef).then(snap => {
                 if (snap.exists()) {
@@ -1870,7 +1889,6 @@
             </div>`;
             document.body.appendChild(authContainer);
 
-            // إظهار/إخفاء كلمة المرور
             document.querySelectorAll('.toggle-password').forEach(icon => {
                 icon.addEventListener('click', () => {
                     const target = document.getElementById(icon.dataset.target);
@@ -1902,7 +1920,6 @@
                 try {
                     const result = await signInWithPopup(auth, googleProvider);
                     const user = result.user;
-                    // التحقق من وجود المستخدم في Firestore
                     const userRef = doc(db, 'users', user.uid);
                     const userSnap = await getDoc(userRef);
                     if (!userSnap.exists()) {
@@ -2049,7 +2066,6 @@
         };
         document.getElementById('logoutBtnSide').onclick = async () => {
             await signOut(auth);
-            // لا حاجة لإعادة تحميل الصفحة، سيتم التعامل معه في onAuthStateChanged
         };
         document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
         document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
