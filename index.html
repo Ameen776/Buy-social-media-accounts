@@ -138,7 +138,15 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 26px;
+            cursor: pointer;
         }
 
         .search-btn {
@@ -149,6 +157,21 @@
             cursor: pointer;
         }
 
+        .profile-icon {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* شريط البحث المنبثق */
         .search-modal {
             position: fixed;
             top: 0;
@@ -174,20 +197,6 @@
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             font-size: 1rem;
-        }
-
-        .menu-btn, .profile-icon {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 26px;
-            cursor: pointer;
-        }
-
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent);
         }
 
         /* القائمة الجانبية */
@@ -456,7 +465,9 @@
         }
 
         /* نماذج */
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -473,7 +484,8 @@
             flex-wrap: wrap;
         }
 
-        .filter-row input, .filter-row select {
+        .filter-row input,
+        .filter-row select {
             flex: 1;
             padding: 8px;
             border-radius: 20px;
@@ -685,7 +697,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .success-check {
@@ -695,9 +709,15 @@
         }
 
         @keyframes checkPop {
-            0% { transform: scale(0); }
-            80% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(0);
+            }
+            80% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         .auth-switch {
@@ -758,8 +778,13 @@
         }
 
         @keyframes float3d {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
         }
 
         .developer-name {
@@ -774,8 +799,13 @@
         }
 
         @keyframes glow {
-            0%, 100% { text-shadow: 0 0 5px #9b59b6; }
-            50% { text-shadow: 0 0 20px #00d4ff, 0 0 10px #2ecc71; }
+            0%,
+            100% {
+                text-shadow: 0 0 5px #9b59b6;
+            }
+            50% {
+                text-shadow: 0 0 20px #00d4ff, 0 0 10px #2ecc71;
+            }
         }
 
         /* الفلتر */
@@ -852,11 +882,12 @@
         <!-- الهيدر -->
         <div class="header">
             <div class="header-left">
+                <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
                 <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
                 <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
             </div>
             <div class="logo" data-i18n="app_name">سوق الحسابات</div>
-            <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+            <div style="width: 40px;"></div> <!-- للحفاظ على التوازن -->
         </div>
 
         <!-- شريط البحث المنبثق -->
@@ -980,8 +1011,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -996,6 +1027,7 @@
         const auth = getAuth(firebaseApp);
         const db = getFirestore(firebaseApp);
         const storage = getStorage(firebaseApp);
+        const googleProvider = new GoogleAuthProvider();
 
         // ============ الترجمة (5 لغات) ============
         const translations = {
@@ -1013,7 +1045,8 @@
                 login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد",
                 platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟",
                 reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني", login_success: "تم تسجيل الدخول بنجاح",
-                register_success: "تم إنشاء الحساب بنجاح", register_error: "خطأ في إنشاء الحساب", login_error: "خطأ في تسجيل الدخول"
+                register_success: "تم إنشاء الحساب بنجاح", register_error: "خطأ في إنشاء الحساب", login_error: "خطأ في تسجيل الدخول",
+                google_login: "تسجيل الدخول عبر Google"
             },
             en: {
                 menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About",
@@ -1029,7 +1062,7 @@
                 login: "Login", register: "Register", password: "Password", create_account: "Create Account",
                 platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?",
                 reset_email_sent: "Password reset email sent", login_success: "Login successful", register_success: "Account created successfully",
-                register_error: "Registration error", login_error: "Login error"
+                register_error: "Registration error", login_error: "Login error", google_login: "Login with Google"
             },
             fr: {
                 menu: "Menu", home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos",
@@ -1045,7 +1078,7 @@
                 login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte",
                 platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", forgot_password: "Mot de passe oublié ?",
                 reset_email_sent: "Email de réinitialisation envoyé", login_success: "Connexion réussie", register_success: "Compte créé",
-                register_error: "Erreur d'inscription", login_error: "Erreur de connexion"
+                register_error: "Erreur d'inscription", login_error: "Erreur de connexion", google_login: "Connexion avec Google"
             },
             tr: {
                 menu: "Menü", home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında",
@@ -1061,7 +1094,7 @@
                 login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur",
                 platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", forgot_password: "Şifremi unuttum?",
                 reset_email_sent: "Şifre sıfırlama e-postası gönderildi", login_success: "Giriş başarılı", register_success: "Hesap oluşturuldu",
-                register_error: "Kayıt hatası", login_error: "Giriş hatası"
+                register_error: "Kayıt hatası", login_error: "Giriş hatası", google_login: "Google ile giriş yap"
             },
             am: {
                 menu: "ምናሌ", home: "መነሻ", add_account: "አካውንት ጨምር", messages: "መልእክቶች", support: "ድጋፍ", about: "ስለ",
@@ -1077,12 +1110,15 @@
                 login: "ግባ", register: "ተመዝገብ", password: "የይለፍ ቃል", create_account: "አዲስ አካውንት ፍጠር",
                 platform: "መድረክ", price: "ዋጋ", link: "ሊንክ", description: "መግለጫ", images: "ምስሎች", forgot_password: "የይለፍ ቃል ረሳህ?",
                 reset_email_sent: "የይለፍ ቃል መቀየሪያ ኢሜይል ተልኳል", login_success: "ግባት ተሳክቷል", register_success: "አካውንት ተፈጥሯል",
-                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት"
+                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት", google_login: "በGoogle ግባ"
             }
         };
 
         let currentLang = localStorage.getItem('lang') || 'ar';
-        function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
+
+        function t(key) {
+            return translations[currentLang]?.[key] || translations.ar[key] || key;
+        }
 
         function applyLanguage() {
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -1108,11 +1144,13 @@
         function playSound() {
             try {
                 notificationSound.play();
-            } catch (e) { console.log("صوت غير مدعوم"); }
+            } catch (e) {
+                console.log("صوت غير مدعوم");
+            }
         }
 
         // عرض الصفحات
-        window.showPage = function (pageId) {
+        window.showPage = function(pageId) {
             currentPage = pageId;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(pageId + 'Page').classList.add('active-page');
@@ -1270,7 +1308,8 @@
         }
 
         async function showDetails(account, accountId) {
-            const modal = document.createElement('div'); modal.className = 'modal';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
             let imagesHtml = '';
             if (account.images && account.images.length) {
                 imagesHtml = `<div style="display:flex; gap:8px; margin-top:10px; overflow-x:auto;">${account.images.map(img => `<img src="${img}" style="width:80px; height:80px; border-radius:8px; object-fit:cover; cursor:pointer;" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
@@ -1292,7 +1331,8 @@
         }
 
         async function showEditModal(accountId, acc) {
-            const modal = document.createElement('div'); modal.className = 'modal';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
             modal.innerHTML = `<div class="modal-content">
                 <h3>✏️ ${t('edit')}</h3>
                 <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="${t('name')}">
@@ -1336,7 +1376,8 @@
                 snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
 
                 accounts.sort((a, b) => {
-                    const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId);
+                    const aF = followingIds.includes(a.sellerId),
+                        bF = followingIds.includes(b.sellerId);
                     if (aF && !bF) return -1;
                     if (!aF && bF) return 1;
                     return (b.createdAt || 0) - (a.createdAt || 0);
@@ -1353,7 +1394,8 @@
 
                 let html = '';
                 for (const acc of filtered) {
-                    let sellerName = "مستخدم", sellerAvatar = null;
+                    let sellerName = "مستخدم",
+                        sellerAvatar = null;
                     const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
                     if (userSnap.exists()) {
                         sellerName = userSnap.data().name || sellerName;
@@ -1401,7 +1443,7 @@
             }
         }
 
-        window.viewOtherProfile = function (userId) {
+        window.viewOtherProfile = function(userId) {
             currentProfileUserId = userId;
             refreshProfilePage();
             showPage('profile');
@@ -1541,7 +1583,7 @@
             };
         }
 
-        window.openChat = async function (sellerId, sellerName) {
+        window.openChat = async function(sellerId, sellerName) {
             if (!currentUser) {
                 alert("تسجيل الدخول مطلوب");
                 return;
@@ -1564,7 +1606,7 @@
         };
 
         // إضافة حساب
-        window.showAddModal = function () {
+        window.showAddModal = function() {
             let imageFiles = [];
             const modal = document.createElement('div');
             modal.className = 'modal';
@@ -1589,7 +1631,7 @@
                     <label>${t('images')}</label>
                     <input type="file" id="addImages" multiple accept="image/*">
                     <div id="previewImages" class="image-preview"></div>
-                    <button type="submit" class="btn-primary">${t('publish')}</button>
+                    <button type="submit" class="btn-primary" id="submitPublishBtn">${t('publish')}</button>
                     <button type="button" id="cancelModal" class="btn-outline">${t('cancel')}</button>
                 </form>
             </div>`;
@@ -1645,13 +1687,16 @@
             });
 
             const form = modal.querySelector('#addForm');
+            const submitBtn = modal.querySelector('#submitPublishBtn');
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) return alert("تسجيل الدخول مطلوب");
                 if (imageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
-                const btn = form.querySelector('button[type="submit"]');
-                btn.disabled = true;
-                btn.textContent = "جاري النشر...";
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = "جاري النشر...";
+
                 try {
                     const urls = [];
                     for (let i = 0; i < imageFiles.length; i++) {
@@ -1660,6 +1705,7 @@
                         const url = await getDownloadURL(storageRef);
                         urls.push(url);
                     }
+
                     await addDoc(collection(db, 'accounts'), {
                         name: document.getElementById('addName').value,
                         link: document.getElementById('addLink').value,
@@ -1673,42 +1719,53 @@
                         views: 0,
                         createdAt: Date.now()
                     });
-                    alert("تم نشر الحساب بنجاح");
+
+                    alert("✅ تم نشر الحساب بنجاح");
                     playSound();
                     modal.remove();
                     loadAccounts();
                     if (currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
                 } catch (err) {
-                    alert("خطأ: " + err.message);
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = t('publish');
+                    alert("❌ خطأ: " + err.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = t('publish');
                 }
             });
+
             modal.querySelector('#cancelModal').onclick = () => modal.remove();
         };
 
-        // تغيير الصورة الرمزية
+        // تغيير الصورة الرمزية (تم إصلاحها)
         async function changeAvatar() {
             if (!currentUser || currentProfileUserId !== currentUser.uid) {
                 alert("لا يمكنك تغيير صورة مستخدم آخر");
                 return;
             }
+
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
             input.onchange = async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+
+                // إظهار مؤشر تحميل
+                const avatarImg = document.getElementById('avatarImg');
+                const originalSrc = avatarImg.src;
+                avatarImg.style.opacity = '0.5';
+
                 try {
                     const storageRef = ref(storage, `avatars/${currentUser.uid}`);
                     await uploadBytes(storageRef, file);
                     const url = await getDownloadURL(storageRef);
                     await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
-                    document.getElementById('avatarImg').src = url;
-                    alert("تم تحديث الصورة");
+                    avatarImg.src = url;
+                    alert("✅ تم تحديث الصورة بنجاح");
                 } catch (err) {
-                    alert("خطأ: " + err.message);
+                    alert("❌ خطأ: " + err.message);
+                    avatarImg.src = originalSrc;
+                } finally {
+                    avatarImg.style.opacity = '1';
                 }
             };
             input.click();
@@ -1807,6 +1864,7 @@
                 </div>
                 <div class="forgot-password" id="forgotPasswordBtn">${t('forgot_password')}</div>
                 <button id="doLogin" class="btn-primary" style="width:100%; margin-top:10px;">${t('login')}</button>
+                <button id="googleLoginBtn" class="btn-outline" style="width:100%; margin-top:10px;"><i class="fab fa-google"></i> ${t('google_login')}</button>
                 <div class="auth-switch" id="toRegister">${t('create_account')}</div>
                 <div id="loginError" style="color:red; margin-top:10px;"></div>
             </div>`;
@@ -1837,6 +1895,32 @@
                     playSound();
                 } catch (e) {
                     document.getElementById('loginError').innerText = e.message.includes('auth/wrong-password') ? 'كلمة مرور خاطئة' : 'خطأ في البريد أو كلمة المرور';
+                }
+            };
+
+            document.getElementById('googleLoginBtn').onclick = async () => {
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    const user = result.user;
+                    // التحقق من وجود المستخدم في Firestore
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (!userSnap.exists()) {
+                        const rid = Math.floor(1e9 + Math.random() * 9e9);
+                        await setDoc(userRef, {
+                            userIdRandom: rid,
+                            email: user.email,
+                            name: user.displayName || 'مستخدم Google',
+                            country: '',
+                            createdAt: Date.now(),
+                            followers: [],
+                            following: []
+                        });
+                    }
+                    authContainer.remove();
+                    playSound();
+                } catch (e) {
+                    document.getElementById('loginError').innerText = e.message;
                 }
             };
 
@@ -1963,7 +2047,10 @@
             refreshProfilePage();
             showPage('profile');
         };
-        document.getElementById('logoutBtnSide').onclick = () => signOut(auth);
+        document.getElementById('logoutBtnSide').onclick = async () => {
+            await signOut(auth);
+            // لا حاجة لإعادة تحميل الصفحة، سيتم التعامل معه في onAuthStateChanged
+        };
         document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
         document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
         document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
