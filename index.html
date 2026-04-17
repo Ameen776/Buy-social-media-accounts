@@ -4,8 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
+    
+    <!-- SEO و Open Graph للتواصل الاجتماعي -->
+    <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
+    <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
+    <meta property="og:image" content="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://selling-accounts-90d8e.web.app">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="سوق الحسابات">
+    <meta name="twitter:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي">
+    <meta name="twitter:image" content="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- أيقونة الموقع للتواصل الاجتماعي -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    
     <style>
         * {
             margin: 0;
@@ -205,6 +224,48 @@
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             font-size: 1rem;
+        }
+
+        .search-results {
+            background: var(--bg-card);
+            border-radius: 16px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: var(--border-color);
+        }
+
+        .search-result-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: bold;
+        }
+
+        .search-result-id {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
         }
 
         /* القائمة الجانبية */
@@ -1078,6 +1139,7 @@
         <!-- شريط البحث المنبثق -->
         <div class="search-modal" id="searchModal">
             <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID...">
+            <div id="searchResults" class="search-results" style="display: none;"></div>
         </div>
 
         <!-- الصفحة الرئيسية -->
@@ -1226,11 +1288,6 @@
             return num.toLocaleString();
         }
 
-        // دالة تنسيق المبلغ
-        function formatPrice(price, currency) {
-            return `${formatNumber(price)} ${currency}`;
-        }
-
         // ============ الترجمة (5 لغات) ============
         const translations = {
             ar: {
@@ -1248,7 +1305,7 @@
                 platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟",
                 reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني", login_success: "تم تسجيل الدخول بنجاح",
                 register_success: "تم إنشاء الحساب بنجاح", register_error: "خطأ في إنشاء الحساب", login_error: "خطأ في تسجيل الدخول",
-                google_login: "تسجيل الدخول عبر Google", views: "مشاهدة", details_title: "تفاصيل الحساب"
+                google_login: "تسجيل الدخول عبر Google", views: "مشاهدة", details_title: "تفاصيل الحساب", search_users: "بحث عن مستخدمين"
             },
             en: {
                 menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About",
@@ -1264,7 +1321,7 @@
                 login: "Login", register: "Register", password: "Password", create_account: "Create Account",
                 platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?",
                 reset_email_sent: "Password reset email sent", login_success: "Login successful", register_success: "Account created successfully",
-                register_error: "Registration error", login_error: "Login error", google_login: "Login with Google", views: "Views", details_title: "Account Details"
+                register_error: "Registration error", login_error: "Login error", google_login: "Login with Google", views: "Views", details_title: "Account Details", search_users: "Search Users"
             },
             fr: {
                 menu: "Menu", home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos",
@@ -1280,7 +1337,7 @@
                 login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte",
                 platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", forgot_password: "Mot de passe oublié ?",
                 reset_email_sent: "Email de réinitialisation envoyé", login_success: "Connexion réussie", register_success: "Compte créé",
-                register_error: "Erreur d'inscription", login_error: "Erreur de connexion", google_login: "Connexion avec Google", views: "Vues", details_title: "Détails du compte"
+                register_error: "Erreur d'inscription", login_error: "Erreur de connexion", google_login: "Connexion avec Google", views: "Vues", details_title: "Détails du compte", search_users: "Rechercher des utilisateurs"
             },
             tr: {
                 menu: "Menü", home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında",
@@ -1296,7 +1353,7 @@
                 login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur",
                 platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", forgot_password: "Şifremi unuttum?",
                 reset_email_sent: "Şifre sıfırlama e-postası gönderildi", login_success: "Giriş başarılı", register_success: "Hesap oluşturuldu",
-                register_error: "Kayıt hatası", login_error: "Giriş hatası", google_login: "Google ile giriş yap", views: "Görüntülenme", details_title: "Hesap Detayları"
+                register_error: "Kayıt hatası", login_error: "Giriş hatası", google_login: "Google ile giriş yap", views: "Görüntülenme", details_title: "Hesap Detayları", search_users: "Kullanıcı Ara"
             },
             am: {
                 menu: "ምናሌ", home: "መነሻ", add_account: "አካውንት ጨምር", messages: "መልእክቶች", support: "ድጋፍ", about: "ስለ",
@@ -1312,7 +1369,7 @@
                 login: "ግባ", register: "ተመዝገብ", password: "የይለፍ ቃል", create_account: "አዲስ አካውንት ፍጠር",
                 platform: "መድረክ", price: "ዋጋ", link: "ሊንክ", description: "መግለጫ", images: "ምስሎች", forgot_password: "የይለፍ ቃል ረሳህ?",
                 reset_email_sent: "የይለፍ ቃል መቀየሪያ ኢሜይል ተልኳል", login_success: "ግባት ተሳክቷል", register_success: "አካውንት ተፈጥሯል",
-                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት", google_login: "በGoogle ግባ", views: "እይታዎች", details_title: "የአካውንት ዝርዝሮች"
+                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት", google_login: "በGoogle ግባ", views: "እይታዎች", details_title: "የአካውንት ዝርዝሮች", search_users: "ተጠቃሚዎችን ፈልግ"
             }
         };
 
@@ -1378,6 +1435,67 @@
             const audioRef = ref(storage, `chat_audio/${convId}_${Date.now()}.webm`);
             await uploadBytes(audioRef, audioBlob);
             return await getDownloadURL(audioRef);
+        }
+
+        // ============ وظيفة البحث عن المستخدمين ============
+        async function searchUsers(searchTerm) {
+            if (!searchTerm || searchTerm.length < 2) {
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+            
+            try {
+                // البحث بالاسم
+                const usersRef = collection(db, 'users');
+                const nameQuery = query(usersRef, where('name', '>=', searchTerm), where('name', '<=', searchTerm + '\uf8ff'), limit(10));
+                const idQuery = query(usersRef, where('userIdRandom', '==', parseInt(searchTerm) || searchTerm));
+                
+                const [nameSnap, idSnap] = await Promise.all([getDocs(nameQuery), getDocs(idQuery)]);
+                
+                const results = [];
+                nameSnap.forEach(doc => {
+                    if (doc.id !== currentUser?.uid) {
+                        results.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+                idSnap.forEach(doc => {
+                    if (doc.id !== currentUser?.uid && !results.find(r => r.id === doc.id)) {
+                        results.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+                
+                const resultsContainer = document.getElementById('searchResults');
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>';
+                    resultsContainer.style.display = 'block';
+                    return;
+                }
+                
+                let html = '';
+                for (const user of results) {
+                    html += `<div class="search-result-item" data-userid="${user.id}">
+                        <img class="search-result-avatar" src="${user.avatar || 'https://via.placeholder.com/40'}" onerror="this.src='https://via.placeholder.com/40'">
+                        <div class="search-result-info">
+                            <div class="search-result-name">${user.name || 'مستخدم'}</div>
+                            <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
+                        </div>
+                        <i class="fas fa-comment" style="color:var(--accent);"></i>
+                    </div>`;
+                }
+                resultsContainer.innerHTML = html;
+                resultsContainer.style.display = 'block';
+                
+                document.querySelectorAll('.search-result-item').forEach(el => {
+                    el.onclick = () => {
+                        const userId = el.dataset.userid;
+                        const userName = el.querySelector('.search-result-name')?.innerText || 'مستخدم';
+                        document.getElementById('searchModal').classList.remove('open');
+                        window.openChat(userId, userName);
+                    };
+                });
+            } catch (error) {
+                console.error("خطأ في البحث:", error);
+            }
         }
 
         // عرض الصفحات
@@ -1730,7 +1848,7 @@
             showPage('profile');
         };
 
-        // الدردشات (تم إصلاح مشكلة إرسال الرسائل والصور)
+        // ============ الدردشات (تم إصلاحها بالكامل) ============
         async function loadConversations() {
             if (!currentUser) return;
             const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
@@ -1787,14 +1905,17 @@
             document.getElementById('chatBox').style.display = 'block';
 
             const messagesRef = collection(db, 'conversations', convId, 'messages');
+            
+            // تحديث حالة القراءة
             const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
             const unreadSnap = await getDocs(unreadQuery);
-            unreadSnap.forEach(async (msg) => {
+            for (const msg of unreadSnap.docs) {
                 await updateDoc(doc(db, 'conversations', convId, 'messages', msg.id), { read: true });
-            });
+            }
 
+            // الاستماع للرسائل
             const q = query(messagesRef, orderBy('timestamp'));
-            onSnapshot(q, (snap) => {
+            const unsubscribe = onSnapshot(q, (snap) => {
                 const div = document.getElementById('chatMessages');
                 div.innerHTML = '';
                 snap.forEach(msg => {
@@ -1818,11 +1939,13 @@
                 div.scrollTop = div.scrollHeight;
             });
 
-            // إرسال رسالة نصية
+            // إعداد أزرار الإرسال
             const sendBtn = document.getElementById('sendMsg');
             const messageInput = document.getElementById('messageInput');
+            const attachBtn = document.getElementById('attachImageBtn');
+            const voiceBtn = document.getElementById('voiceRecordBtn');
             
-            // إزالة المستمعين القدامى وإضافتهم مرة واحدة
+            // إزالة المستمعين القدامى
             const newSendBtn = sendBtn.cloneNode(true);
             sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
             
@@ -1849,8 +1972,7 @@
                 }
             };
 
-            // إرفاق صورة
-            const attachBtn = document.getElementById('attachImageBtn');
+            // زر إرفاق الصورة
             const newAttachBtn = attachBtn.cloneNode(true);
             attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
             
@@ -1862,7 +1984,6 @@
                     const file = e.target.files[0];
                     if (file) {
                         try {
-                            // رفع الصورة إلى ImgBB
                             const imageUrl = await uploadToImgBB(file);
                             await addDoc(messagesRef, {
                                 imageUrl: imageUrl,
@@ -1877,15 +1998,14 @@
                             playSound();
                         } catch (error) {
                             console.error("خطأ في رفع الصورة:", error);
-                            alert("حدث خطأ في رفع الصورة");
+                            alert("حدث خطأ في رفع الصورة: " + error.message);
                         }
                     }
                 };
                 input.click();
             };
 
-            // تسجيل صوتي
-            const voiceBtn = document.getElementById('voiceRecordBtn');
+            // زر التسجيل الصوتي
             const newVoiceBtn = voiceBtn.cloneNode(true);
             voiceBtn.parentNode.replaceChild(newVoiceBtn, voiceBtn);
             
@@ -1932,10 +2052,10 @@
                             if (mediaRecorder && isRecording) {
                                 mediaRecorder.stop();
                             }
-                        }, 30000); // حد أقصى 30 ثانية
+                        }, 30000);
                     } catch (err) {
                         console.error("خطأ في الوصول إلى الميكروفون:", err);
-                        alert("لا يمكن الوصول إلى الميكروفون");
+                        alert("لا يمكن الوصول إلى الميكروفون. يرجى السماح بالوصول إلى الميكروفون.");
                     }
                 } else {
                     if (mediaRecorder && isRecording) {
@@ -1945,6 +2065,7 @@
             };
 
             document.getElementById('backConv').onclick = () => {
+                unsubscribe();
                 document.getElementById('chatBox').style.display = 'none';
                 document.getElementById('convList').style.display = 'block';
                 loadConversations();
@@ -2417,23 +2538,23 @@
         document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
 
         // البحث المنبثق
+        const searchInputModal = document.getElementById('searchInputModal');
+        const searchModal = document.getElementById('searchModal');
+        
         document.getElementById('searchBtn').onclick = () => {
-            const modal = document.getElementById('searchModal');
-            modal.classList.toggle('open');
-            document.getElementById('searchInputModal').focus();
+            searchModal.classList.toggle('open');
+            searchInputModal.focus();
         };
-        document.getElementById('searchInputModal')?.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const accounts = document.querySelectorAll('#accountsList .card');
-            accounts.forEach(card => {
-                const name = card.querySelector('h3')?.innerText.toLowerCase() || '';
-                const sellerName = card.querySelector('p[onclick]')?.innerText.toLowerCase() || '';
-                if (name.includes(searchTerm) || sellerName.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+        
+        searchInputModal?.addEventListener('input', (e) => {
+            searchUsers(e.target.value.trim());
+        });
+        
+        // إغلاق البحث عند النقر خارجه
+        document.addEventListener('click', (e) => {
+            if (!searchModal.contains(e.target) && e.target.id !== 'searchBtn') {
+                searchModal.classList.remove('open');
+            }
         });
 
         // الترجمة
