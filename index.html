@@ -135,26 +135,10 @@
             z-index: 99;
         }
 
-        .header-right {
+        .header-left {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 26px;
-            cursor: pointer;
-        }
-
-        .search-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 20px;
-            cursor: pointer;
         }
 
         .profile-icon {
@@ -169,6 +153,28 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: var(--accent);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 26px;
+            cursor: pointer;
         }
 
         /* شريط البحث المنبثق */
@@ -373,10 +379,16 @@
             font-weight: bold;
             font-size: 0.9rem;
             min-width: 110px;
+            transition: 0.3s;
         }
 
         .btn-follow-green.unfollow {
             background: #555;
+        }
+
+        .btn-follow-green:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
         }
 
         /* الملف الشخصي */
@@ -881,9 +893,11 @@
 
         <!-- الهيدر -->
         <div class="header">
+            <div class="header-left">
+                <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
+            </div>
             <div class="logo" data-i18n="app_name">سوق الحسابات</div>
             <div class="header-right">
-                <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
                 <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
                 <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
             </div>
@@ -1033,6 +1047,12 @@
         const storage = getStorage(firebaseApp);
         const googleProvider = new GoogleAuthProvider();
 
+        // دالة تنسيق الأرقام (مثل: 22000 -> 22,000)
+        function formatNumber(num) {
+            if (num === undefined || num === null) return '0';
+            return num.toLocaleString();
+        }
+
         // ============ الترجمة (5 لغات) ============
         const translations = {
             ar: {
@@ -1153,7 +1173,7 @@
             }
         }
 
-        // دالة رفع الصور إلى ImgBB (كبديل لـ Firebase Storage للصور المؤقتة)
+        // دالة رفع الصور إلى ImgBB
         async function uploadToImgBB(file) {
             const formData = new FormData();
             formData.append('image', file);
@@ -1222,8 +1242,8 @@
             const userRef = doc(db, 'users', userId);
             const snap = await getDoc(userRef);
             const data = snap.data() || {};
-            document.getElementById('followersCount').innerText = data.followers?.length || 0;
-            document.getElementById('followingCount').innerText = data.following?.length || 0;
+            document.getElementById('followersCount').innerText = formatNumber(data.followers?.length || 0);
+            document.getElementById('followingCount').innerText = formatNumber(data.following?.length || 0);
 
             const container = document.getElementById('followButtonContainer');
             if (!currentUser || userId === currentUser.uid) {
@@ -1234,17 +1254,34 @@
             const currentSnap = await getDoc(currentUserRef);
             const isFollowing = currentSnap.data()?.following?.includes(userId) || false;
             container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="followBtn">${isFollowing ? t('unfollow') : t('follow')}</button>`;
-            document.getElementById('followBtn')?.addEventListener('click', async () => {
-                if (isFollowing) {
-                    await updateDoc(currentUserRef, { following: arrayRemove(userId) });
-                    await updateDoc(userRef, { followers: arrayRemove(currentUser.uid) });
-                } else {
-                    await updateDoc(currentUserRef, { following: arrayUnion(userId) });
-                    await updateDoc(userRef, { followers: arrayUnion(currentUser.uid) });
-                }
-                loadFollowStats(userId);
-                loadAccounts();
-            });
+            
+            const followBtn = document.getElementById('followBtn');
+            if (followBtn) {
+                followBtn.onclick = async () => {
+                    // تعطيل الزر مؤقتاً لمنع النقر المتكرر
+                    followBtn.disabled = true;
+                    followBtn.style.opacity = '0.7';
+                    
+                    try {
+                        if (isFollowing) {
+                            await updateDoc(currentUserRef, { following: arrayRemove(userId) });
+                            await updateDoc(userRef, { followers: arrayRemove(currentUser.uid) });
+                        } else {
+                            await updateDoc(currentUserRef, { following: arrayUnion(userId) });
+                            await updateDoc(userRef, { followers: arrayUnion(currentUser.uid) });
+                        }
+                        // تحديث الإحصائيات
+                        await loadFollowStats(userId);
+                        // تحديث الصفحة الرئيسية لترتيب المنشورات حسب المتابعة
+                        if (currentPage === 'home') loadAccounts();
+                    } catch (error) {
+                        console.error("خطأ في تحديث المتابعة:", error);
+                    } finally {
+                        followBtn.disabled = false;
+                        followBtn.style.opacity = '1';
+                    }
+                };
+            }
         }
 
         // تحميل منشورات المستخدم
@@ -1269,7 +1306,7 @@
                 for (const acc of accounts) {
                     html += `<div class="my-account-card">
                         <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
-                        <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
+                        <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${formatNumber(acc.followers || 0)}</p>
                         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
                             ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${acc.id}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ ${t('edit')}</button>
                             <button class="delete-account-btn btn-danger" data-id="${acc.id}">🗑️ ${t('delete')}</button>` : ''}
@@ -1337,7 +1374,7 @@
             }
             modal.innerHTML = `<div class="modal-content">
                 <h3>${account.name}</h3>
-                <p>${account.platform} | 👥 ${account.followers?.toLocaleString()}</p>
+                <p>${account.platform} | 👥 ${formatNumber(account.followers)}</p>
                 <p>💰 ${account.price} ${account.currency} | 👁️ ${account.views || 0}</p>
                 <p>🔗 <a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></p>
                 <p>📝 ${account.description || 'لا يوجد وصف'}</p>
@@ -1381,7 +1418,7 @@
             modal.querySelector('#cancelEdit').onclick = () => modal.remove();
         }
 
-        // تحميل الحسابات في الصفحة الرئيسية
+        // تحميل الحسابات في الصفحة الرئيسية (مع ترتيب حسب المتابعة)
         async function loadAccounts() {
             const container = document.getElementById('accountsList');
             container.innerHTML = 'جار التحميل...';
@@ -1396,9 +1433,10 @@
                 let accounts = [];
                 snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
 
+                // ترتيب الحسابات: أولاً حسابات المستخدمين الذين يتابعهم، ثم الأحدث
                 accounts.sort((a, b) => {
-                    const aF = followingIds.includes(a.sellerId),
-                        bF = followingIds.includes(b.sellerId);
+                    const aF = followingIds.includes(a.sellerId);
+                    const bF = followingIds.includes(b.sellerId);
                     if (aF && !bF) return -1;
                     if (!aF && bF) return 1;
                     return (b.createdAt || 0) - (a.createdAt || 0);
@@ -1415,8 +1453,8 @@
 
                 let html = '';
                 for (const acc of filtered) {
-                    let sellerName = "مستخدم",
-                        sellerAvatar = null;
+                    let sellerName = "مستخدم";
+                    let sellerAvatar = null;
                     const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
                     if (userSnap.exists()) {
                         sellerName = userSnap.data().name || sellerName;
@@ -1432,7 +1470,7 @@
                                 <p style="margin:0; cursor:pointer; color:var(--accent);" onclick="window.viewOtherProfile('${acc.sellerId}')">${sellerName}</p>
                             </div>
                         </div>
-                        <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
+                        <p>${acc.platform} | 👥 ${formatNumber(acc.followers)}</p>
                         <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                         <div style="display:flex; gap:8px; margin-top:10px;">
                             <button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
@@ -1470,7 +1508,7 @@
             showPage('profile');
         };
 
-        // الدردشات
+        // الدردشات (تم تفعيلها بالكامل)
         async function loadConversations() {
             if (!currentUser) return;
             const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
@@ -1489,7 +1527,6 @@
                     const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0, 6);
                     const avatar = userSnap.exists() ? userSnap.data().avatar : null;
 
-                    // حساب الرسائل غير المقروءة
                     const messagesRef = collection(db, 'conversations', docSnap.id, 'messages');
                     const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
                     const unreadSnap = await getDocs(unreadQuery);
@@ -1527,7 +1564,6 @@
             document.getElementById('convList').style.display = 'none';
             document.getElementById('chatBox').style.display = 'block';
 
-            // تحديث حالة القراءة للرسائل
             const messagesRef = collection(db, 'conversations', convId, 'messages');
             const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
             const unreadSnap = await getDocs(unreadQuery);
@@ -1556,7 +1592,7 @@
             document.getElementById('sendMsg').onclick = async () => {
                 const inp = document.getElementById('messageInput');
                 if (inp.value.trim()) {
-                    await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                    await addDoc(messagesRef, {
                         text: inp.value.trim(),
                         senderId: currentUser.uid,
                         timestamp: Date.now(),
@@ -1581,7 +1617,7 @@
                         const storageRef = ref(storage, `chat_images/${convId}_${Date.now()}`);
                         await uploadBytes(storageRef, file);
                         const imageUrl = await getDownloadURL(storageRef);
-                        await addDoc(collection(db, 'conversations', convId, 'messages'), {
+                        await addDoc(messagesRef, {
                             imageUrl: imageUrl,
                             senderId: currentUser.uid,
                             timestamp: Date.now(),
@@ -1626,7 +1662,7 @@
             loadConversation(convId);
         };
 
-        // إضافة حساب (تم إصلاح مشكلة النشر باستخدام ImgBB)
+        // إضافة حساب
         window.showAddModal = function() {
             let imageFiles = [];
             const modal = document.createElement('div');
@@ -1719,14 +1755,12 @@
                 submitBtn.textContent = "جاري النشر...";
 
                 try {
-                    // رفع الصور إلى ImgBB
                     const imageUrls = [];
                     for (let i = 0; i < imageFiles.length; i++) {
                         const url = await uploadToImgBB(imageFiles[i]);
                         imageUrls.push(url);
                     }
 
-                    // حفظ بيانات الحساب في Firestore
                     await addDoc(collection(db, 'accounts'), {
                         name: document.getElementById('addName').value,
                         link: document.getElementById('addLink').value,
@@ -1776,7 +1810,6 @@
                 avatarImg.style.opacity = '0.5';
 
                 try {
-                    // رفع الصورة إلى ImgBB
                     const url = await uploadToImgBB(file);
                     await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
                     avatarImg.src = url;
