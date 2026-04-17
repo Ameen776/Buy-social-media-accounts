@@ -26,6 +26,7 @@
             --chat-bg-1: linear-gradient(135deg, #1a1a2a, #16213e);
             --chat-bg-2: linear-gradient(135deg, #1e1e2e, #0f3460);
             --chat-bg-3: linear-gradient(135deg, #2a1a2a, #1a0f2e);
+            --details-bg: linear-gradient(145deg, #1e1e2e, #16162a);
         }
 
         body.light {
@@ -40,6 +41,7 @@
             --chat-bg-1: linear-gradient(135deg, #e0e0e8, #d0d0e0);
             --chat-bg-2: linear-gradient(135deg, #e8e0e8, #d8d0e0);
             --chat-bg-3: linear-gradient(135deg, #e0e8e0, #d0e0d0);
+            --details-bg: linear-gradient(145deg, #ffffff, #f0f0f8);
         }
 
         body {
@@ -524,6 +526,120 @@
             overflow-y: auto;
         }
 
+        /* نافذة التفاصيل المحسنة */
+        .details-modal {
+            max-width: 550px;
+            width: 90%;
+        }
+
+        .details-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .details-header h2 {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .details-platform {
+            display: inline-block;
+            background: var(--accent);
+            color: #111;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .details-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: rgba(var(--accent-rgb, 0, 212, 255), 0.1);
+            padding: 12px;
+            border-radius: 16px;
+            text-align: center;
+            flex: 1;
+            min-width: 100px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card i {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .details-info {
+            background: var(--bg-body);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            width: 80px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .info-value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .details-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin: 10px 0;
+        }
+
+        .details-images img {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: 0.2s;
+        }
+
+        .details-images img:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
         /* الدردشات */
         .chat-container {
             display: flex;
@@ -567,6 +683,13 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            overflow: hidden;
+        }
+
+        .conversation-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .conversation-info {
@@ -588,7 +711,7 @@
         }
 
         .chat-messages {
-            height: 300px;
+            height: 350px;
             overflow-y: auto;
             background: var(--chat-bg-1);
             border-radius: 16px;
@@ -635,10 +758,22 @@
             cursor: pointer;
         }
 
+        .message-audio {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-audio audio {
+            height: 35px;
+            border-radius: 20px;
+        }
+
         .chat-input-area {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .chat-input-area input {
@@ -646,12 +781,42 @@
             margin: 0;
         }
 
-        .attach-btn {
+        .attach-btn, .voice-btn {
             background: none;
             border: none;
             color: var(--accent);
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .attach-btn:hover, .voice-btn:hover {
+            background: var(--border-color);
+        }
+
+        .recording-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ff4444;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .recording-indicator .pulse {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulseRed 1s infinite;
+        }
+
+        @keyframes pulseRed {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.5); }
         }
 
         /* شاشات المصادقة */
@@ -854,6 +1019,13 @@
             .accounts-grid {
                 grid-template-columns: 1fr;
             }
+            .stat-card {
+                min-width: 80px;
+            }
+            .info-label {
+                width: 70px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -967,6 +1139,7 @@
                 <div id="chatMessages" class="chat-messages"></div>
                 <div class="chat-input-area">
                     <button class="attach-btn" id="attachImageBtn"><i class="fas fa-image"></i></button>
+                    <button class="voice-btn" id="voiceRecordBtn"><i class="fas fa-microphone"></i></button>
                     <input type="text" id="messageInput" placeholder="اكتب رسالة..." data-i18n-placeholder="type_message">
                     <button id="sendMsg" class="btn-primary" data-i18n="send">إرسال</button>
                 </div>
@@ -1053,6 +1226,11 @@
             return num.toLocaleString();
         }
 
+        // دالة تنسيق المبلغ
+        function formatPrice(price, currency) {
+            return `${formatNumber(price)} ${currency}`;
+        }
+
         // ============ الترجمة (5 لغات) ============
         const translations = {
             ar: {
@@ -1070,7 +1248,7 @@
                 platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟",
                 reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني", login_success: "تم تسجيل الدخول بنجاح",
                 register_success: "تم إنشاء الحساب بنجاح", register_error: "خطأ في إنشاء الحساب", login_error: "خطأ في تسجيل الدخول",
-                google_login: "تسجيل الدخول عبر Google"
+                google_login: "تسجيل الدخول عبر Google", views: "مشاهدة", details_title: "تفاصيل الحساب"
             },
             en: {
                 menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About",
@@ -1086,7 +1264,7 @@
                 login: "Login", register: "Register", password: "Password", create_account: "Create Account",
                 platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?",
                 reset_email_sent: "Password reset email sent", login_success: "Login successful", register_success: "Account created successfully",
-                register_error: "Registration error", login_error: "Login error", google_login: "Login with Google"
+                register_error: "Registration error", login_error: "Login error", google_login: "Login with Google", views: "Views", details_title: "Account Details"
             },
             fr: {
                 menu: "Menu", home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos",
@@ -1102,7 +1280,7 @@
                 login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte",
                 platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", forgot_password: "Mot de passe oublié ?",
                 reset_email_sent: "Email de réinitialisation envoyé", login_success: "Connexion réussie", register_success: "Compte créé",
-                register_error: "Erreur d'inscription", login_error: "Erreur de connexion", google_login: "Connexion avec Google"
+                register_error: "Erreur d'inscription", login_error: "Erreur de connexion", google_login: "Connexion avec Google", views: "Vues", details_title: "Détails du compte"
             },
             tr: {
                 menu: "Menü", home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında",
@@ -1118,7 +1296,7 @@
                 login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur",
                 platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", forgot_password: "Şifremi unuttum?",
                 reset_email_sent: "Şifre sıfırlama e-postası gönderildi", login_success: "Giriş başarılı", register_success: "Hesap oluşturuldu",
-                register_error: "Kayıt hatası", login_error: "Giriş hatası", google_login: "Google ile giriş yap"
+                register_error: "Kayıt hatası", login_error: "Giriş hatası", google_login: "Google ile giriş yap", views: "Görüntülenme", details_title: "Hesap Detayları"
             },
             am: {
                 menu: "ምናሌ", home: "መነሻ", add_account: "አካውንት ጨምር", messages: "መልእክቶች", support: "ድጋፍ", about: "ስለ",
@@ -1134,7 +1312,7 @@
                 login: "ግባ", register: "ተመዝገብ", password: "የይለፍ ቃል", create_account: "አዲስ አካውንት ፍጠር",
                 platform: "መድረክ", price: "ዋጋ", link: "ሊንክ", description: "መግለጫ", images: "ምስሎች", forgot_password: "የይለፍ ቃል ረሳህ?",
                 reset_email_sent: "የይለፍ ቃል መቀየሪያ ኢሜይል ተልኳል", login_success: "ግባት ተሳክቷል", register_success: "አካውንት ተፈጥሯል",
-                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት", google_login: "በGoogle ግባ"
+                register_error: "የምዝገባ ስህተት", login_error: "የግባት ስህተት", google_login: "በGoogle ግባ", views: "እይታዎች", details_title: "የአካውንት ዝርዝሮች"
             }
         };
 
@@ -1164,6 +1342,11 @@
         let currentConversationId = null;
         let unreadCounts = {};
         let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+        
+        // متغيرات التسجيل الصوتي
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
 
         function playSound() {
             try {
@@ -1188,6 +1371,13 @@
                 throw new Error(data.error?.message || 'فشل رفع الصورة');
             }
             return data.data.url;
+        }
+
+        // دالة رفع الملفات الصوتية إلى Firebase Storage
+        async function uploadAudioToStorage(audioBlob, convId) {
+            const audioRef = ref(storage, `chat_audio/${convId}_${Date.now()}.webm`);
+            await uploadBytes(audioRef, audioBlob);
+            return await getDownloadURL(audioRef);
         }
 
         // عرض الصفحات
@@ -1258,7 +1448,6 @@
             const followBtn = document.getElementById('followBtn');
             if (followBtn) {
                 followBtn.onclick = async () => {
-                    // تعطيل الزر مؤقتاً لمنع النقر المتكرر
                     followBtn.disabled = true;
                     followBtn.style.opacity = '0.7';
                     
@@ -1270,9 +1459,7 @@
                             await updateDoc(currentUserRef, { following: arrayUnion(userId) });
                             await updateDoc(userRef, { followers: arrayUnion(currentUser.uid) });
                         }
-                        // تحديث الإحصائيات
                         await loadFollowStats(userId);
-                        // تحديث الصفحة الرئيسية لترتيب المنشورات حسب المتابعة
                         if (currentPage === 'home') loadAccounts();
                     } catch (error) {
                         console.error("خطأ في تحديث المتابعة:", error);
@@ -1330,7 +1517,7 @@
                             views: parseInt(btn.dataset.views),
                             images: JSON.parse(btn.dataset.images)
                         };
-                        showDetails(acc, btn.dataset.id);
+                        showEnhancedDetails(acc, btn.dataset.id);
                     };
                 });
 
@@ -1365,24 +1552,60 @@
             }
         }
 
-        async function showDetails(account, accountId) {
+        // نافذة تفاصيل محسنة ومنظمة
+        async function showEnhancedDetails(account, accountId) {
             const modal = document.createElement('div');
             modal.className = 'modal';
+            
             let imagesHtml = '';
             if (account.images && account.images.length) {
-                imagesHtml = `<div style="display:flex; gap:8px; margin-top:10px; overflow-x:auto;">${account.images.map(img => `<img src="${img}" style="width:80px; height:80px; border-radius:8px; object-fit:cover; cursor:pointer;" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
+                imagesHtml = `<div class="details-images">${account.images.map(img => `<img src="${img}" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
             }
-            modal.innerHTML = `<div class="modal-content">
-                <h3>${account.name}</h3>
-                <p>${account.platform} | 👥 ${formatNumber(account.followers)}</p>
-                <p>💰 ${account.price} ${account.currency} | 👁️ ${account.views || 0}</p>
-                <p>🔗 <a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></p>
-                <p>📝 ${account.description || 'لا يوجد وصف'}</p>
-                ${imagesHtml}
-                <button class="btn-primary" id="closeModal" style="margin-top:15px;">${t('details')}</button>
+            
+            modal.innerHTML = `<div class="modal-content details-modal">
+                <div class="details-header">
+                    <h2>${account.name}</h2>
+                    <span class="details-platform"><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</span>
+                </div>
+                
+                <div class="details-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <div class="stat-value">${formatNumber(account.followers)}</div>
+                        <div class="stat-label">${t('followers')}</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div class="stat-value">${formatNumber(account.price)} ${account.currency}</div>
+                        <div class="stat-label">${t('price')}</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-eye"></i>
+                        <div class="stat-value">${formatNumber(account.views || 0)}</div>
+                        <div class="stat-label">${t('views')}</div>
+                    </div>
+                </div>
+                
+                <div class="details-info">
+                    <div class="info-row">
+                        <div class="info-label"><i class="fas fa-link"></i> ${t('link')}:</div>
+                        <div class="info-value"><a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></div>
+                    </div>
+                    ${account.description ? `
+                    <div class="info-row">
+                        <div class="info-label"><i class="fas fa-align-left"></i> ${t('description')}:</div>
+                        <div class="info-value">${account.description}</div>
+                    </div>` : ''}
+                </div>
+                
+                ${imagesHtml ? `<div class="details-info"><div class="info-label"><i class="fas fa-images"></i> ${t('images')}:</div>${imagesHtml}</div>` : ''}
+                
+                <button class="btn-primary" id="closeDetailsModal" style="width:100%; margin-top:15px;">${t('details')}</button>
             </div>`;
+            
             document.body.appendChild(modal);
-            modal.querySelector('#closeModal').onclick = () => modal.remove();
+            modal.querySelector('#closeDetailsModal').onclick = () => modal.remove();
+            
             if (accountId) {
                 await updateDoc(doc(db, 'accounts', accountId), { views: increment(1) });
             }
@@ -1418,7 +1641,7 @@
             modal.querySelector('#cancelEdit').onclick = () => modal.remove();
         }
 
-        // تحميل الحسابات في الصفحة الرئيسية (مع ترتيب حسب المتابعة)
+        // تحميل الحسابات في الصفحة الرئيسية
         async function loadAccounts() {
             const container = document.getElementById('accountsList');
             container.innerHTML = 'جار التحميل...';
@@ -1433,7 +1656,6 @@
                 let accounts = [];
                 snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
 
-                // ترتيب الحسابات: أولاً حسابات المستخدمين الذين يتابعهم، ثم الأحدث
                 accounts.sort((a, b) => {
                     const aF = followingIds.includes(a.sellerId);
                     const bF = followingIds.includes(b.sellerId);
@@ -1493,7 +1715,7 @@
                             views: parseInt(btn.dataset.views),
                             images: JSON.parse(btn.dataset.images)
                         };
-                        showDetails(acc, btn.dataset.id);
+                        showEnhancedDetails(acc, btn.dataset.id);
                     };
                 });
             } catch (e) {
@@ -1508,7 +1730,7 @@
             showPage('profile');
         };
 
-        // الدردشات (تم تفعيلها بالكامل)
+        // الدردشات (تم إصلاح مشكلة إرسال الرسائل والصور)
         async function loadConversations() {
             if (!currentUser) return;
             const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
@@ -1535,7 +1757,7 @@
                     unreadCounts[docSnap.id] = unreadCount;
 
                     html += `<div class="conversation-item" data-convid="${docSnap.id}">
-                        <div class="conversation-avatar">${avatar ? `<img src="${avatar}" style="width:50px;height:50px;border-radius:50%;">` : '<i class="fas fa-user"></i>'}</div>
+                        <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
                         <div class="conversation-info">
                             <div class="conversation-name">${name}</div>
                             <div class="conversation-last-msg">${conv.lastMessage || 'اضغط للدردشة'}</div>
@@ -1578,10 +1800,17 @@
                 snap.forEach(msg => {
                     const data = msg.data();
                     const isMe = data.senderId === currentUser.uid;
+                    let content = '';
+                    if (data.text) {
+                        content = `<div>${data.text}</div>`;
+                    } else if (data.imageUrl) {
+                        content = `<img src="${data.imageUrl}" class="message-image" onclick="window.open('${data.imageUrl}','_blank')">`;
+                    } else if (data.audioUrl) {
+                        content = `<div class="message-audio"><audio controls src="${data.audioUrl}"></audio></div>`;
+                    }
                     div.innerHTML += `<div class="message ${isMe ? 'sent' : 'received'}">
                         <div class="message-bubble">
-                            ${data.text || ''}
-                            ${data.imageUrl ? `<img src="${data.imageUrl}" class="message-image" onclick="window.open('${data.imageUrl}','_blank')">` : ''}
+                            ${content}
                             <div style="font-size:0.6rem; margin-top:4px;">${data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : ''}</div>
                         </div>
                     </div>`;
@@ -1589,48 +1818,130 @@
                 div.scrollTop = div.scrollHeight;
             });
 
-            document.getElementById('sendMsg').onclick = async () => {
-                const inp = document.getElementById('messageInput');
-                if (inp.value.trim()) {
-                    await addDoc(messagesRef, {
-                        text: inp.value.trim(),
-                        senderId: currentUser.uid,
-                        timestamp: Date.now(),
-                        read: false
-                    });
-                    await updateDoc(doc(db, 'conversations', convId), {
-                        lastMessage: inp.value.trim(),
-                        lastMessageTime: Date.now()
-                    });
-                    inp.value = '';
-                    playSound();
+            // إرسال رسالة نصية
+            const sendBtn = document.getElementById('sendMsg');
+            const messageInput = document.getElementById('messageInput');
+            
+            // إزالة المستمعين القدامى وإضافتهم مرة واحدة
+            const newSendBtn = sendBtn.cloneNode(true);
+            sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+            
+            newSendBtn.onclick = async () => {
+                const text = messageInput.value.trim();
+                if (text) {
+                    try {
+                        await addDoc(messagesRef, {
+                            text: text,
+                            senderId: currentUser.uid,
+                            timestamp: Date.now(),
+                            read: false
+                        });
+                        await updateDoc(doc(db, 'conversations', convId), {
+                            lastMessage: text,
+                            lastMessageTime: Date.now()
+                        });
+                        messageInput.value = '';
+                        playSound();
+                    } catch (error) {
+                        console.error("خطأ في إرسال الرسالة:", error);
+                        alert("حدث خطأ في إرسال الرسالة");
+                    }
                 }
             };
 
-            document.getElementById('attachImageBtn').onclick = () => {
+            // إرفاق صورة
+            const attachBtn = document.getElementById('attachImageBtn');
+            const newAttachBtn = attachBtn.cloneNode(true);
+            attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
+            
+            newAttachBtn.onclick = () => {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
                 input.onchange = async (e) => {
                     const file = e.target.files[0];
                     if (file) {
-                        const storageRef = ref(storage, `chat_images/${convId}_${Date.now()}`);
-                        await uploadBytes(storageRef, file);
-                        const imageUrl = await getDownloadURL(storageRef);
-                        await addDoc(messagesRef, {
-                            imageUrl: imageUrl,
-                            senderId: currentUser.uid,
-                            timestamp: Date.now(),
-                            read: false
-                        });
-                        await updateDoc(doc(db, 'conversations', convId), {
-                            lastMessage: '📷 صورة',
-                            lastMessageTime: Date.now()
-                        });
-                        playSound();
+                        try {
+                            // رفع الصورة إلى ImgBB
+                            const imageUrl = await uploadToImgBB(file);
+                            await addDoc(messagesRef, {
+                                imageUrl: imageUrl,
+                                senderId: currentUser.uid,
+                                timestamp: Date.now(),
+                                read: false
+                            });
+                            await updateDoc(doc(db, 'conversations', convId), {
+                                lastMessage: '📷 صورة',
+                                lastMessageTime: Date.now()
+                            });
+                            playSound();
+                        } catch (error) {
+                            console.error("خطأ في رفع الصورة:", error);
+                            alert("حدث خطأ في رفع الصورة");
+                        }
                     }
                 };
                 input.click();
+            };
+
+            // تسجيل صوتي
+            const voiceBtn = document.getElementById('voiceRecordBtn');
+            const newVoiceBtn = voiceBtn.cloneNode(true);
+            voiceBtn.parentNode.replaceChild(newVoiceBtn, voiceBtn);
+            
+            newVoiceBtn.onclick = async () => {
+                if (!isRecording) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+                        
+                        mediaRecorder.ondataavailable = (event) => {
+                            audioChunks.push(event.data);
+                        };
+                        
+                        mediaRecorder.onstop = async () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            try {
+                                const audioUrl = await uploadAudioToStorage(audioBlob, convId);
+                                await addDoc(messagesRef, {
+                                    audioUrl: audioUrl,
+                                    senderId: currentUser.uid,
+                                    timestamp: Date.now(),
+                                    read: false
+                                });
+                                await updateDoc(doc(db, 'conversations', convId), {
+                                    lastMessage: '🎤 رسالة صوتية',
+                                    lastMessageTime: Date.now()
+                                });
+                                playSound();
+                            } catch (error) {
+                                console.error("خطأ في رفع الصوت:", error);
+                                alert("حدث خطأ في رفع التسجيل الصوتي");
+                            }
+                            stream.getTracks().forEach(track => track.stop());
+                            newVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                            isRecording = false;
+                        };
+                        
+                        mediaRecorder.start();
+                        isRecording = true;
+                        newVoiceBtn.innerHTML = '<span class="recording-indicator"><span class="pulse"></span> تسجيل...</span>';
+                        
+                        setTimeout(() => {
+                            if (mediaRecorder && isRecording) {
+                                mediaRecorder.stop();
+                            }
+                        }, 30000); // حد أقصى 30 ثانية
+                    } catch (err) {
+                        console.error("خطأ في الوصول إلى الميكروفون:", err);
+                        alert("لا يمكن الوصول إلى الميكروفون");
+                    }
+                } else {
+                    if (mediaRecorder && isRecording) {
+                        mediaRecorder.stop();
+                    }
+                }
             };
 
             document.getElementById('backConv').onclick = () => {
