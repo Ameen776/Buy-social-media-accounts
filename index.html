@@ -271,6 +271,9 @@
         .reply-item { padding: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
         .reply-item:last-child { border-bottom: none; }
         .reply-admin { background: rgba(0,212,255,0.1); border-radius: 10px; padding: 8px; margin: 5px 0; }
+        .ticket-status { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 8px; }
+        .status-pending { background: #ff9800; color: #fff; }
+        .status-read { background: #4caf50; color: #fff; }
         
         /* صفحة عن التطبيق */
         .about-3d { text-align: center; perspective: 1000px; }
@@ -401,7 +404,11 @@
             <div><label data-i18n="attach_image">إرفاق صورة</label><input type="file" id="supportImage" accept="image/*"><div id="supportImagePreview" class="support-preview"></div></div>
             <button type="submit" class="btn-primary" data-i18n="send">إرسال</button>
         </form>
-        <div id="supportReplies" class="support-reply">
+        <div id="supportTickets" class="support-reply">
+            <h4><i class="fas fa-ticket-alt"></i> تذاكر الدعم</h4>
+            <div id="ticketsList">جار التحميل...</div>
+        </div>
+        <div id="supportReplies" class="support-reply" style="margin-top:15px;">
             <h4><i class="fas fa-reply-all"></i> ردود الدعم</h4>
             <div id="repliesList">جار التحميل...</div>
         </div>
@@ -428,7 +435,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
     
     const firebaseConfig = {
@@ -446,28 +453,47 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ============ بوت التليجرام ============
+    // ============ بوت التليجرام مع أزرار تفاعلية ============
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const TELEGRAM_CHAT_ID = "8562687782";
     
-    async function sendToTelegram(userId, userName, issueType, message, imageUrl = null, ticketId) {
+    async function sendToTelegram(userId, userName, userEmail, userPhone, issueType, message, imageUrl = null, ticketId) {
         try {
-            const text = `📢 **شكوى جديدة من سوق الحسابات**\n\n👤 المستخدم: ${userName}\n🆔 ID: ${userId}\n📋 نوع المشكلة: ${issueType}\n📝 المشكلة: ${message}\n\n🆔 رقم التذكرة: ${ticketId}\n\n✏️ **للرد على هذا المستخدم، أرسل:**\n\`/reply_${ticketId} نص الرد\``;
+            const keyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ قراءة", callback_data: `read_${ticketId}` },
+                        { text: "✏️ رد", callback_data: `reply_${ticketId}` }
+                    ]
+                ]
+            };
+            const text = `📢 **شكوى جديدة من سوق الحسابات**\n\n👤 المستخدم: ${userName}\n🆔 ID: ${userId}\n📧 البريد: ${userEmail || 'غير متوفر'}\n📱 الهاتف: ${userPhone || 'غير متوفر'}\n📋 نوع المشكلة: ${issueType}\n📝 المشكلة: ${message}\n\n🆔 رقم التذكرة: ${ticketId}\n\n📌 الحالة: ⏳ جاري الانتظار`;
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, photo: imageUrl, caption: text, parse_mode: "Markdown" })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, photo: imageUrl, caption: text, parse_mode: "Markdown", reply_markup: keyboard })
                 });
             } else {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: "Markdown" })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: "Markdown", reply_markup: keyboard })
                 });
             }
             return true;
         } catch(e) { console.error("Telegram error:", e); return false; }
+    }
+    
+    async function updateTicketStatus(ticketId, status) {
+        const ticketsQuery = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+        const ticketsSnap = await getDocs(ticketsQuery);
+        if (!ticketsSnap.empty) {
+            const ticketDoc = ticketsSnap.docs[0];
+            await updateDoc(doc(db, 'support_tickets', ticketDoc.id), { status: status, readAt: Date.now() });
+            return ticketDoc.data().userId;
+        }
+        return null;
     }
     
     async function sendReplyToUser(userId, replyMessage, ticketId) {
@@ -493,29 +519,75 @@
             if (data.ok && data.result) {
                 for (const update of data.result) {
                     if (update.update_id > lastUpdateId) lastUpdateId = update.update_id;
-                    if (update.message && update.message.text) {
-                        const text = update.message.text;
-                        const replyMatch = text.match(/^\/reply_(\d+)\s+(.+)$/s);
-                        if (replyMatch) {
-                            const ticketId = replyMatch[1];
-                            const replyMessage = replyMatch[2];
-                            const ticketsQuery = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
-                            const ticketsSnap = await getDocs(ticketsQuery);
-                            if (!ticketsSnap.empty()) {
-                                const ticket = ticketsSnap.docs[0].data();
-                                await sendReplyToUser(ticket.userId, replyMessage, ticketId);
-                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: `✅ **تم إرسال الرد إلى المستخدم بنجاح**\n\n📝 الرد: ${replyMessage}\n🆔 التذكرة: ${ticketId}`, parse_mode: "Markdown" })
+                    
+                    // معالجة callback_query من الأزرار
+                    if (update.callback_query) {
+                        const callbackData = update.callback_query.data;
+                        const message = update.callback_query.message;
+                        const chatId = message.chat.id;
+                        
+                        if (callbackData.startsWith('read_')) {
+                            const ticketId = callbackData.replace('read_', '');
+                            const userId = await updateTicketStatus(ticketId, 'read');
+                            if (userId) {
+                                await addDoc(collection(db, 'support_replies'), {
+                                    userId: userId,
+                                    message: "📖 تمت قراءة رسالتك من قبل فريق الدعم",
+                                    replyType: 'system',
+                                    ticketId: ticketId,
+                                    createdAt: Date.now(),
+                                    read: false
                                 });
-                            } else {
-                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: `❌ **لم يتم العثور على تذكرة برقم ${ticketId}**`, parse_mode: "Markdown" })
+                                    body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✅ تم تحديث الحالة إلى مقروءة", show_alert: false })
+                                });
+                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } })
                                 });
                             }
+                        }
+                        else if (callbackData.startsWith('reply_')) {
+                            const ticketId = callbackData.replace('reply_', '');
+                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`, parse_mode: "Markdown" })
+                            });
+                            // تخزين مؤقت لانتظار الرد
+                            pendingReplies[chatId] = ticketId;
+                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✏️ أرسل ردك الآن", show_alert: false })
+                            });
+                        }
+                    }
+                    // معالجة الرسائل النصية (الردود)
+                    else if (update.message && update.message.text && pendingReplies[update.message.chat.id]) {
+                        const ticketId = pendingReplies[update.message.chat.id];
+                        const replyText = update.message.text;
+                        const ticketsQuery = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+                        const ticketsSnap = await getDocs(ticketsQuery);
+                        if (!ticketsSnap.empty()) {
+                            const ticket = ticketsSnap.docs[0].data();
+                            await sendReplyToUser(ticket.userId, replyText, ticketId);
+                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "Markdown" })
+                            });
+                            delete pendingReplies[update.message.chat.id];
+                        } else {
+                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "Markdown" })
+                            });
+                            delete pendingReplies[update.message.chat.id];
                         }
                     }
                 }
@@ -523,7 +595,8 @@
         } catch(e) { console.error("Error checking Telegram replies:", e); }
     }
     
-    setInterval(checkTelegramReplies, 5000);
+    let pendingReplies = {};
+    setInterval(checkTelegramReplies, 3000);
     
     async function uploadToImgBB(file) {
         const fd = new FormData(); fd.append("image", file); fd.append("key", IMGBB_KEY);
@@ -547,7 +620,7 @@
         { name: "العراق", code: "+964" }, { name: "سوريا", code: "+963" }, { name: "لبنان", code: "+961" },
         { name: "فلسطين", code: "+970" }, { name: "ليبيا", code: "+218" }, { name: "تونس", code: "+216" },
         { name: "الجزائر", code: "+213" }, { name: "المغرب", code: "+212" }, { name: "موريتانيا", code: "+222" },
-        { name: "السودان", code: "+249" }, { name: "الصومال", code: "+252" }, { name: "جيبوتी", code: "+253" },
+        { name: "السودان", code: "+249" }, { name: "الصومال", code: "+252" }, { name: "جيبوتي", code: "+253" },
         { name: "جزر القمر", code: "+269" }
     ];
     
@@ -568,6 +641,7 @@
         if(window.currentPage === 'home') loadAccounts();
         else if(window.currentPage === 'profile' && window.currentProfileUserId) refreshProfilePage();
         else if(window.currentPage === 'messages') loadConversations();
+        else if(window.currentPage === 'support') { loadUserTickets(); loadSupportReplies(); }
     }
     
     let currentUser = null;
@@ -589,7 +663,7 @@
         if (pageId === 'home') loadAccounts();
         if (pageId === 'profile' && currentProfileUserId) refreshProfilePage();
         if (pageId === 'messages') loadConversations();
-        if (pageId === 'support') loadSupportReplies();
+        if (pageId === 'support') { loadUserTickets(); loadSupportReplies(); }
     };
     
     document.getElementById('sidebarOverlay').onclick = () => {
@@ -975,7 +1049,7 @@
                 await addDoc(messagesRef, { text: text, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                 await updateDoc(doc(db, 'conversations', convId), { lastMessage: text, lastMessageTime: Date.now() });
                 messageInput.value = ''; playSound();
-                loadConversations(); // تحديث قائمة المحادثات
+                loadConversations();
             }
         };
         
@@ -1067,7 +1141,29 @@
         } catch(e) { console.error(e); }
     }
     
-    // ============ الدعم الفني ============
+    // ============ الدعم الفني مع التذاكر ============
+    async function loadUserTickets() {
+        if (!currentUser) return;
+        const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        const container = document.getElementById('ticketsList');
+        if (snap.empty) { container.innerHTML = 'لا توجد تذاكر دعم'; return; }
+        let html = '';
+        snap.forEach(doc => {
+            const ticket = doc.data();
+            const statusClass = ticket.status === 'read' ? 'status-read' : 'status-pending';
+            const statusText = ticket.status === 'read' ? 'تمت القراءة ✓' : 'جاري الانتظار ⏳';
+            html += `<div class="reply-item">
+                <strong>📌 تذكرة رقم: ${ticket.ticketId}</strong>
+                <span class="ticket-status ${statusClass}">${statusText}</span><br>
+                <small>${new Date(ticket.createdAt).toLocaleString()}</small><br>
+                📝 ${ticket.issueType}<br>
+                📄 ${ticket.message.substring(0, 100)}${ticket.message.length > 100 ? '...' : ''}
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
     async function loadSupportReplies() {
         if (!currentUser) return;
         const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
@@ -1078,7 +1174,8 @@
         snap.forEach(doc => {
             const reply = doc.data();
             const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
-            html += `<div class="reply-item ${replyClass}"><strong>${reply.replyType === 'admin' ? '📌 إدارة الموقع' : '📝 ردك'}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
+            const icon = reply.replyType === 'admin' ? '📌' : (reply.replyType === 'system' ? '⚙️' : '📝');
+            html += `<div class="reply-item ${replyClass}"><strong>${icon} ${reply.replyType === 'admin' ? 'إدارة الموقع' : (reply.replyType === 'system' ? 'النظام' : 'ردك')}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
         });
         container.innerHTML = html;
     }
@@ -1270,20 +1367,31 @@
         let imageUrl = '';
         if (imageFile) { imageUrl = await uploadToImgBB(imageFile); }
         const ticketId = Date.now().toString();
+        
+        // جلب بيانات المستخدم
+        const userRef = doc(db, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data() || {};
+        const userEmail = currentUser.email || '';
+        const userPhone = userData.phone || '';
+        
         await addDoc(collection(db, 'support_tickets'), { 
-            userId: currentUser?.uid, 
-            userName: currentUser?.displayName || currentUser?.email,
+            userId: currentUser.uid, 
+            userName: currentUser.displayName || currentUser.email,
+            userEmail: userEmail,
+            userPhone: userPhone,
             issueType, 
             message, 
             imageUrl, 
             ticketId,
             createdAt: Date.now(), 
-            status: 'open' 
+            status: 'pending'
         });
-        await sendToTelegram(currentUser?.uid, currentUser?.displayName || currentUser?.email, issueType, message, imageUrl, ticketId);
+        await sendToTelegram(currentUser.uid, currentUser.displayName || currentUser.email, userEmail, userPhone, issueType, message, imageUrl, ticketId);
         alert("تم إرسال طلب الدعم بنجاح، سيتم الرد عليك قريباً");
         document.getElementById('supportForm').reset();
         document.getElementById('supportImagePreview').innerHTML = '';
+        loadUserTickets();
     });
     document.getElementById('supportImage')?.addEventListener('change', (e) => { const preview = document.getElementById('supportImagePreview'); preview.innerHTML = ''; const file = e.target.files[0]; if (file) { const img = document.createElement('img'); img.src = URL.createObjectURL(file); preview.appendChild(img); } });
     
