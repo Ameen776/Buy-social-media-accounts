@@ -254,6 +254,7 @@
         .support-reply h4 { color: var(--accent); margin-bottom: 10px; }
         .reply-item { padding: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
         .reply-item:last-child { border-bottom: none; }
+        .reply-admin { background: rgba(0,212,255,0.1); border-radius: 10px; padding: 8px; margin: 5px 0; }
         
         /* صفحة عن التطبيق */
         .about-3d { text-align: center; perspective: 1000px; }
@@ -272,7 +273,6 @@
         
         @media (max-width: 640px) { .accounts-grid { grid-template-columns: 1fr; } }
         
-        /* إغلاق القائمة الجانبية بالنقر في أي مكان */
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .sidebar-overlay.active { display: block; }
     </style>
@@ -288,7 +288,6 @@
 </div>
 
 <div id="app" style="display:none;">
-    <!-- طبقة التعتيم لإغلاق القائمة الجانبية -->
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     
     <div class="sidebar" id="sidebar">
@@ -318,7 +317,7 @@
     </div>
 
     <div class="search-modal" id="searchModal">
-        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID...">
+        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID (10 أرقام)...">
         <div id="searchResults" class="search-results" style="display: none;"></div>
     </div>
     
@@ -388,7 +387,7 @@
         </form>
         <div id="supportReplies" class="support-reply">
             <h4><i class="fas fa-reply-all"></i> ردود الدعم</h4>
-            <div id="repliesList">لا توجد ردود حتى الآن</div>
+            <div id="repliesList">جار التحميل...</div>
         </div>
     </div>
     
@@ -435,9 +434,12 @@
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const TELEGRAM_CHAT_ID = "8562687782";
     
-    async function sendToTelegram(message, imageUrl = null) {
+    // دالة لاستقبال الردود من التليجرام عبر webhook (سيتم استدعاؤها من سكريبت منفصل)
+    // هنا نقوم بإنشاء مستمع لردود الدعم من Firestore
+    
+    async function sendToTelegram(userId, userName, issueType, message, imageUrl = null, ticketId) {
         try {
-            let text = `📢 **شكوى جديدة من سوق الحسابات**\n\n${message}`;
+            const text = `📢 **شكوى جديدة من سوق الحسابات**\n\n👤 المستخدم: ${userName}\n🆔 ID: ${userId}\n📋 نوع المشكلة: ${issueType}\n📝 المشكلة: ${message}\n\n🆔 رقم التذكرة: ${ticketId}`;
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
                     method: "POST",
@@ -455,6 +457,21 @@
         } catch(e) { console.error("Telegram error:", e); return false; }
     }
     
+    // دالة لإرسال رد من المسؤول إلى المستخدم
+    async function sendReplyToUser(userId, replyMessage, adminName = "الإدارة") {
+        try {
+            await addDoc(collection(db, 'support_replies'), {
+                userId: userId,
+                message: replyMessage,
+                replyType: 'admin',
+                adminName: adminName,
+                createdAt: Date.now(),
+                read: false
+            });
+            return true;
+        } catch(e) { console.error("Error sending reply:", e); return false; }
+    }
+    
     async function uploadToImgBB(file) {
         const fd = new FormData(); fd.append("image", file); fd.append("key", IMGBB_KEY);
         const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: fd });
@@ -463,7 +480,7 @@
         return data.data.url;
     }
     
-    // ============ قائمة الدول العربية للهاتف والتسجيل ============
+    // ============ قائمة الدول العربية ============
     const arabCountries = [
         { name: "السعودية", code: "+966" }, { name: "مصر", code: "+20" }, { name: "الإمارات", code: "+971" },
         { name: "الأردن", code: "+962" }, { name: "الكويت", code: "+965" }, { name: "عمان", code: "+968" },
@@ -517,7 +534,6 @@
         if (pageId === 'support') loadSupportReplies();
     };
     
-    // إغلاق القائمة الجانبية بالنقر في أي مكان
     document.getElementById('sidebarOverlay').onclick = () => {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('active');
@@ -776,6 +792,7 @@
             const txt = inputField.value.trim();
             if(txt) {
                 await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
+                await updateDoc(doc(db, 'conversations', convId), { lastMessage: txt, lastMessageTime: Date.now() });
                 inputField.value = '';
                 playSound();
             }
@@ -789,8 +806,9 @@
                     try {
                         const imageUrl = await uploadToImgBB(file);
                         await addDoc(collection(db, 'conversations', convId, 'messages'), { imageUrl: imageUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                        await updateDoc(doc(db, 'conversations', convId), { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
                         playSound();
-                    } catch(e) { alert("خطأ في رفع الصورة"); }
+                    } catch(e) { alert("خطأ في رفع الصورة: " + e.message); }
                 }
             }; input.click();
         };
@@ -808,16 +826,17 @@
                         try {
                             const audioUrl = await uploadToStorage(audioBlob, `chat_audio/${convId}`);
                             await addDoc(collection(db, 'conversations', convId, 'messages'), { audioUrl: audioUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                            await updateDoc(doc(db, 'conversations', convId), { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
                             playSound();
-                        } catch(e) { alert("خطأ في رفع الصوت"); }
+                        } catch(e) { alert("خطأ في رفع الصوت: " + e.message); }
                         stream.getTracks().forEach(t => t.stop());
                         modal.querySelector('#modalVoiceBtn').innerHTML = '<i class="fas fa-microphone"></i>';
                         modalIsRecording = false;
                     };
                     modalRecorder.start(); modalIsRecording = true;
-                    modal.querySelector('#modalVoiceBtn').innerHTML = '<span style="background:#ff4444; padding:5px 10px; border-radius:20px; font-size:12px;">تسجيل...</span>';
+                    modal.querySelector('#modalVoiceBtn').innerHTML = '<span class="recording-indicator"><span class="pulse"></span> تسجيل...</span>';
                     setTimeout(() => { if (modalRecorder && modalIsRecording) modalRecorder.stop(); }, 30000);
-                } catch(e) { alert("لا يمكن الوصول إلى الميكروفون"); }
+                } catch(e) { alert("لا يمكن الوصول إلى الميكروفون: " + e.message); }
             } else { if (modalRecorder && modalIsRecording) modalRecorder.stop(); }
         };
         
@@ -988,7 +1007,7 @@
         } catch(e) { console.error(e); }
     }
     
-    // ============ الدعم الفني مع التليجرام ============
+    // ============ الدعم الفني مع الردود ============
     async function loadSupportReplies() {
         if (!currentUser) return;
         const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
@@ -998,11 +1017,13 @@
         let html = '';
         snap.forEach(doc => {
             const reply = doc.data();
-            html += `<div class="reply-item"><strong>${reply.replyType === 'admin' ? '📌 إدارة الموقع' : '📝 ردك'}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
+            const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
+            html += `<div class="reply-item ${replyClass}"><strong>${reply.replyType === 'admin' ? '📌 إدارة الموقع' : '📝 ردك'}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
         });
         container.innerHTML = html;
     }
     
+    // ============ إضافة حساب ============
     window.showAddModal = function() {
         let imageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -1189,9 +1210,18 @@
         const imageFile = document.getElementById('supportImage').files[0];
         let imageUrl = '';
         if (imageFile) { imageUrl = await uploadToImgBB(imageFile); }
-        const userInfo = `👤 المستخدم: ${currentUser?.email || currentUser?.uid}\n📋 نوع المشكلة: ${issueType}\n📝 المشكلة: ${message}`;
-        await sendToTelegram(userInfo, imageUrl);
-        await addDoc(collection(db, 'support_tickets'), { userId: currentUser?.uid, issueType, message, imageUrl, createdAt: Date.now(), status: 'open' });
+        const ticketId = Date.now().toString();
+        await addDoc(collection(db, 'support_tickets'), { 
+            userId: currentUser?.uid, 
+            userName: currentUser?.displayName || currentUser?.email,
+            issueType, 
+            message, 
+            imageUrl, 
+            ticketId,
+            createdAt: Date.now(), 
+            status: 'open' 
+        });
+        await sendToTelegram(currentUser?.uid, currentUser?.displayName || currentUser?.email, issueType, message, imageUrl, ticketId);
         alert("تم إرسال طلب الدعم بنجاح، سيتم الرد عليك قريباً");
         document.getElementById('supportForm').reset();
         document.getElementById('supportImagePreview').innerHTML = '';
