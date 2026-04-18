@@ -434,11 +434,10 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // تكوين تيليجرام
+    // ---------- تيليجرام ----------
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     let lastUpdateId = 0;
-    const pendingReplies = new Map();
     const processedCallbacks = new Set();
     
     function generateTicketId() {
@@ -491,7 +490,6 @@ ${message}`;
                 read: false
             });
             
-            // تحديث حالة التذكرة
             const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
             const snap = await getDocs(q);
             if (!snap.empty) {
@@ -520,15 +518,13 @@ ${message}`;
                         
                         if (callbackData.startsWith('reply_')) {
                             const ticketId = callbackData.replace('reply_', '');
-                            pendingReplies.set(chatId, ticketId);
                             
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ 
                                     chat_id: chatId, 
-                                    text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`,
-                                    parse_mode: "HTML",
+                                    text: `✏️ أرسل الرد على التذكرة ${ticketId} (رد على هذه الرسالة)`,
                                     reply_markup: { force_reply: true, selective: true }
                                 })
                             });
@@ -536,7 +532,7 @@ ${message}`;
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: callbackId, text: "✏️ أرسل ردك الآن" })
+                                body: JSON.stringify({ callback_query_id: callbackId })
                             });
                             
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
@@ -547,13 +543,11 @@ ${message}`;
                         }
                     }
                     else if (update.message && update.message.text && update.message.reply_to_message) {
-                        const chatId = update.message.chat.id;
-                        const replyText = update.message.text;
                         const repliedText = update.message.reply_to_message.text || '';
                         const ticketMatch = repliedText.match(/التذكرة\s*(\d+)/);
-                        
                         if (ticketMatch) {
                             const ticketId = ticketMatch[1];
+                            const replyText = update.message.text;
                             
                             const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
                             const snap = await getDocs(q);
@@ -565,19 +559,17 @@ ${message}`;
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ 
-                                        chat_id: chatId, 
-                                        text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`,
-                                        parse_mode: "HTML"
+                                        chat_id: update.message.chat.id, 
+                                        text: `✅ تم إرسال الرد إلى المستخدم.\n\n📝 الرد: ${replyText}`
                                     })
                                 });
                             } else {
                                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ chat_id: chatId, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}` })
+                                    body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}` })
                                 });
                             }
-                            pendingReplies.delete(chatId);
                         }
                     }
                 }
@@ -795,7 +787,7 @@ ${message}`;
             <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
             <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
             <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
-            <label>${t('images')} (اختر صور جديدة لإضافتها، الحد الأقصى 3 صور)</label>
+            <label>${t('images')} (اختر صور جديدة، الحد الأقصى 3)</label>
             <input type="file" id="editImages" accept="image/*" multiple>
             <div id="editImagePreview" class="image-preview">
                 ${currentImages.map((img, i) => `
@@ -843,13 +835,11 @@ ${message}`;
             try {
                 let finalImages = [...currentImages];
                 
-                // رفع الصور الجديدة
                 for (const file of newImageFiles) {
                     const url = await uploadToImgBB(file);
                     finalImages.push(url);
                 }
                 
-                // التأكد من عدم تجاوز 3 صور
                 if (finalImages.length > 3) finalImages = finalImages.slice(0, 3);
                 
                 await updateDoc(doc(db, 'accounts', accountId), {
@@ -931,7 +921,6 @@ ${message}`;
         const convId = [currentUser.uid, sellerId].sort().join('_');
         const convRef = doc(db, 'conversations', convId);
         
-        // التأكد من وجود المحادثة
         if (!(await getDoc(convRef)).exists()) {
             await setDoc(convRef, { 
                 participants: [currentUser.uid, sellerId], 
@@ -1032,12 +1021,18 @@ ${message}`;
     async function loadConversations() {
         if (!currentUser) return;
         const container = document.getElementById('convList');
-        container.innerHTML = '<div>جار التحميل...</div>';
         
-        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid), orderBy('lastMessageTime', 'desc'));
+        const q = query(collection(db, 'conversations'), 
+            where('participants', 'array-contains', currentUser.uid),
+            orderBy('lastMessageTime', 'desc')
+        );
         
         onSnapshot(q, async (snap) => {
-            if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
+            if (snap.empty) {
+                container.innerHTML = '<div class="card" style="text-align:center; padding:20px;">لا توجد محادثات بعد</div>';
+                return;
+            }
+            
             let totalUnread = 0;
             let html = '';
             
@@ -1050,8 +1045,10 @@ ${message}`;
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
                 const avatar = userSnap.exists() ? userSnap.data().avatar : null;
                 
-                // حساب الرسائل غير المقروءة
-                const unreadQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), where('read', '==', false), where('senderId', '!=', currentUser.uid));
+                const unreadQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), 
+                    where('read', '==', false), 
+                    where('senderId', '!=', currentUser.uid)
+                );
                 const unreadSnap = await getDocs(unreadQuery);
                 const unreadCount = unreadSnap.size;
                 totalUnread += unreadCount;
@@ -1089,7 +1086,6 @@ ${message}`;
         
         const messagesRef = collection(db, 'conversations', convId, 'messages');
         
-        // تحديث حالة القراءة
         const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
         const unreadSnap = await getDocs(unreadQuery);
         for (const msg of unreadSnap.docs) { 
@@ -1217,8 +1213,6 @@ ${message}`;
     async function loadUserTickets() {
         if (!currentUser) return;
         const container = document.getElementById('ticketsList');
-        container.innerHTML = 'جار التحميل...';
-        
         try {
             const userData = (await getDoc(doc(db, 'users', currentUser.uid))).data() || {};
             const userAvatar = userData.avatar || 'https://via.placeholder.com/40';
@@ -1227,7 +1221,10 @@ ${message}`;
             const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
             
-            if (snap.empty) { container.innerHTML = 'لا توجد تذاكر دعم'; return; }
+            if (snap.empty) {
+                container.innerHTML = '<div class="card" style="padding:15px; text-align:center;">لا توجد تذاكر دعم</div>';
+                return;
+            }
             
             let html = '';
             snap.forEach(doc => {
@@ -1248,19 +1245,23 @@ ${message}`;
                 </div>`;
             });
             container.innerHTML = html;
-        } catch(e) { container.innerHTML = 'خطأ في تحميل التذاكر'; console.error(e); }
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = '<div class="card" style="padding:15px; text-align:center; color:red;">خطأ في تحميل التذاكر</div>';
+        }
     }
     
     async function loadSupportReplies() {
         if (!currentUser) return;
         const container = document.getElementById('repliesList');
-        container.innerHTML = 'جار التحميل...';
-        
         try {
             const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
             
-            if (snap.empty) { container.innerHTML = 'لا توجد ردود حتى الآن'; return; }
+            if (snap.empty) {
+                container.innerHTML = '<div class="card" style="padding:15px; text-align:center;">لا توجد ردود حتى الآن</div>';
+                return;
+            }
             
             let html = '';
             for (const docSnap of snap.docs) {
@@ -1278,7 +1279,10 @@ ${message}`;
                 </div>`;
             }
             container.innerHTML = html;
-        } catch(e) { container.innerHTML = 'خطأ في تحميل الردود'; console.error(e); }
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = '<div class="card" style="padding:15px; text-align:center; color:red;">خطأ في تحميل الردود</div>';
+        }
     }
     
     window.showAddModal = function() {
@@ -1512,7 +1516,6 @@ ${message}`;
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
     
-    // تهيئة الأحداث
     document.getElementById('menuBtn').onclick = () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
