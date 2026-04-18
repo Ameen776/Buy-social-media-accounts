@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- أيقونات الموقع -->
+    <!-- أيقونة الموقع -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="apple-touch-icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="shortcut icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -57,7 +57,6 @@
         }
         body{background:var(--bg-body);color:var(--text-primary);transition:0.3s;padding-bottom:70px;}
         
-        /* شاشة البداية */
         .splash-screen {
             position: fixed; inset: 0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e, #0f0f1f);
             display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -82,7 +81,6 @@
         .splash-text { color: var(--accent); font-size: 1.2rem; letter-spacing: 2px; animation: blink 1.5s infinite; }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        /* الهيدر */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-header); position: sticky; top: 0; z-index: 99; backdrop-filter: blur(10px); }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .profile-icon { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; transition: 0.2s; }
@@ -94,7 +92,6 @@
         .menu-btn { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; transition: 0.2s; }
         .menu-btn:hover { color: var(--accent); }
         
-        /* شريط البحث */
         .search-modal {
             position: fixed; top: 0; left: 0; right: 0; background: var(--bg-card);
             padding: 15px; z-index: 1001; border-bottom: 1px solid var(--border-color);
@@ -110,7 +107,6 @@
         .search-result-name { font-weight: bold; }
         .search-result-id { font-size: 0.7rem; color: var(--text-secondary); }
         
-        /* القائمة الجانبية */
         .sidebar {
             position: fixed; top: 0; right: -280px; width: 280px; height: 100%;
             background: var(--sidebar-bg); transition: 0.3s; padding: 20px;
@@ -126,19 +122,16 @@
         }
         .sidebar button:hover { background: var(--accent); color: #111; border-color: var(--accent); }
         
-        /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-header); display: flex; justify-content: space-around; padding: 12px; z-index: 100; border-top: 1px solid var(--border-color); backdrop-filter: blur(10px); }
-        .bottom-nav button { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
+        .bottom-nav button { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; position: relative; }
         .bottom-nav button i { font-size: 22px; }
         .bottom-nav button.active { color: var(--accent); }
         .bottom-nav button:hover { color: var(--accent); }
         .notification-badge { position: absolute; top: -5px; right: -10px; background: #ff4444; color: #fff; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
         
-        /* الصفحات */
         .page { display: none; padding: 15px; }
         .active-page { display: block; }
         
-        /* شبكة الحسابات */
         .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .card { background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid var(--border-color); transition: 0.2s; }
         .card:hover { transform: translateY(-3px); border-color: var(--accent); }
@@ -147,7 +140,6 @@
         .profile-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent); transition: 0.2s; }
         .profile-thumb:hover { transform: scale(1.05); }
         
-        /* أزرار */
         .btn-primary { background: var(--accent); border: none; padding: 8px 16px; border-radius: 25px; color: #111; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.2s; }
         .btn-primary:hover { transform: scale(1.02); opacity: 0.9; }
         .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 7px 15px; border-radius: 25px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
@@ -158,7 +150,6 @@
         .btn-follow-green:hover { transform: scale(1.02); opacity: 0.9; }
         .btn-follow-green.unfollow { background: #555; }
         
-        /* الملف الشخصي */
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px; display: block; border: 2px solid var(--accent); object-fit: cover; transition: 0.2s; }
         .own-profile-avatar { cursor: pointer; }
         .own-profile-avatar:hover { transform: scale(1.05); border-color: #fff; }
@@ -174,22 +165,18 @@
         .settings-icon.hidden { display: none; }
         .profile-header { position: relative; }
         
-        /* منشورات المستخدم */
         .my-accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
         .my-account-card { background: var(--bg-card); padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); transition: 0.2s; }
         .my-account-card:hover { transform: translateY(-2px); border-color: var(--accent); }
         
-        /* نماذج */
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); transition: 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(0,212,255,0.3); }
         .filter-row { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 8px; border-radius: 20px; }
         
-        /* مودال */
         .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .modal-content { background: var(--bg-card); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
         
-        /* تفاصيل الحساب */
         .details-modal { max-width: 550px; width: 90%; background: var(--bg-card); border-radius: 24px; perspective: 1000px; }
         .details-inner { background: linear-gradient(145deg, var(--bg-card), var(--bg-body)); border-radius: 24px; padding: 20px; transform-style: preserve-3d; transform: rotateX(2deg); transition: 0.3s; }
         .details-inner:hover { transform: rotateX(0deg) scale(1.01); }
@@ -211,7 +198,6 @@
         .details-images img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 2px solid var(--border-color); transition: 0.2s; }
         .details-images img:hover { transform: scale(1.05); border-color: var(--accent); }
         
-        /* الدردشات */
         .chat-container { display: flex; flex-direction: column; gap: 10px; }
         .conversation-item { padding: 15px; border-radius: 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; position: relative; background: var(--bg-card); border: 1px solid var(--border-color); }
         .conversation-item:hover { transform: translateX(-5px); background: var(--border-color); }
@@ -241,7 +227,6 @@
         .recording-indicator .pulse { width: 10px; height: 10px; background: white; border-radius: 50%; animation: pulseRed 1s infinite; }
         @keyframes pulseRed { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
         
-        /* المصادقة */
         .auth-container { position: fixed; inset: 0; background: var(--auth-bg); display: flex; align-items: center; justify-content: center; z-index: 10001; }
         .auth-card { background: rgba(30, 30, 46, 0.95); backdrop-filter: blur(20px); border-radius: 30px; padding: 30px; width: 90%; max-width: 400px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         .password-wrapper { position: relative; }
@@ -254,19 +239,22 @@
         .auth-switch { margin-top: 15px; color: var(--accent); cursor: pointer; }
         .forgot-password { font-size: 0.8rem; color: var(--accent); cursor: pointer; text-align: left; margin-top: 5px; }
         
-        /* الدعم الفني */
         .support-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .support-preview img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
         .support-reply { margin-top: 20px; padding: 15px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); }
         .support-reply h4 { color: var(--accent); margin-bottom: 10px; }
-        .reply-item { padding: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
+        .reply-item { padding: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; display: flex; align-items: flex-start; gap: 10px; }
         .reply-item:last-child { border-bottom: none; }
+        .reply-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .reply-content { flex: 1; }
         .reply-admin { background: rgba(0,212,255,0.1); border-radius: 10px; padding: 8px; margin: 5px 0; }
+        .ticket-item { padding: 12px; border-bottom: 1px solid var(--border-color); display: flex; align-items: flex-start; gap: 10px; }
+        .ticket-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .ticket-content { flex: 1; }
         .ticket-status { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 8px; }
         .status-pending { background: #ff9800; color: #fff; }
         .status-read { background: #4caf50; color: #fff; }
         
-        /* عن التطبيق */
         .about-3d { text-align: center; perspective: 1000px; }
         .about-card-3d { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(0,212,255,0.2)); backdrop-filter: blur(10px); border-radius: 40px; padding: 40px 20px; transform-style: preserve-3d; transform: rotateY(5deg) rotateX(5deg); transition: 0.4s; border: 1px solid rgba(0,212,255,0.3); }
         .about-card-3d:hover { transform: rotateY(0deg) rotateX(0deg) scale(1.02); }
@@ -280,6 +268,8 @@
         .price-currency-row select { width: auto; flex: 1; }
         .image-preview { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
         .image-preview img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .image-preview-item { position: relative; }
+        .image-preview-item .remove-image { position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
         
         @media (max-width: 640px) { .accounts-grid { grid-template-columns: 1fr; } }
         
@@ -327,7 +317,7 @@
     </div>
 
     <div class="search-modal" id="searchModal">
-        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID (10 أرقام)...">
+        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID...">
         <div id="searchResults" class="search-results" style="display: none;"></div>
     </div>
     
@@ -397,11 +387,11 @@
         </form>
         <div id="supportTickets" class="support-reply">
             <h4><i class="fas fa-ticket-alt"></i> تذاكر الدعم</h4>
-            <div id="ticketsList">جار التحميل...</div>
+            <div id="ticketsList">لا توجد تذاكر</div>
         </div>
         <div id="supportReplies" class="support-reply" style="margin-top:15px;">
             <h4><i class="fas fa-reply-all"></i> ردود الدعم</h4>
-            <div id="repliesList">جار التحميل...</div>
+            <div id="repliesList">لا توجد ردود</div>
         </div>
     </div>
     
@@ -419,12 +409,11 @@
     <div class="bottom-nav">
         <button onclick="window.showPage('home')"><i class="fas fa-home"></i><span data-i18n="home">الرئيسية</span></button>
         <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i><span data-i18n="publish">نشر</span></button>
-        <button onclick="window.showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span data-i18n="chats">الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
+        <button onclick="window.showPage('messages')" id="navMessagesBtn" style="position:relative;"><i class="fas fa-comment-dots"></i><span data-i18n="chats">الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
     </div>
 </div>
 
 <script type="module">
-    // ---------- تهيئة Firebase ----------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -445,19 +434,17 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ---------- تكوين تيليجرام (محسّن) ----------
+    // تكوين تيليجرام
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     let lastUpdateId = 0;
-    const pendingReplies = new Map(); // chatId -> ticketId
+    const pendingReplies = new Map();
     const processedCallbacks = new Set();
     
-    // توليد رقم تذكرة 10 أرقام
     function generateTicketId() {
         return Math.floor(1000000000 + Math.random() * 9000000000).toString();
     }
     
-    // إرسال إلى تيليجرام
     async function sendToTelegram(userName, email, phone, issueType, message, imageUrl = null, ticketId) {
         try {
             const caption = `📢 شكوى جديدة
@@ -472,7 +459,7 @@
 ${message}`;
             
             const keyboard = {
-                inline_keyboard: [[{ text: "💬 رد على الشكوى", callback_data: `reply_${ticketId}` }]]
+                inline_keyboard: [[{ text: "💬 الرد على الشكوى", callback_data: `reply_${ticketId}` }]]
             };
             
             if (imageUrl) {
@@ -492,17 +479,6 @@ ${message}`;
         } catch(e) { console.error("Telegram error:", e); return false; }
     }
     
-    async function updateTicketStatus(ticketId, status) {
-        const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-            const docRef = snap.docs[0].ref;
-            await updateDoc(docRef, { status, readAt: Date.now() });
-            return snap.docs[0].data().userId;
-        }
-        return null;
-    }
-    
     async function sendReplyToUser(userId, replyMessage, ticketId) {
         try {
             await addDoc(collection(db, 'support_replies'), {
@@ -514,11 +490,17 @@ ${message}`;
                 createdAt: Date.now(),
                 read: false
             });
+            
+            // تحديث حالة التذكرة
+            const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                await updateDoc(snap.docs[0].ref, { status: 'read', readAt: Date.now() });
+            }
             return true;
         } catch(e) { console.error("Error sending reply:", e); return false; }
     }
     
-    // فحص تحديثات تيليجرام (مع تحسين منع التكرار)
     async function checkTelegramReplies() {
         try {
             const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30`);
@@ -527,7 +509,6 @@ ${message}`;
                 for (const update of data.result) {
                     if (update.update_id > lastUpdateId) lastUpdateId = update.update_id;
                     
-                    // معالجة callback_query
                     if (update.callback_query) {
                         const callbackId = update.callback_query.id;
                         if (processedCallbacks.has(callbackId)) continue;
@@ -540,17 +521,24 @@ ${message}`;
                         if (callbackData.startsWith('reply_')) {
                             const ticketId = callbackData.replace('reply_', '');
                             pendingReplies.set(chatId, ticketId);
+                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`, parse_mode: "HTML" })
+                                body: JSON.stringify({ 
+                                    chat_id: chatId, 
+                                    text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`,
+                                    parse_mode: "HTML",
+                                    reply_markup: { force_reply: true, selective: true }
+                                })
                             });
+                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: callbackId, text: "✏️ أرسل ردك الآن", show_alert: false })
+                                body: JSON.stringify({ callback_query_id: callbackId, text: "✏️ أرسل ردك الآن" })
                             });
-                            // إزالة الأزرار
+                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -558,31 +546,39 @@ ${message}`;
                             });
                         }
                     }
-                    // معالجة الردود النصية
-                    else if (update.message && update.message.text && pendingReplies.has(update.message.chat.id)) {
+                    else if (update.message && update.message.text && update.message.reply_to_message) {
                         const chatId = update.message.chat.id;
-                        const ticketId = pendingReplies.get(chatId);
                         const replyText = update.message.text;
+                        const repliedText = update.message.reply_to_message.text || '';
+                        const ticketMatch = repliedText.match(/التذكرة\s*(\d+)/);
                         
-                        const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
-                        const snap = await getDocs(q);
-                        if (!snap.empty) {
-                            const ticket = snap.docs[0].data();
-                            await sendReplyToUser(ticket.userId, replyText, ticketId);
-                            await updateTicketStatus(ticketId, 'read');
-                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: chatId, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "HTML" })
-                            });
-                        } else {
-                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: chatId, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "HTML" })
-                            });
+                        if (ticketMatch) {
+                            const ticketId = ticketMatch[1];
+                            
+                            const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+                            const snap = await getDocs(q);
+                            if (!snap.empty) {
+                                const ticket = snap.docs[0].data();
+                                await sendReplyToUser(ticket.userId, replyText, ticketId);
+                                
+                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ 
+                                        chat_id: chatId, 
+                                        text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`,
+                                        parse_mode: "HTML"
+                                    })
+                                });
+                            } else {
+                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ chat_id: chatId, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}` })
+                                });
+                            }
+                            pendingReplies.delete(chatId);
                         }
-                        pendingReplies.delete(chatId);
                     }
                 }
             }
@@ -591,7 +587,6 @@ ${message}`;
     
     setInterval(checkTelegramReplies, 3000);
     
-    // رفع الصور إلى ImgBB
     async function uploadToImgBB(file) {
         const fd = new FormData(); fd.append("image", file); fd.append("key", IMGBB_KEY);
         const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: fd });
@@ -606,7 +601,6 @@ ${message}`;
         return await getDownloadURL(storageRef);
     }
     
-    // قائمة الدول العربية
     const arabCountries = [
         { name: "السعودية", code: "+966" }, { name: "مصر", code: "+20" }, { name: "الإمارات", code: "+971" },
         { name: "الأردن", code: "+962" }, { name: "الكويت", code: "+965" }, { name: "عمان", code: "+968" },
@@ -618,7 +612,6 @@ ${message}`;
         { name: "جزر القمر", code: "+269" }
     ];
     
-    // الترجمة
     const translations = {
         ar: { menu: "القائمة", home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", app_name: "سوق الحسابات", available_accounts: "الحسابات المتاحة", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني", issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح", other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", publish: "نشر", chats: "الدردشات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟", reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة" },
         en: { menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About", dark_mode: "Dark Mode", logout: "Logout", app_name: "Accounts Market", available_accounts: "Available Accounts", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support", issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion", other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts", secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", publish: "Publish", chats: "Chats", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?", reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views" },
@@ -735,10 +728,10 @@ ${message}`;
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
                     <p>💰 ${acc.price||0} ${acc.currency||'ريال'} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${acc.id}" data-acc='${JSON.stringify(acc)}'>✏️ ${t('edit')}</button>
+                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${acc.id}" data-acc='${JSON.stringify(acc).replace(/'/g, "&apos;")}'>✏️ ${t('edit')}</button>
                         <button class="delete-btn btn-danger" data-id="${acc.id}">🗑️ ${t('delete')}</button>` : ''}
                         <button onclick="window.openChat('${acc.sellerId}', '${acc.name.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
-                        <button class="details-btn btn-outline" data-id="${acc.id}" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        <button class="details-btn btn-outline" data-id="${acc.id}" data-acc='${JSON.stringify(acc).replace(/'/g, "&apos;")}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
@@ -793,6 +786,8 @@ ${message}`;
     
     async function showEditModal(accountId, acc) {
         const modal = document.createElement('div'); modal.className = 'modal';
+        let currentImages = acc.images || [];
+        
         modal.innerHTML = `<div class="modal-content">
             <h3>✏️ ${t('edit')}</h3>
             <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="${t('name')}">
@@ -800,17 +795,76 @@ ${message}`;
             <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
             <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
             <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
+            <label>${t('images')} (اختر صور جديدة لإضافتها، الحد الأقصى 3 صور)</label>
+            <input type="file" id="editImages" accept="image/*" multiple>
+            <div id="editImagePreview" class="image-preview">
+                ${currentImages.map((img, i) => `
+                    <div class="image-preview-item">
+                        <img src="${img}">
+                        <span class="remove-image" data-index="${i}">×</span>
+                    </div>
+                `).join('')}
+            </div>
             <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">${t('save')}</button><button class="btn-outline" id="cancelEdit">${t('cancel')}</button></div>
         </div>`;
         document.body.appendChild(modal);
-        modal.querySelector('#saveEdit').onclick = async () => {
-            await updateDoc(doc(db, 'accounts', accountId), {
-                name: modal.querySelector('#editName').value, link: modal.querySelector('#editLink').value,
-                followers: parseInt(modal.querySelector('#editFollowers').value), price: parseFloat(modal.querySelector('#editPrice').value),
-                currency: modal.querySelector('#editCurrency').value, description: modal.querySelector('#editDesc').value
-            });
-            alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
+        
+        let newImageFiles = [];
+        const previewDiv = modal.querySelector('#editImagePreview');
+        
+        modal.querySelector('#editImages').onchange = (e) => {
+            newImageFiles = Array.from(e.target.files);
+            if (currentImages.length + newImageFiles.length > 3) {
+                alert("الحد الأقصى للصور هو 3 صور");
+                newImageFiles = newImageFiles.slice(0, 3 - currentImages.length);
+            }
+            for (const file of newImageFiles) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const div = document.createElement('div');
+                    div.className = 'image-preview-item';
+                    div.innerHTML = `<img src="${ev.target.result}"><span class="remove-image new-image">×</span>`;
+                    previewDiv.appendChild(div);
+                    div.querySelector('.remove-image').onclick = () => div.remove();
+                };
+                reader.readAsDataURL(file);
+            }
         };
+        
+        previewDiv.querySelectorAll('.remove-image').forEach(btn => {
+            btn.onclick = () => {
+                const index = parseInt(btn.dataset.index);
+                currentImages.splice(index, 1);
+                btn.parentElement.remove();
+            };
+        });
+        
+        modal.querySelector('#saveEdit').onclick = async () => {
+            try {
+                let finalImages = [...currentImages];
+                
+                // رفع الصور الجديدة
+                for (const file of newImageFiles) {
+                    const url = await uploadToImgBB(file);
+                    finalImages.push(url);
+                }
+                
+                // التأكد من عدم تجاوز 3 صور
+                if (finalImages.length > 3) finalImages = finalImages.slice(0, 3);
+                
+                await updateDoc(doc(db, 'accounts', accountId), {
+                    name: modal.querySelector('#editName').value,
+                    link: modal.querySelector('#editLink').value,
+                    followers: parseInt(modal.querySelector('#editFollowers').value),
+                    price: parseFloat(modal.querySelector('#editPrice').value),
+                    currency: modal.querySelector('#editCurrency').value,
+                    description: modal.querySelector('#editDesc').value,
+                    images: finalImages
+                });
+                alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
+            } catch(err) { alert("خطأ: " + err.message); }
+        };
+        
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
@@ -853,7 +907,7 @@ ${message}`;
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc).replace(/'/g, "&apos;")}'>🔍 ${t('details')}</button>
                         <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
                     </div>
                 </div>`;
@@ -871,14 +925,20 @@ ${message}`;
         showPage('profile');
     };
     
-    // ---------- الشات (محسّن) ----------
     window.openChat = async function(sellerId, sellerName) {
         if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
         if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
         const convId = [currentUser.uid, sellerId].sort().join('_');
         const convRef = doc(db, 'conversations', convId);
+        
+        // التأكد من وجود المحادثة
         if (!(await getDoc(convRef)).exists()) {
-            await setDoc(convRef, { participants: [currentUser.uid, sellerId], createdAt: Date.now() });
+            await setDoc(convRef, { 
+                participants: [currentUser.uid, sellerId], 
+                createdAt: Date.now(),
+                lastMessage: '',
+                lastMessageTime: Date.now()
+            });
         }
         
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -895,7 +955,9 @@ ${message}`;
         
         const messagesDiv = modal.querySelector('#chatArea');
         const inputField = modal.querySelector('#modalChatInput');
-        const q = query(collection(db, 'conversations', convId, 'messages'), orderBy('timestamp'));
+        const messagesRef = collection(db, 'conversations', convId, 'messages');
+        const q = query(messagesRef, orderBy('timestamp'));
+        
         const unsubscribe = onSnapshot(q, (snap) => {
             messagesDiv.innerHTML = '';
             snap.forEach(msgDoc => {
@@ -913,11 +975,10 @@ ${message}`;
         modal.querySelector('#modalSendBtn').onclick = async () => {
             const txt = inputField.value.trim();
             if(txt) {
-                await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
+                await addDoc(messagesRef, { text: txt, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                 await updateDoc(convRef, { lastMessage: txt, lastMessageTime: Date.now() });
                 inputField.value = '';
                 playSound();
-                loadConversations();
             }
         };
         
@@ -928,10 +989,9 @@ ${message}`;
                 if(file) {
                     try {
                         const imageUrl = await uploadToImgBB(file);
-                        await addDoc(collection(db, 'conversations', convId, 'messages'), { imageUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                        await addDoc(messagesRef, { imageUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                         await updateDoc(convRef, { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
                         playSound();
-                        loadConversations();
                     } catch(e) { alert("خطأ في رفع الصورة: " + e.message); }
                 }
             }; input.click();
@@ -949,10 +1009,9 @@ ${message}`;
                         const audioBlob = new Blob(modalChunks, { type: 'audio/webm' });
                         try {
                             const audioUrl = await uploadToStorage(audioBlob, `chat_audio/${convId}`);
-                            await addDoc(collection(db, 'conversations', convId, 'messages'), { audioUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                            await addDoc(messagesRef, { audioUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                             await updateDoc(convRef, { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
                             playSound();
-                            loadConversations();
                         } catch(e) { alert("خطأ في رفع الصوت: " + e.message); }
                         stream.getTracks().forEach(t => t.stop());
                         modal.querySelector('#modalVoiceBtn').innerHTML = '<i class="fas fa-microphone"></i>';
@@ -972,33 +1031,51 @@ ${message}`;
     
     async function loadConversations() {
         if (!currentUser) return;
-        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid));
+        const container = document.getElementById('convList');
+        container.innerHTML = '<div>جار التحميل...</div>';
+        
+        const q = query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid), orderBy('lastMessageTime', 'desc'));
+        
         onSnapshot(q, async (snap) => {
-            const container = document.getElementById('convList');
             if (snap.empty) { container.innerHTML = '<div>لا توجد محادثات</div>'; return; }
             let totalUnread = 0;
             let html = '';
+            
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
                 const otherId = conv.participants.find(id => id !== currentUser.uid);
+                if (!otherId) continue;
+                
                 const userSnap = await getDoc(doc(db, 'users', otherId));
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
                 const avatar = userSnap.exists() ? userSnap.data().avatar : null;
+                
+                // حساب الرسائل غير المقروءة
                 const unreadQuery = query(collection(db, 'conversations', docSnap.id, 'messages'), where('read', '==', false), where('senderId', '!=', currentUser.uid));
                 const unreadSnap = await getDocs(unreadQuery);
                 const unreadCount = unreadSnap.size;
                 totalUnread += unreadCount;
-                html += `<div class="conversation-item" data-convid="${docSnap.id}" data-otherid="${otherId}" data-othername="${name}">
+                
+                html += `<div class="conversation-item" data-convid="${docSnap.id}" data-otherid="${otherId}" data-othername="${name.replace(/'/g, "&apos;")}">
                     <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
-                    <div class="conversation-info"><div class="conversation-name">${name}</div><div class="conversation-last-msg">${conv.lastMessage || 'اضغط للدردشة'}</div></div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">${name}</div>
+                        <div class="conversation-last-msg">${conv.lastMessage || 'اضغط للدردشة'}</div>
+                    </div>
                     <div class="conversation-time">${conv.lastMessageTime ? new Date(conv.lastMessageTime).toLocaleTimeString() : ''}</div>
                     ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
                 </div>`;
             }
             container.innerHTML = html;
+            
             const badge = document.getElementById('msgNotification');
-            if (totalUnread > 0) { badge.style.display = 'flex'; badge.innerText = totalUnread > 9 ? '9+' : totalUnread; }
-            else { badge.style.display = 'none'; }
+            if (totalUnread > 0) { 
+                badge.style.display = 'flex'; 
+                badge.innerText = totalUnread > 9 ? '9+' : totalUnread; 
+            } else { 
+                badge.style.display = 'none'; 
+            }
+            
             document.querySelectorAll('.conversation-item').forEach(el => {
                 el.onclick = () => loadConversation(el.dataset.convid, el.dataset.othername);
             });
@@ -1011,9 +1088,13 @@ ${message}`;
         document.getElementById('chatBox').style.display = 'block';
         
         const messagesRef = collection(db, 'conversations', convId, 'messages');
+        
+        // تحديث حالة القراءة
         const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
         const unreadSnap = await getDocs(unreadQuery);
-        for (const msg of unreadSnap.docs) { await updateDoc(doc(db, 'conversations', convId, 'messages', msg.id), { read: true }); }
+        for (const msg of unreadSnap.docs) { 
+            await updateDoc(doc(db, 'conversations', convId, 'messages', msg.id), { read: true }); 
+        }
         
         currentMessagesUnsubscribe = onSnapshot(query(messagesRef, orderBy('timestamp')), (snap) => {
             const div = document.getElementById('chatMessages');
@@ -1042,8 +1123,8 @@ ${message}`;
             if (text) {
                 await addDoc(messagesRef, { text, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                 await updateDoc(doc(db, 'conversations', convId), { lastMessage: text, lastMessageTime: Date.now() });
-                messageInput.value = ''; playSound();
-                loadConversations();
+                messageInput.value = ''; 
+                playSound();
             }
         };
         
@@ -1059,7 +1140,6 @@ ${message}`;
                         await addDoc(messagesRef, { imageUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                         await updateDoc(doc(db, 'conversations', convId), { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
                         playSound();
-                        loadConversations();
                     } catch(e) { alert("خطأ في رفع الصورة: " + e.message); }
                 }
             }; input.click();
@@ -1081,12 +1161,13 @@ ${message}`;
                             await addDoc(messagesRef, { audioUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                             await updateDoc(doc(db, 'conversations', convId), { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
                             playSound();
-                            loadConversations();
                         } catch(e) { alert("خطأ في رفع الصوت: " + e.message); }
                         stream.getTracks().forEach(t => t.stop());
-                        newVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; isRecording = false;
+                        newVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; 
+                        isRecording = false;
                     };
-                    mediaRecorder.start(); isRecording = true;
+                    mediaRecorder.start(); 
+                    isRecording = true;
                     newVoiceBtn.innerHTML = '<span class="recording-indicator"><span class="pulse"></span> تسجيل...</span>';
                     setTimeout(() => { if (mediaRecorder && isRecording) mediaRecorder.stop(); }, 30000);
                 } catch(e) { alert("لا يمكن الوصول إلى الميكروفون: " + e.message); }
@@ -1097,11 +1178,9 @@ ${message}`;
             if (currentMessagesUnsubscribe) { currentMessagesUnsubscribe(); currentMessagesUnsubscribe = null; }
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
-            loadConversations();
         };
     }
     
-    // البحث عن المستخدمين
     async function searchUsers(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) { document.getElementById('searchResults').style.display = 'none'; return; }
         try {
@@ -1135,71 +1214,148 @@ ${message}`;
         } catch(e) { console.error(e); }
     }
     
-    // الدعم الفني مع تذاكر (محسّن)
     async function loadUserTickets() {
         if (!currentUser) return;
-        const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
         const container = document.getElementById('ticketsList');
-        if (snap.empty) { container.innerHTML = 'لا توجد تذاكر دعم'; return; }
-        let html = '';
-        snap.forEach(doc => {
-            const ticket = doc.data();
-            const statusClass = ticket.status === 'read' ? 'status-read' : 'status-pending';
-            const statusText = ticket.status === 'read' ? 'تمت القراءة ✓' : 'جاري الانتظار ⏳';
-            html += `<div class="reply-item">
-                <strong>📌 تذكرة رقم: ${ticket.ticketId}</strong>
-                <span class="ticket-status ${statusClass}">${statusText}</span><br>
-                <small>${new Date(ticket.createdAt).toLocaleString()}</small><br>
-                📝 ${ticket.issueType}<br>
-                📄 ${ticket.message.substring(0, 100)}${ticket.message.length > 100 ? '...' : ''}
-            </div>`;
-        });
-        container.innerHTML = html;
+        container.innerHTML = 'جار التحميل...';
+        
+        try {
+            const userData = (await getDoc(doc(db, 'users', currentUser.uid))).data() || {};
+            const userAvatar = userData.avatar || 'https://via.placeholder.com/40';
+            const userName = userData.name || currentUser.displayName || currentUser.email || 'مستخدم';
+            
+            const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) { container.innerHTML = 'لا توجد تذاكر دعم'; return; }
+            
+            let html = '';
+            snap.forEach(doc => {
+                const ticket = doc.data();
+                const statusClass = ticket.status === 'read' ? 'status-read' : 'status-pending';
+                const statusText = ticket.status === 'read' ? 'تمت القراءة ✓' : 'جاري الانتظار ⏳';
+                
+                html += `<div class="ticket-item">
+                    <img class="ticket-avatar" src="${userAvatar}">
+                    <div class="ticket-content">
+                        <strong>${userName}</strong> - تذكرة رقم: ${ticket.ticketId}
+                        <span class="ticket-status ${statusClass}">${statusText}</span><br>
+                        <small>${new Date(ticket.createdAt).toLocaleString()}</small><br>
+                        📝 ${ticket.issueType}<br>
+                        📄 ${ticket.message.substring(0, 100)}${ticket.message.length > 100 ? '...' : ''}
+                        ${ticket.imageUrl ? '<br>📎 <a href="' + ticket.imageUrl + '" target="_blank" style="color:var(--accent);">عرض الصورة المرفقة</a>' : ''}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } catch(e) { container.innerHTML = 'خطأ في تحميل التذاكر'; console.error(e); }
     }
     
     async function loadSupportReplies() {
         if (!currentUser) return;
-        const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
         const container = document.getElementById('repliesList');
-        if (snap.empty) { container.innerHTML = 'لا توجد ردود حتى الآن'; return; }
-        let html = '';
-        snap.forEach(doc => {
-            const reply = doc.data();
-            const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
-            const icon = reply.replyType === 'admin' ? '📌' : (reply.replyType === 'system' ? '⚙️' : '📝');
-            html += `<div class="reply-item ${replyClass}"><strong>${icon} ${reply.replyType === 'admin' ? 'إدارة الموقع' : (reply.replyType === 'system' ? 'النظام' : 'ردك')}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
-        });
-        container.innerHTML = html;
+        container.innerHTML = 'جار التحميل...';
+        
+        try {
+            const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) { container.innerHTML = 'لا توجد ردود حتى الآن'; return; }
+            
+            let html = '';
+            for (const docSnap of snap.docs) {
+                const reply = docSnap.data();
+                const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
+                const icon = reply.replyType === 'admin' ? '👑' : '📝';
+                
+                html += `<div class="reply-item ${replyClass}">
+                    <div class="reply-avatar" style="background:var(--accent); display:flex; align-items:center; justify-content:center;">${icon}</div>
+                    <div class="reply-content">
+                        <strong>${reply.replyType === 'admin' ? 'إدارة الموقع' : 'الرد'}</strong><br>
+                        ${reply.message}<br>
+                        <small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        } catch(e) { container.innerHTML = 'خطأ في تحميل الردود'; console.error(e); }
     }
     
     window.showAddModal = function() {
         let imageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('add_account')}</h3><form id="addForm"><select id="addPlatform" required><option value="">${t('platform')}</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="${t('name')}" required><input id="addFollowers" placeholder="${t('followers')}" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="${t('price')}" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="${t('link')}" required><textarea id="addDesc" placeholder="${t('description')}"></textarea><label>${t('images')}</label><input type="file" id="addImages" accept="image/*"><div id="preview"></div><button type="submit" class="btn-primary" id="submitPublishBtn">${t('publish')}</button><button type="button" id="cancelAdd" class="btn-outline">${t('cancel')}</button></form></div>`;
+        modal.innerHTML = `<div class="modal-content">
+            <h3>➕ ${t('add_account')}</h3>
+            <form id="addForm">
+                <select id="addPlatform" required><option value="">${t('platform')}</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
+                <input id="addName" placeholder="${t('name')}" required>
+                <input id="addFollowers" placeholder="${t('followers')}" type="number" required>
+                <div class="price-currency-row"><input id="addPrice" placeholder="${t('price')}" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div>
+                <input id="addLink" placeholder="${t('link')}" required>
+                <textarea id="addDesc" placeholder="${t('description')}"></textarea>
+                <label>${t('images')} (اختر حتى 3 صور)</label>
+                <input type="file" id="addImages" accept="image/*" multiple>
+                <div id="preview" class="image-preview"></div>
+                <button type="submit" class="btn-primary" id="submitPublishBtn">${t('publish')}</button>
+                <button type="button" id="cancelAdd" class="btn-outline">${t('cancel')}</button>
+            </form>
+        </div>`;
         document.body.appendChild(modal);
+        
         const preview = modal.querySelector('#preview');
         modal.querySelector('#addImages').onchange = (e) => {
-            const file = e.target.files[0];
-            if(file) { imageFiles = [file]; preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:60px; height:60px; border-radius:8px;">`; }
+            const files = Array.from(e.target.files);
+            if (files.length > 3) {
+                alert("الحد الأقصى للصور هو 3 صور");
+                return;
+            }
+            imageFiles = files;
+            preview.innerHTML = '';
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const div = document.createElement('div');
+                    div.className = 'image-preview-item';
+                    div.innerHTML = `<img src="${ev.target.result}">`;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
         };
+        
         modal.querySelector('#addForm').onsubmit = async (e) => {
             e.preventDefault();
             if(!currentUser) return alert("تسجيل الدخول مطلوب");
             if(imageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
+            if(imageFiles.length > 3) return alert("الحد الأقصى للصور هو 3 صور");
+            
             const btn = modal.querySelector('#submitPublishBtn');
             btn.disabled = true; btn.textContent = "جاري النشر...";
             try {
-                const url = await uploadToImgBB(imageFiles[0]);
+                const imageUrls = [];
+                for (const file of imageFiles) {
+                    const url = await uploadToImgBB(file);
+                    imageUrls.push(url);
+                }
+                
                 await addDoc(collection(db, 'accounts'), {
-                    name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value,
-                    platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value),
-                    price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value,
-                    description: modal.querySelector('#addDesc').value, images: [url], sellerId: currentUser.uid,
-                    views: 0, createdAt: Date.now()
+                    name: modal.querySelector('#addName').value,
+                    link: modal.querySelector('#addLink').value,
+                    platform: modal.querySelector('#addPlatform').value,
+                    followers: parseInt(modal.querySelector('#addFollowers').value),
+                    price: parseFloat(modal.querySelector('#addPrice').value),
+                    currency: modal.querySelector('#addCurrency').value,
+                    description: modal.querySelector('#addDesc').value,
+                    images: imageUrls,
+                    sellerId: currentUser.uid,
+                    views: 0,
+                    createdAt: Date.now()
                 });
-                alert("تم النشر بنجاح"); playSound(); modal.remove(); loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
+                alert("تم النشر بنجاح"); 
+                playSound(); 
+                modal.remove(); 
+                loadAccounts(); 
+                if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
             } catch(err) { alert("خطأ: "+err.message); }
             finally { btn.disabled = false; btn.textContent = t('publish'); }
         };
@@ -1212,11 +1368,14 @@ ${message}`;
         input.onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            const avatarImg = document.getElementById('avatarImg'); const originalSrc = avatarImg.src; avatarImg.style.opacity = '0.5';
+            const avatarImg = document.getElementById('avatarImg'); 
+            const originalSrc = avatarImg.src; 
+            avatarImg.style.opacity = '0.5';
             try {
                 const url = await uploadToImgBB(file);
                 await updateDoc(doc(db, 'users', currentUser.uid), { avatar: url });
-                avatarImg.src = url; alert("تم تحديث الصورة");
+                avatarImg.src = url; 
+                alert("تم تحديث الصورة");
             } catch(err) { alert("خطأ: "+err.message); avatarImg.src = originalSrc; }
             finally { avatarImg.style.opacity = '1'; }
         }; input.click();
@@ -1246,17 +1405,20 @@ ${message}`;
         });
         modal.querySelector('#saveSettings').onclick = async () => {
             await updateDoc(userRef, {
-                name: modal.querySelector('#setName').value, email: modal.querySelector('#setEmail').value,
+                name: modal.querySelector('#setName').value, 
+                email: modal.querySelector('#setEmail').value,
                 phone: modal.querySelector('#setPhoneCode').value + ' ' + modal.querySelector('#setPhone').value,
-                city: modal.querySelector('#setCity').value, country: modal.querySelector('#setCountry').value,
+                city: modal.querySelector('#setCity').value, 
+                country: modal.querySelector('#setCountry').value,
                 zip: modal.querySelector('#setZip').value
             });
-            alert(t('updated')); modal.remove(); refreshProfilePage();
+            alert(t('updated')); 
+            modal.remove(); 
+            refreshProfilePage();
         };
         modal.querySelector('#closeSettings').onclick = () => modal.remove();
     }
     
-    // المصادقة
     let authContainer = null;
     function generateStrongPassword() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
@@ -1278,7 +1440,11 @@ ${message}`;
             });
         });
         document.getElementById('doLogin').onclick = async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); playSound(); }
+            try { 
+                await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); 
+                authContainer.remove(); 
+                playSound(); 
+            }
             catch(e) { document.getElementById('loginError').innerText = e.message.includes('auth/wrong-password') ? 'كلمة مرور خاطئة' : 'خطأ في البريد أو كلمة المرور'; }
         };
         document.getElementById('googleLoginBtn').onclick = async () => {
@@ -1286,8 +1452,19 @@ ${message}`;
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
                 const userRef = doc(db, 'users', user.uid);
-                if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { userIdRandom: Math.floor(1e9 + Math.random() * 9e9), email: user.email, name: user.displayName || 'مستخدم Google', country: '', createdAt: Date.now(), followers: [], following: [] }); }
-                authContainer.remove(); playSound();
+                if (!(await getDoc(userRef)).exists()) { 
+                    await setDoc(userRef, { 
+                        userIdRandom: Math.floor(1e9 + Math.random() * 9e9), 
+                        email: user.email, 
+                        name: user.displayName || 'مستخدم Google', 
+                        country: '', 
+                        createdAt: Date.now(), 
+                        followers: [], 
+                        following: [] 
+                    }); 
+                }
+                authContainer.remove(); 
+                playSound();
             } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
         document.getElementById('forgotPasswordBtn').onclick = async () => {
@@ -1335,23 +1512,38 @@ ${message}`;
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
     
-    // الأحداث العامة
+    // تهيئة الأحداث
     document.getElementById('menuBtn').onclick = () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
     };
-    document.getElementById('profileIcon').onclick = () => { currentProfileUserId = currentUser?.uid; refreshProfilePage(); showPage('profile'); };
+    document.getElementById('profileIcon').onclick = () => { 
+        currentProfileUserId = currentUser?.uid; 
+        refreshProfilePage(); 
+        showPage('profile'); 
+    };
     document.getElementById('logoutBtnSide').onclick = async () => { await signOut(auth); };
     document.getElementById('themeToggleSide').onclick = () => document.body.classList.toggle('light');
     document.getElementById('searchInput')?.addEventListener('input', () => loadAccounts());
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
-    document.getElementById('langSelectSide').addEventListener('change', (e) => { currentLang = e.target.value; localStorage.setItem('lang', currentLang); applyLanguage(); });
+    document.getElementById('langSelectSide').addEventListener('change', (e) => { 
+        currentLang = e.target.value; 
+        localStorage.setItem('lang', currentLang); 
+        applyLanguage(); 
+    });
     
     const searchModal = document.getElementById('searchModal');
-    document.getElementById('searchBtn').onclick = () => { searchModal.classList.toggle('open'); document.getElementById('searchInputModal').focus(); };
+    document.getElementById('searchBtn').onclick = () => { 
+        searchModal.classList.toggle('open'); 
+        document.getElementById('searchInputModal').focus(); 
+    };
     document.getElementById('searchInputModal')?.addEventListener('input', (e) => { searchUsers(e.target.value.trim()); });
-    document.addEventListener('click', (e) => { if (!searchModal.contains(e.target) && e.target.id !== 'searchBtn') { searchModal.classList.remove('open'); } });
+    document.addEventListener('click', (e) => { 
+        if (!searchModal.contains(e.target) && e.target.id !== 'searchBtn') { 
+            searchModal.classList.remove('open'); 
+        } 
+    });
     
     document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1359,13 +1551,16 @@ ${message}`;
         const message = document.getElementById('supportMsg').value;
         const imageFile = document.getElementById('supportImage').files[0];
         let imageUrl = '';
-        if (imageFile) { imageUrl = await uploadToImgBB(imageFile); }
-        const ticketId = generateTicketId();
         
-        const userRef = doc(db, 'users', currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        const userData = userSnap.data() || {};
-        const userName = currentUser.displayName || currentUser.email || 'مستخدم';
+        if (imageFile) { 
+            try {
+                imageUrl = await uploadToImgBB(imageFile); 
+            } catch(e) { alert("خطأ في رفع الصورة"); return; }
+        }
+        
+        const ticketId = generateTicketId();
+        const userData = (await getDoc(doc(db, 'users', currentUser.uid))).data() || {};
+        const userName = userData.name || currentUser.displayName || currentUser.email || 'مستخدم';
         const userEmail = currentUser.email || '';
         const userPhone = userData.phone || '';
         
@@ -1381,20 +1576,32 @@ ${message}`;
             createdAt: Date.now(), 
             status: 'pending'
         });
+        
         await sendToTelegram(userName, userEmail, userPhone, issueType, message, imageUrl, ticketId);
         alert("تم إرسال طلب الدعم بنجاح، سيتم الرد عليك قريباً");
         document.getElementById('supportForm').reset();
         document.getElementById('supportImagePreview').innerHTML = '';
         loadUserTickets();
     });
-    document.getElementById('supportImage')?.addEventListener('change', (e) => { const preview = document.getElementById('supportImagePreview'); preview.innerHTML = ''; const file = e.target.files[0]; if (file) { const img = document.createElement('img'); img.src = URL.createObjectURL(file); preview.appendChild(img); } });
+    
+    document.getElementById('supportImage')?.addEventListener('change', (e) => { 
+        const preview = document.getElementById('supportImagePreview'); 
+        preview.innerHTML = ''; 
+        const file = e.target.files[0]; 
+        if (file) { 
+            const img = document.createElement('img'); 
+            img.src = URL.createObjectURL(file); 
+            preview.appendChild(img); 
+        } 
+    });
     
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const splash = document.getElementById('splash');
         const appDiv = document.getElementById('app');
         if (user) {
-            splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 400);
+            splash.style.opacity = '0'; 
+            setTimeout(() => { splash.style.display = 'none'; appDiv.style.display = 'block'; }, 400);
             currentProfileUserId = user.uid;
             await refreshProfilePage();
             await loadAccounts();
@@ -1406,7 +1613,13 @@ ${message}`;
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
         }
     });
-    setTimeout(() => { if(!currentUser && document.getElementById('splash').style.display !== 'none') { document.getElementById('splash').style.display = 'none'; showLoginScreen(); } }, 2000);
+    
+    setTimeout(() => { 
+        if(!currentUser && document.getElementById('splash').style.display !== 'none') { 
+            document.getElementById('splash').style.display = 'none'; 
+            showLoginScreen(); 
+        } 
+    }, 2000);
 </script>
 </body>
 </html>
