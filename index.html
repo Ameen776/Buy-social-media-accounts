@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
     
-    <!-- Open Graph للتواصل الاجتماعي - أيقونة الموقع (صورة مصغرة واحدة) -->
+    <!-- Open Graph -->
     <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
     <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
     <meta property="og:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -23,10 +23,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- أيقونة الموقع (رابط واحد فقط) -->
+    <!-- أيقونات الموقع -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="apple-touch-icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="shortcut icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
+    <meta name="theme-color" content="#0b0b1a">
     
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
@@ -56,7 +57,7 @@
         }
         body{background:var(--bg-body);color:var(--text-primary);transition:0.3s;padding-bottom:70px;}
         
-        /* شاشة البداية المتحركة */
+        /* شاشة البداية */
         .splash-screen {
             position: fixed; inset: 0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e, #0f0f1f);
             display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -93,7 +94,7 @@
         .menu-btn { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; transition: 0.2s; }
         .menu-btn:hover { color: var(--accent); }
         
-        /* شريط البحث المنبثق */
+        /* شريط البحث */
         .search-modal {
             position: fixed; top: 0; left: 0; right: 0; background: var(--bg-card);
             padding: 15px; z-index: 1001; border-bottom: 1px solid var(--border-color);
@@ -146,14 +147,13 @@
         .profile-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent); transition: 0.2s; }
         .profile-thumb:hover { transform: scale(1.05); }
         
-        /* الأزرار */
+        /* أزرار */
         .btn-primary { background: var(--accent); border: none; padding: 8px 16px; border-radius: 25px; color: #111; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.2s; }
         .btn-primary:hover { transform: scale(1.02); opacity: 0.9; }
         .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 7px 15px; border-radius: 25px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
         .btn-outline:hover { background: var(--accent); color: #111; }
         .btn-danger { background: #ff4444; border: none; padding: 8px 16px; border-radius: 25px; color: #fff; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
         .btn-danger:hover { transform: scale(1.02); opacity: 0.9; }
-        
         .btn-follow-green { background: #2ecc71; border: none; padding: 8px 20px; border-radius: 25px; color: #fff; cursor: pointer; font-weight: bold; font-size: 0.9rem; min-width: 110px; transition: 0.2s; }
         .btn-follow-green:hover { transform: scale(1.02); opacity: 0.9; }
         .btn-follow-green.unfollow { background: #555; }
@@ -185,11 +185,11 @@
         .filter-row { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 8px; border-radius: 20px; }
         
-        /* المشروطات */
+        /* مودال */
         .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .modal-content { background: var(--bg-card); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
         
-        /* نافذة التفاصيل */
+        /* تفاصيل الحساب */
         .details-modal { max-width: 550px; width: 90%; background: var(--bg-card); border-radius: 24px; perspective: 1000px; }
         .details-inner { background: linear-gradient(145deg, var(--bg-card), var(--bg-body)); border-radius: 24px; padding: 20px; transform-style: preserve-3d; transform: rotateX(2deg); transition: 0.3s; }
         .details-inner:hover { transform: rotateX(0deg) scale(1.01); }
@@ -241,7 +241,7 @@
         .recording-indicator .pulse { width: 10px; height: 10px; background: white; border-radius: 50%; animation: pulseRed 1s infinite; }
         @keyframes pulseRed { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
         
-        /* شاشات المصادقة */
+        /* المصادقة */
         .auth-container { position: fixed; inset: 0; background: var(--auth-bg); display: flex; align-items: center; justify-content: center; z-index: 10001; }
         .auth-card { background: rgba(30, 30, 46, 0.95); backdrop-filter: blur(20px); border-radius: 30px; padding: 30px; width: 90%; max-width: 400px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         .password-wrapper { position: relative; }
@@ -254,7 +254,7 @@
         .auth-switch { margin-top: 15px; color: var(--accent); cursor: pointer; }
         .forgot-password { font-size: 0.8rem; color: var(--accent); cursor: pointer; text-align: left; margin-top: 5px; }
         
-        /* صفحة الدعم الفني */
+        /* الدعم الفني */
         .support-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .support-preview img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
         .support-reply { margin-top: 20px; padding: 15px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); }
@@ -266,7 +266,7 @@
         .status-pending { background: #ff9800; color: #fff; }
         .status-read { background: #4caf50; color: #fff; }
         
-        /* صفحة عن التطبيق */
+        /* عن التطبيق */
         .about-3d { text-align: center; perspective: 1000px; }
         .about-card-3d { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(0,212,255,0.2)); backdrop-filter: blur(10px); border-radius: 40px; padding: 40px 20px; transform-style: preserve-3d; transform: rotateY(5deg) rotateX(5deg); transition: 0.4s; border: 1px solid rgba(0,212,255,0.3); }
         .about-card-3d:hover { transform: rotateY(0deg) rotateX(0deg) scale(1.02); }
@@ -424,9 +424,10 @@
 </div>
 
 <script type="module">
+    // ---------- تهيئة Firebase ----------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
     
     const firebaseConfig = {
@@ -444,10 +445,19 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ============ بوت التليجرام المحسن (حسب الطلب) ============
+    // ---------- تكوين تيليجرام (محسّن) ----------
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
+    let lastUpdateId = 0;
+    const pendingReplies = new Map(); // chatId -> ticketId
+    const processedCallbacks = new Set();
     
+    // توليد رقم تذكرة 10 أرقام
+    function generateTicketId() {
+        return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    }
+    
+    // إرسال إلى تيليجرام
     async function sendToTelegram(userName, email, phone, issueType, message, imageUrl = null, ticketId) {
         try {
             const caption = `📢 شكوى جديدة
@@ -462,16 +472,14 @@
 ${message}`;
             
             const keyboard = {
-                inline_keyboard: [
-                    [{ text: "💬 رد على الشكوى", callback_data: `reply_${ticketId}` }]
-                ]
+                inline_keyboard: [[{ text: "💬 رد على الشكوى", callback_data: `reply_${ticketId}` }]]
             };
             
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption: caption, parse_mode: "HTML", reply_markup: keyboard })
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption, parse_mode: "HTML", reply_markup: keyboard })
                 });
             } else {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -485,12 +493,12 @@ ${message}`;
     }
     
     async function updateTicketStatus(ticketId, status) {
-        const ticketsQuery = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
-        const ticketsSnap = await getDocs(ticketsQuery);
-        if (!ticketsSnap.empty) {
-            const ticketDoc = ticketsSnap.docs[0];
-            await updateDoc(doc(db, 'support_tickets', ticketDoc.id), { status: status, readAt: Date.now() });
-            return ticketDoc.data().userId;
+        const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+            const docRef = snap.docs[0].ref;
+            await updateDoc(docRef, { status, readAt: Date.now() });
+            return snap.docs[0].data().userId;
         }
         return null;
     }
@@ -498,11 +506,11 @@ ${message}`;
     async function sendReplyToUser(userId, replyMessage, ticketId) {
         try {
             await addDoc(collection(db, 'support_replies'), {
-                userId: userId,
+                userId,
                 message: replyMessage,
                 replyType: 'admin',
                 adminName: 'إدارة الموقع',
-                ticketId: ticketId,
+                ticketId,
                 createdAt: Date.now(),
                 read: false
             });
@@ -510,26 +518,28 @@ ${message}`;
         } catch(e) { console.error("Error sending reply:", e); return false; }
     }
     
-    let lastUpdateId = 0;
-    let pendingReplies = {}; // تخزين مؤقت لانتظار الردود
-    
+    // فحص تحديثات تيليجرام (مع تحسين منع التكرار)
     async function checkTelegramReplies() {
         try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30`);
-            const data = await response.json();
+            const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30`);
+            const data = await res.json();
             if (data.ok && data.result) {
                 for (const update of data.result) {
                     if (update.update_id > lastUpdateId) lastUpdateId = update.update_id;
                     
-                    // معالجة callback_query من الأزرار
+                    // معالجة callback_query
                     if (update.callback_query) {
+                        const callbackId = update.callback_query.id;
+                        if (processedCallbacks.has(callbackId)) continue;
+                        processedCallbacks.add(callbackId);
+                        
                         const callbackData = update.callback_query.data;
                         const chatId = update.callback_query.message.chat.id;
                         const messageId = update.callback_query.message.message_id;
                         
                         if (callbackData.startsWith('reply_')) {
                             const ticketId = callbackData.replace('reply_', '');
-                            pendingReplies[chatId] = ticketId;
+                            pendingReplies.set(chatId, ticketId);
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -538,9 +548,9 @@ ${message}`;
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✏️ أرسل ردك الآن", show_alert: false })
+                                body: JSON.stringify({ callback_query_id: callbackId, text: "✏️ أرسل ردك الآن", show_alert: false })
                             });
-                            // إخفاء الأزرار بعد الضغط
+                            // إزالة الأزرار
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -548,37 +558,40 @@ ${message}`;
                             });
                         }
                     }
-                    // معالجة الرسائل النصية (الردود)
-                    else if (update.message && update.message.text && pendingReplies[update.message.chat.id]) {
-                        const ticketId = pendingReplies[update.message.chat.id];
+                    // معالجة الردود النصية
+                    else if (update.message && update.message.text && pendingReplies.has(update.message.chat.id)) {
+                        const chatId = update.message.chat.id;
+                        const ticketId = pendingReplies.get(chatId);
                         const replyText = update.message.text;
-                        const ticketsQuery = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
-                        const ticketsSnap = await getDocs(ticketsQuery);
-                        if (!ticketsSnap.empty()) {
-                            const ticket = ticketsSnap.docs[0].data();
+                        
+                        const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
+                        const snap = await getDocs(q);
+                        if (!snap.empty) {
+                            const ticket = snap.docs[0].data();
                             await sendReplyToUser(ticket.userId, replyText, ticketId);
+                            await updateTicketStatus(ticketId, 'read');
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "HTML" })
+                                body: JSON.stringify({ chat_id: chatId, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "HTML" })
                             });
-                            delete pendingReplies[update.message.chat.id];
                         } else {
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "HTML" })
+                                body: JSON.stringify({ chat_id: chatId, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "HTML" })
                             });
-                            delete pendingReplies[update.message.chat.id];
                         }
+                        pendingReplies.delete(chatId);
                     }
                 }
             }
-        } catch(e) { console.error("Error checking Telegram replies:", e); }
+        } catch(e) { console.error("Telegram polling error:", e); }
     }
     
     setInterval(checkTelegramReplies, 3000);
     
+    // رفع الصور إلى ImgBB
     async function uploadToImgBB(file) {
         const fd = new FormData(); fd.append("image", file); fd.append("key", IMGBB_KEY);
         const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: fd });
@@ -593,7 +606,7 @@ ${message}`;
         return await getDownloadURL(storageRef);
     }
     
-    // ============ قائمة الدول العربية ============
+    // قائمة الدول العربية
     const arabCountries = [
         { name: "السعودية", code: "+966" }, { name: "مصر", code: "+20" }, { name: "الإمارات", code: "+971" },
         { name: "الأردن", code: "+962" }, { name: "الكويت", code: "+965" }, { name: "عمان", code: "+968" },
@@ -605,7 +618,7 @@ ${message}`;
         { name: "جزر القمر", code: "+269" }
     ];
     
-    // ============ الترجمة ============
+    // الترجمة
     const translations = {
         ar: { menu: "القائمة", home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", app_name: "سوق الحسابات", available_accounts: "الحسابات المتاحة", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني", issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح", other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", publish: "نشر", chats: "الدردشات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟", reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة" },
         en: { menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About", dark_mode: "Dark Mode", logout: "Logout", app_name: "Accounts Market", available_accounts: "Available Accounts", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support", issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion", other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts", secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", publish: "Publish", chats: "Chats", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?", reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views" },
@@ -858,7 +871,7 @@ ${message}`;
         showPage('profile');
     };
     
-    // ============ الشات مع التخزين التلقائي في الدردشات ============
+    // ---------- الشات (محسّن) ----------
     window.openChat = async function(sellerId, sellerName) {
         if (!currentUser) { alert("تسجيل الدخول مطلوب"); return; }
         if (sellerId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
@@ -901,10 +914,10 @@ ${message}`;
             const txt = inputField.value.trim();
             if(txt) {
                 await addDoc(collection(db, 'conversations', convId, 'messages'), { text: txt, senderId: currentUser.uid, timestamp: Date.now() });
-                await updateDoc(doc(db, 'conversations', convId), { lastMessage: txt, lastMessageTime: Date.now() });
+                await updateDoc(convRef, { lastMessage: txt, lastMessageTime: Date.now() });
                 inputField.value = '';
                 playSound();
-                loadConversations(); // تحديث قائمة المحادثات فوراً
+                loadConversations();
             }
         };
         
@@ -915,8 +928,8 @@ ${message}`;
                 if(file) {
                     try {
                         const imageUrl = await uploadToImgBB(file);
-                        await addDoc(collection(db, 'conversations', convId, 'messages'), { imageUrl: imageUrl, senderId: currentUser.uid, timestamp: Date.now() });
-                        await updateDoc(doc(db, 'conversations', convId), { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
+                        await addDoc(collection(db, 'conversations', convId, 'messages'), { imageUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                        await updateDoc(convRef, { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
                         playSound();
                         loadConversations();
                     } catch(e) { alert("خطأ في رفع الصورة: " + e.message); }
@@ -936,8 +949,8 @@ ${message}`;
                         const audioBlob = new Blob(modalChunks, { type: 'audio/webm' });
                         try {
                             const audioUrl = await uploadToStorage(audioBlob, `chat_audio/${convId}`);
-                            await addDoc(collection(db, 'conversations', convId, 'messages'), { audioUrl: audioUrl, senderId: currentUser.uid, timestamp: Date.now() });
-                            await updateDoc(doc(db, 'conversations', convId), { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
+                            await addDoc(collection(db, 'conversations', convId, 'messages'), { audioUrl, senderId: currentUser.uid, timestamp: Date.now() });
+                            await updateDoc(convRef, { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
                             playSound();
                             loadConversations();
                         } catch(e) { alert("خطأ في رفع الصوت: " + e.message); }
@@ -1027,7 +1040,7 @@ ${message}`;
         newSendBtn.onclick = async () => {
             const text = messageInput.value.trim();
             if (text) {
-                await addDoc(messagesRef, { text: text, senderId: currentUser.uid, timestamp: Date.now(), read: false });
+                await addDoc(messagesRef, { text, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                 await updateDoc(doc(db, 'conversations', convId), { lastMessage: text, lastMessageTime: Date.now() });
                 messageInput.value = ''; playSound();
                 loadConversations();
@@ -1043,7 +1056,7 @@ ${message}`;
                 if (file) {
                     try {
                         const imageUrl = await uploadToImgBB(file);
-                        await addDoc(messagesRef, { imageUrl: imageUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
+                        await addDoc(messagesRef, { imageUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                         await updateDoc(doc(db, 'conversations', convId), { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
                         playSound();
                         loadConversations();
@@ -1065,7 +1078,7 @@ ${message}`;
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         try {
                             const audioUrl = await uploadToStorage(audioBlob, `chat_audio/${convId}`);
-                            await addDoc(messagesRef, { audioUrl: audioUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
+                            await addDoc(messagesRef, { audioUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
                             await updateDoc(doc(db, 'conversations', convId), { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
                             playSound();
                             loadConversations();
@@ -1088,7 +1101,7 @@ ${message}`;
         };
     }
     
-    // ============ البحث عن المستخدمين ============
+    // البحث عن المستخدمين
     async function searchUsers(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) { document.getElementById('searchResults').style.display = 'none'; return; }
         try {
@@ -1122,7 +1135,7 @@ ${message}`;
         } catch(e) { console.error(e); }
     }
     
-    // ============ الدعم الفني مع التذاكر ============
+    // الدعم الفني مع تذاكر (محسّن)
     async function loadUserTickets() {
         if (!currentUser) return;
         const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
@@ -1243,7 +1256,7 @@ ${message}`;
         modal.querySelector('#closeSettings').onclick = () => modal.remove();
     }
     
-    // ============ المصادقة ============
+    // المصادقة
     let authContainer = null;
     function generateStrongPassword() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
@@ -1322,7 +1335,7 @@ ${message}`;
         document.getElementById('toLogin').onclick = () => showLoginScreen();
     }
     
-    // ============ أحداث ============
+    // الأحداث العامة
     document.getElementById('menuBtn').onclick = () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
@@ -1347,9 +1360,8 @@ ${message}`;
         const imageFile = document.getElementById('supportImage').files[0];
         let imageUrl = '';
         if (imageFile) { imageUrl = await uploadToImgBB(imageFile); }
-        const ticketId = Math.floor(1000000000 + Math.random() * 9000000000).toString(); // رقم عشوائي من 10 أرقام
+        const ticketId = generateTicketId();
         
-        // جلب بيانات المستخدم
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
@@ -1359,9 +1371,9 @@ ${message}`;
         
         await addDoc(collection(db, 'support_tickets'), { 
             userId: currentUser.uid, 
-            userName: userName,
-            userEmail: userEmail,
-            userPhone: userPhone,
+            userName,
+            userEmail,
+            userPhone,
             issueType, 
             message, 
             imageUrl, 
