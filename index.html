@@ -5,36 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
     
-    <!-- SEO و Open Graph للتواصل الاجتماعي - أيقونة الموقع بجميع الأحجام -->
+    <!-- Open Graph للتواصل الاجتماعي - أيقونة الموقع (صورة مصغرة واحدة) -->
     <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
     <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
-    <meta property="og:image" content="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
-    <meta property="og:image:secure_url" content="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    <meta property="og:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
+    <meta property="og:image:secure_url" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
+    <meta property="og:image:width" content="256">
+    <meta property="og:image:height" content="256">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://selling-accounts-90d8e.web.app">
-    <meta property="og:site_name" content="سوق الحسابات">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="سوق الحسابات - المنصة الاحترافية">
+    <meta name="twitter:title" content="سوق الحسابات">
     <meta name="twitter:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي">
-    <meta name="twitter:image" content="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
+    <meta name="twitter:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- أيقونات الموقع بجميع الأحجام -->
-    <link rel="icon" type="image/png" sizes="512x512" href="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="256x256" href="https://i.ibb.co/rRHrqzGc/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://i.ibb.co/rRHrqzGc/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/B5BMvQVr/1776423732636a.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/rRHrqzGc/1776423732636a.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
+    <!-- أيقونة الموقع (رابط واحد فقط) -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="shortcut icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     
     <style>
@@ -453,32 +444,40 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ============ بوت التليجرام مع أزرار تفاعلية ============
+    // ============ بوت التليجرام المحسن (حسب الطلب) ============
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
-    const TELEGRAM_CHAT_ID = "8562687782";
+    const ADMIN_CHAT_ID = "8562687782";
     
-    async function sendToTelegram(userId, userName, userEmail, userPhone, issueType, message, imageUrl = null, ticketId) {
+    async function sendToTelegram(userName, email, phone, issueType, message, imageUrl = null, ticketId) {
         try {
+            const caption = `📢 شكوى جديدة
+
+🆔 رقم التذكرة: ${ticketId}
+👤 الاسم: ${userName}
+📧 البريد: ${email || 'غير متوفر'}
+📱 الهاتف: ${phone || 'غير متوفر'}
+📋 نوع الشكوى: ${issueType}
+
+📝 الشكوى:
+${message}`;
+            
             const keyboard = {
                 inline_keyboard: [
-                    [
-                        { text: "✅ قراءة", callback_data: `read_${ticketId}` },
-                        { text: "✏️ رد", callback_data: `reply_${ticketId}` }
-                    ]
+                    [{ text: "💬 رد على الشكوى", callback_data: `reply_${ticketId}` }]
                 ]
             };
-            const text = `📢 **شكوى جديدة من سوق الحسابات**\n\n👤 المستخدم: ${userName}\n🆔 ID: ${userId}\n📧 البريد: ${userEmail || 'غير متوفر'}\n📱 الهاتف: ${userPhone || 'غير متوفر'}\n📋 نوع المشكلة: ${issueType}\n📝 المشكلة: ${message}\n\n🆔 رقم التذكرة: ${ticketId}\n\n📌 الحالة: ⏳ جاري الانتظار`;
+            
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, photo: imageUrl, caption: text, parse_mode: "Markdown", reply_markup: keyboard })
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption: caption, parse_mode: "HTML", reply_markup: keyboard })
                 });
             } else {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: "Markdown", reply_markup: keyboard })
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: caption, parse_mode: "HTML", reply_markup: keyboard })
                 });
             }
             return true;
@@ -512,6 +511,8 @@
     }
     
     let lastUpdateId = 0;
+    let pendingReplies = {}; // تخزين مؤقت لانتظار الردود
+    
     async function checkTelegramReplies() {
         try {
             const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30`);
@@ -523,46 +524,27 @@
                     // معالجة callback_query من الأزرار
                     if (update.callback_query) {
                         const callbackData = update.callback_query.data;
-                        const message = update.callback_query.message;
-                        const chatId = message.chat.id;
+                        const chatId = update.callback_query.message.chat.id;
+                        const messageId = update.callback_query.message.message_id;
                         
-                        if (callbackData.startsWith('read_')) {
-                            const ticketId = callbackData.replace('read_', '');
-                            const userId = await updateTicketStatus(ticketId, 'read');
-                            if (userId) {
-                                await addDoc(collection(db, 'support_replies'), {
-                                    userId: userId,
-                                    message: "📖 تمت قراءة رسالتك من قبل فريق الدعم",
-                                    replyType: 'system',
-                                    ticketId: ticketId,
-                                    createdAt: Date.now(),
-                                    read: false
-                                });
-                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✅ تم تحديث الحالة إلى مقروءة", show_alert: false })
-                                });
-                                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } })
-                                });
-                            }
-                        }
-                        else if (callbackData.startsWith('reply_')) {
+                        if (callbackData.startsWith('reply_')) {
                             const ticketId = callbackData.replace('reply_', '');
+                            pendingReplies[chatId] = ticketId;
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`, parse_mode: "Markdown" })
+                                body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`, parse_mode: "HTML" })
                             });
-                            // تخزين مؤقت لانتظار الرد
-                            pendingReplies[chatId] = ticketId;
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✏️ أرسل ردك الآن", show_alert: false })
+                            });
+                            // إخفاء الأزرار بعد الضغط
+                            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } })
                             });
                         }
                     }
@@ -578,14 +560,14 @@
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "Markdown" })
+                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "HTML" })
                             });
                             delete pendingReplies[update.message.chat.id];
                         } else {
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "Markdown" })
+                                body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}`, parse_mode: "HTML" })
                             });
                             delete pendingReplies[update.message.chat.id];
                         }
@@ -595,7 +577,6 @@
         } catch(e) { console.error("Error checking Telegram replies:", e); }
     }
     
-    let pendingReplies = {};
     setInterval(checkTelegramReplies, 3000);
     
     async function uploadToImgBB(file) {
@@ -1366,18 +1347,19 @@
         const imageFile = document.getElementById('supportImage').files[0];
         let imageUrl = '';
         if (imageFile) { imageUrl = await uploadToImgBB(imageFile); }
-        const ticketId = Date.now().toString();
+        const ticketId = Math.floor(1000000000 + Math.random() * 9000000000).toString(); // رقم عشوائي من 10 أرقام
         
         // جلب بيانات المستخدم
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
+        const userName = currentUser.displayName || currentUser.email || 'مستخدم';
         const userEmail = currentUser.email || '';
         const userPhone = userData.phone || '';
         
         await addDoc(collection(db, 'support_tickets'), { 
             userId: currentUser.uid, 
-            userName: currentUser.displayName || currentUser.email,
+            userName: userName,
             userEmail: userEmail,
             userPhone: userPhone,
             issueType, 
@@ -1387,7 +1369,7 @@
             createdAt: Date.now(), 
             status: 'pending'
         });
-        await sendToTelegram(currentUser.uid, currentUser.displayName || currentUser.email, userEmail, userPhone, issueType, message, imageUrl, ticketId);
+        await sendToTelegram(userName, userEmail, userPhone, issueType, message, imageUrl, ticketId);
         alert("تم إرسال طلب الدعم بنجاح، سيتم الرد عليك قريباً");
         document.getElementById('supportForm').reset();
         document.getElementById('supportImagePreview').innerHTML = '';
