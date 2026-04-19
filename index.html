@@ -193,6 +193,7 @@
         .message.sent .message-bubble { background: #9b59b6; color: white; border-bottom-right-radius: 5px; }
         .message.received .message-bubble { background: var(--bg-card); color: var(--text-primary); border-bottom-left-radius: 5px; }
         .message-image { max-width: 200px; border-radius: 10px; margin-top: 5px; cursor: pointer; }
+        .message-time { font-size: 10px; opacity: 0.7; display: block; margin-top: 4px; }
         .chat-input-area { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
         .chat-input-area input { flex: 1; margin: 0; padding: 12px; border-radius: 30px; }
         .send-btn { background: var(--accent); border: none; color: #111; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
@@ -243,6 +244,8 @@
         
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .sidebar-overlay.active { display: block; }
+        
+        .loader { text-align: center; padding: 20px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
@@ -377,7 +380,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
     
     const firebaseConfig = {
@@ -401,17 +404,21 @@
     
     async function sendToTelegram(userName, email, phone, issueType, message, imageUrl = null, ticketId) {
         try {
-            const caption = `📢 شكوى جديدة\n\n🆔 رقم التذكرة: ${ticketId}\n👤 الاسم: ${userName}\n📧 البريد: ${email || 'غير متوفر'}\n📱 الهاتف: ${phone || 'غير متوفر'}\n📋 نوع الشكوى: ${issueType}\n\n📝 الشكوى:\n${message}`;
-            const keyboard = { inline_keyboard: [[{ text: "💬 رد على الشكوى", callback_data: `reply_${ticketId}` }]] };
+            const text = `⚠️ شكوى جديدة:\n👤 الاسم: ${userName}\n📧 الإيميل: ${email || 'غير متوفر'}\n📱 الهاتف: ${phone || 'غير متوفر'}\n🆔 ID: ${ticketId}\n📋 نوع الشكوى: ${issueType}\n📝 الشكوى: ${message}\n🖼 الصورة: ${imageUrl || 'لا توجد صورة'}`;
+            const keyboard = {
+                inline_keyboard: [[{ text: "💬 الرد على المستخدم", callback_data: `reply_${ticketId}` }]]
+            };
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption: caption, parse_mode: "HTML", reply_markup: keyboard })
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption: text, parse_mode: "HTML", reply_markup: keyboard })
                 });
             } else {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: caption, parse_mode: "HTML", reply_markup: keyboard })
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: text, parse_mode: "HTML", reply_markup: keyboard })
                 });
             }
             return true;
@@ -421,8 +428,13 @@
     async function sendReplyToUser(userId, replyMessage, ticketId) {
         try {
             await addDoc(collection(db, 'support_replies'), {
-                userId: userId, message: replyMessage, replyType: 'admin',
-                adminName: 'إدارة الموقع', ticketId: ticketId, createdAt: Date.now(), read: false
+                userId: userId,
+                message: replyMessage,
+                replyType: 'admin',
+                adminName: 'إدارة الموقع',
+                ticketId: ticketId,
+                createdAt: Date.now(),
+                read: false
             });
             return true;
         } catch(e) { console.error("Error sending reply:", e); return false; }
@@ -446,15 +458,18 @@
                             const ticketId = callbackData.replace('reply_', '');
                             pendingReplies[chatId] = ticketId;
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                method: "POST", headers: { "Content-Type": "application/json" },
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل نص الرد للتذكرة ${ticketId}:\n\nاكتب الرد ثم أرسله.`, parse_mode: "HTML" })
                             });
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-                                method: "POST", headers: { "Content-Type": "application/json" },
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ callback_query_id: update.callback_query.id, text: "✏️ أرسل ردك الآن", show_alert: false })
                             });
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
-                                method: "POST", headers: { "Content-Type": "application/json" },
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } })
                             });
                         }
@@ -467,7 +482,8 @@
                             const ticket = ticketsSnap.docs[0].data();
                             await sendReplyToUser(ticket.userId, replyText, ticketId);
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                method: "POST", headers: { "Content-Type": "application/json" },
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم بنجاح.\n\n📝 الرد: ${replyText}`, parse_mode: "HTML" })
                             });
                             delete pendingReplies[update.message.chat.id];
@@ -494,12 +510,6 @@
         return data.data.url;
     }
     
-    async function uploadToStorage(file, path) {
-        const storageRef = ref(storage, `${path}_${Date.now()}`);
-        await uploadBytes(storageRef, file);
-        return await getDownloadURL(storageRef);
-    }
-    
     // ============ قائمة الدول العربية ============
     const arabCountries = [
         { name: "السعودية", code: "+966" }, { name: "مصر", code: "+20" }, { name: "الإمارات", code: "+971" },
@@ -515,10 +525,30 @@
     let currentUser = null;
     let currentProfileUserId = null;
     let currentPage = 'home';
-    let currentChatUserId = null; // معرف الشخص الذي نراسله حالياً
+    let currentChatUserId = null;
     let currentMessagesUnsubscribe = null;
     let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
     function playSound() { try { notificationSound.play(); } catch(e) {} }
+    
+    // ============ الترجمة بدون إعادة تحميل الصفحة ============
+    const translations = {
+        ar: { home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", publish: "نشر", conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني", issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح", other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", chats: "الدردشات", forgot_password: "نسيت كلمة المرور؟", reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة" },
+        en: { home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About", dark_mode: "Dark Mode", logout: "Logout", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", publish: "Publish", conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support", issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion", other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts", secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", chats: "Chats", forgot_password: "Forgot password?", reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views" },
+        fr: { home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos", dark_mode: "Mode nuit", logout: "Déconnexion", search: "Rechercher...", all: "Tous", profile: "Profil", followers: "Abonnés", following: "Abonnements", posts: "Annonces", edit: "Modifier", delete: "Supprimer", chat: "Discuter", details: "Détails", follow: "Suivre", unfollow: "Ne plus suivre", settings: "Paramètres", name: "Nom", email: "Email", phone: "Téléphone", city: "Ville", country: "Pays", zip: "Code postal", save: "Enregistrer", cancel: "Annuler", confirm_delete: "Supprimer ?", deleted: "Supprimé", updated: "Mis à jour", login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte", platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", publish: "Publier", conversations: "Conversations", type_message: "Écrivez...", send: "Envoyer", back: "Retour", support_title: "Support", issue_buy: "Achat", issue_sell: "Vente", issue_chat: "Chat", suggestion: "Suggestion", other: "Autre", support_placeholder: "Décrivez...", attach_image: "Image", about_desc: "Plateforme d'achat/vente de comptes", secure: "Sécurisé", fast: "Rapide", support247: "Support 24/7", developed_by: "Développé par", chats: "Discussions", forgot_password: "Mot de passe oublié ?", reset_email_sent: "Email de réinitialisation envoyé", google_login: "Connexion avec Google", views: "Vues" },
+        tr: { home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında", dark_mode: "Gece Modu", logout: "Çıkış", search: "Ara...", all: "Tümü", profile: "Profil", followers: "Takipçi", following: "Takip", posts: "İlanlar", edit: "Düzenle", delete: "Sil", chat: "Sohbet", details: "Detaylar", follow: "Takip Et", unfollow: "Takibi Bırak", settings: "Ayarlar", name: "İsim", email: "E-posta", phone: "Telefon", city: "Şehir", country: "Ülke", zip: "Posta kodu", save: "Kaydet", cancel: "İptal", confirm_delete: "Silmek istediğinize emin misiniz?", deleted: "Silindi", updated: "Güncellendi", login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur", platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", publish: "Yayınla", conversations: "Sohbetler", type_message: "Mesaj yaz...", send: "Gönder", back: "Geri", support_title: "Destek", issue_buy: "Satın alma", issue_sell: "Satış", issue_chat: "Sohbet", suggestion: "Öneri", other: "Diğer", support_placeholder: "Sorununuzu yazın...", attach_image: "Resim ekle", about_desc: "Sosyal medya hesap platformu", secure: "Güvenli", fast: "Hızlı", support247: "7/24 Destek", developed_by: "Geliştiren", chats: "Sohbetler", forgot_password: "Şifremi unuttum?", reset_email_sent: "Şifre sıfırlama e-postası gönderildi", google_login: "Google ile giriş yap", views: "Görüntülenme" }
+    };
+    let currentLang = localStorage.getItem('lang') || 'ar';
+    function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
+    function applyLanguage() {
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(k) el.innerText = t(k); });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if(k) el.placeholder = t(k); });
+        document.getElementById('langSelectSide').value = currentLang;
+        // تحديث الصفحة الحالية
+        if (currentPage === 'home') loadAccounts();
+        else if (currentPage === 'profile' && currentProfileUserId) refreshProfilePage();
+        else if (currentPage === 'messages') loadConversations();
+    }
     
     window.showPage = function(pageId) {
         currentPage = pageId;
@@ -537,13 +567,14 @@
         document.getElementById('sidebarOverlay').classList.remove('active');
     };
     
+    // ============ تحديث الملف الشخصي ومنشورات المستخدم ============
     async function refreshProfilePage() {
         if (!currentProfileUserId) return;
         await loadProfileData(currentProfileUserId);
         await loadUserAccounts(currentProfileUserId);
         await loadFollowStats(currentProfileUserId);
         const isOwnProfile = (currentUser && currentProfileUserId === currentUser.uid);
-        document.getElementById('profileTitle').innerText = isOwnProfile ? 'الملف الشخصي' : `@${document.getElementById('userName').innerText || 'مستخدم'}`;
+        document.getElementById('profileTitle').innerText = isOwnProfile ? t('profile') : `@${document.getElementById('userName').innerText || 'مستخدم'}`;
         const settingsIcon = document.getElementById('settingsIcon');
         if (settingsIcon) isOwnProfile ? settingsIcon.classList.remove('hidden') : settingsIcon.classList.add('hidden');
         const avatarImg = document.getElementById('avatarImg');
@@ -571,7 +602,7 @@
         if (!currentUser || userId === currentUser.uid) { container.innerHTML = ''; return; }
         const currentSnap = await getDoc(doc(db, 'users', currentUser.uid));
         const isFollowing = currentSnap.data()?.following?.includes(userId) || false;
-        container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="followBtn">${isFollowing ? 'إلغاء المتابعة' : 'متابعة'}</button>`;
+        container.innerHTML = `<button class="btn-follow-green ${isFollowing ? 'unfollow' : ''}" id="followBtn">${isFollowing ? t('unfollow') : t('follow')}</button>`;
         document.getElementById('followBtn')?.addEventListener('click', async () => {
             const btn = document.getElementById('followBtn'); btn.disabled = true; btn.style.opacity = '0.7';
             try {
@@ -589,13 +620,17 @@
         });
     }
     
+    // ============ عرض منشورات المستخدم (تم إصلاحها) ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
             const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) { container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>'; return; }
+            if (querySnapshot.empty) {
+                container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
+                return;
+            }
             const isOwner = (currentUser && currentUser.uid === userId);
             let html = '';
             for (const docSnap of querySnapshot.docs) {
@@ -604,10 +639,10 @@
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
                     <p>💰 ${acc.price} ${acc.currency} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>✏️ تعديل</button>
-                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ حذف</button>` : ''}
-                        <button onclick="window.openChat('${acc.sellerId}', '${acc.name.replace(/'/g, "\\'")}')" class="btn-outline">💬 مراسلة</button>
-                        <button class="details-btn btn-outline" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>🔍 تفاصيل</button>
+                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>✏️ ${t('edit')}</button>
+                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ ${t('delete')}</button>` : ''}
+                        <button onclick="window.openChat('${acc.sellerId}', '${acc.name.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
+                        <button class="details-btn btn-outline" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
@@ -621,16 +656,19 @@
                 });
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.onclick = async () => {
-                        if(confirm('هل أنت متأكد من الحذف؟')) {
+                        if(confirm(t('confirm_delete'))) {
                             await deleteDoc(doc(db, 'accounts', btn.dataset.id));
-                            alert('تم الحذف');
+                            alert(t('deleted'));
                             loadUserAccounts(userId);
                             loadAccounts();
                         }
                     };
                 });
             }
-        } catch(e) { container.innerHTML = '<div class="card">خطأ في تحميل المنشورات</div>'; console.error(e); }
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = '<div class="card">خطأ في تحميل المنشورات</div>';
+        }
     }
     
     async function showDetails(account) {
@@ -642,16 +680,16 @@
         modal.innerHTML = `<div class="modal-content details-modal">
             <div class="details-header"><h2>${account.name}</h2><span class="details-platform"><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</span></div>
             <div class="details-stats">
-                <div class="stat-card"><i class="fas fa-users"></i><div class="stat-value">${account.followers?.toLocaleString()}</div><div class="stat-label">متابع</div></div>
-                <div class="stat-card"><i class="fas fa-money-bill-wave"></i><div class="stat-value">${account.price} ${account.currency}</div><div class="stat-label">السعر</div></div>
-                <div class="stat-card"><i class="fas fa-eye"></i><div class="stat-value">${account.views || 0}</div><div class="stat-label">مشاهدة</div></div>
+                <div class="stat-card"><i class="fas fa-users"></i><div class="stat-value">${account.followers?.toLocaleString()}</div><div class="stat-label">${t('followers')}</div></div>
+                <div class="stat-card"><i class="fas fa-money-bill-wave"></i><div class="stat-value">${account.price} ${account.currency}</div><div class="stat-label">${t('price')}</div></div>
+                <div class="stat-card"><i class="fas fa-eye"></i><div class="stat-value">${account.views || 0}</div><div class="stat-label">${t('views')}</div></div>
             </div>
             <div class="details-info">
-                <div class="info-row"><div class="info-label"><i class="fas fa-link"></i> الرابط:</div><div class="info-value"><a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></div></div>
-                ${account.description ? `<div class="info-row"><div class="info-label"><i class="fas fa-align-left"></i> الوصف:</div><div class="info-value">${account.description}</div></div>` : ''}
+                <div class="info-row"><div class="info-label"><i class="fas fa-link"></i> ${t('link')}:</div><div class="info-value"><a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></div></div>
+                ${account.description ? `<div class="info-row"><div class="info-label"><i class="fas fa-align-left"></i> ${t('description')}:</div><div class="info-value">${account.description}</div></div>` : ''}
             </div>
-            ${imagesHtml ? `<div class="details-info"><div class="info-label"><i class="fas fa-images"></i> الصور:</div>${imagesHtml}</div>` : ''}
-            <button class="btn-primary" id="closeDetailsModal" style="width:100%; margin-top:15px;">إغلاق</button>
+            ${imagesHtml ? `<div class="details-info"><div class="info-label"><i class="fas fa-images"></i> ${t('images')}:</div>${imagesHtml}</div>` : ''}
+            <button class="btn-primary" id="closeDetailsModal" style="width:100%; margin-top:15px;">${t('details')}</button>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeDetailsModal').onclick = () => modal.remove();
@@ -661,13 +699,13 @@
     async function showEditModal(accountId, acc) {
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
-            <h3>✏️ تعديل الحساب</h3>
-            <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="اسم الحساب">
-            <input type="url" id="editLink" value="${acc.link}" placeholder="الرابط">
-            <input type="number" id="editFollowers" value="${acc.followers}" placeholder="عدد المتابعين">
-            <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="السعر"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
-            <textarea id="editDesc" placeholder="الوصف">${acc.description || ''}</textarea>
-            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">حفظ</button><button class="btn-outline" id="cancelEdit">إلغاء</button></div>
+            <h3>✏️ ${t('edit')}</h3>
+            <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="${t('name')}">
+            <input type="url" id="editLink" value="${acc.link}" placeholder="${t('link')}">
+            <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
+            <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
+            <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
+            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">${t('save')}</button><button class="btn-outline" id="cancelEdit">${t('cancel')}</button></div>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#saveEdit').onclick = async () => {
@@ -676,7 +714,7 @@
                 followers: parseInt(modal.querySelector('#editFollowers').value), price: parseFloat(modal.querySelector('#editPrice').value),
                 currency: modal.querySelector('#editCurrency').value, description: modal.querySelector('#editDesc').value
             });
-            alert('تم التحديث'); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
+            alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
         };
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
@@ -721,8 +759,8 @@
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc)}'>🔍 تفاصيل</button>
-                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 محادثة</button>
+                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
                     </div>
                 </div>`;
             }
@@ -739,19 +777,23 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - باستخدام الهيكل الجديد ============
+    // ============ الشات والمراسلة - مع onSnapshot الفوري ============
     
     // دالة إرسال الرسالة (نص وصورة)
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
         if (!currentChatUserId) return;
         
+        const chatId = currentUser.uid + "_" + currentChatUserId;
+        
         const messageData = {
             senderId: currentUser.uid,
             receiverId: currentChatUserId,
+            chatId: chatId,
             text: text || "",
             image: imageUrl || "",
             timestamp: Date.now(),
+            read: false
         };
         
         try {
@@ -764,13 +806,42 @@
         }
     }
     
-    // دالة عرض الرسائل فورياً (Real-time)
-    function loadMessages(otherUserId) {
-        if (!currentUser || !otherUserId) return;
+    // دالة فتح المحادثة مع onSnapshot الفوري
+    async function openChat(otherUserId, otherUserName) {
+        if (!currentUser) {
+            alert("تسجيل الدخول مطلوب");
+            return;
+        }
+        if (otherUserId === currentUser.uid) {
+            alert("لا يمكن مراسلة نفسك");
+            return;
+        }
+        
+        currentChatUserId = otherUserId;
+        
+        // إخفاء قائمة المحادثات وإظهار صندوق المحادثة
+        document.getElementById('convList').style.display = 'none';
+        document.getElementById('chatBox').style.display = 'block';
+        
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.innerHTML = '<div class="loader">جار التحميل...</div>';
         
         const chatId1 = currentUser.uid + "_" + otherUserId;
         const chatId2 = otherUserId + "_" + currentUser.uid;
         
+        // تحديث حالة القراءة للرسائل
+        const unreadQuery = query(
+            collection(db, "messages"),
+            where("senderId", "==", otherUserId),
+            where("receiverId", "==", currentUser.uid),
+            where("read", "==", false)
+        );
+        const unreadSnap = await getDocs(unreadQuery);
+        for (const msg of unreadSnap.docs) {
+            await updateDoc(doc(db, "messages", msg.id), { read: true });
+        }
+        
+        // الاستماع الفوري للرسائل (صفر ثانية تأخير)
         const q = query(
             collection(db, "messages"),
             where("chatId", "in", [chatId1, chatId2]),
@@ -782,48 +853,90 @@
         }
         
         currentMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
-            const chatMessages = document.getElementById('chatMessages');
-            if (!chatMessages) return;
-            chatMessages.innerHTML = "";
+            messagesContainer.innerHTML = "";
+            if (snapshot.empty) {
+                messagesContainer.innerHTML = '<div class="loader">لا توجد رسائل بعد، ابدأ المحادثة</div>';
+                return;
+            }
             snapshot.forEach((doc) => {
                 const msg = doc.data();
-                const msgClass = msg.senderId === currentUser.uid ? "sent" : "received";
-                let content = '';
-                if (msg.text) {
-                    content = `<div>${escapeHtml(msg.text)}</div>`;
-                }
-                if (msg.image) {
-                    content += `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">`;
-                }
-                chatMessages.innerHTML += `
-                    <div class="message ${msgClass}">
+                const isMe = msg.senderId === currentUser.uid;
+                const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : '';
+                messagesContainer.innerHTML += `
+                    <div class="message ${isMe ? 'sent' : 'received'}">
                         <div class="message-bubble">
-                            ${content}
-                            <div style="font-size:0.6rem; margin-top:4px;">${msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}</div>
+                            ${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ""}
+                            ${msg.image ? `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">` : ""}
+                            <span class="message-time">${time}</span>
                         </div>
                     </div>
                 `;
             });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
+        
+        // إعداد أزرار الإرسال
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendMsg');
+        const attachBtn = document.getElementById('attachImageBtn');
+        const backBtn = document.getElementById('backConv');
+        
+        const newSendBtn = sendBtn.cloneNode(true);
+        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+        newSendBtn.onclick = async () => {
+            const text = messageInput.value.trim();
+            if (text) {
+                await sendMessage(text);
+                messageInput.value = '';
+            }
+        };
+        
+        const newAttachBtn = attachBtn.cloneNode(true);
+        attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
+        newAttachBtn.onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        const imageUrl = await uploadToImgBB(file);
+                        await sendMessage("", imageUrl);
+                    } catch(e) {
+                        alert("خطأ في رفع الصورة: " + e.message);
+                    }
+                }
+            };
+            input.click();
+        };
+        
+        const newBackBtn = backBtn.cloneNode(true);
+        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+        newBackBtn.onclick = () => {
+            if (currentMessagesUnsubscribe) {
+                currentMessagesUnsubscribe();
+                currentMessagesUnsubscribe = null;
+            }
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
+            loadConversations();
+        };
     }
+    
+    window.openChat = openChat;
     
     // دالة تحميل المحادثات (قائمة الدردشات)
     async function loadConversations() {
         if (!currentUser) return;
         
-        // جلب جميع الرسائل التي تخص المستخدم الحالي
-        const q = query(
-            collection(db, "messages"),
-            where("senderId", "==", currentUser.uid)
-        );
-        
-        const senderSnap = await getDocs(q);
-        const receiverSnap = await getDocs(query(collection(db, "messages"), where("receiverId", "==", currentUser.uid)));
+        // جلب جميع المستخدمين الذين تحدثت معهم
+        const sentMessages = await getDocs(query(collection(db, "messages"), where("senderId", "==", currentUser.uid)));
+        const receivedMessages = await getDocs(query(collection(db, "messages"), where("receiverId", "==", currentUser.uid)));
         
         const usersMap = new Map();
         
-        senderSnap.forEach(doc => {
+        sentMessages.forEach(doc => {
             const data = doc.data();
             const otherId = data.receiverId;
             if (otherId && !usersMap.has(otherId)) {
@@ -831,7 +944,7 @@
             }
         });
         
-        receiverSnap.forEach(doc => {
+        receivedMessages.forEach(doc => {
             const data = doc.data();
             const otherId = data.senderId;
             if (otherId && !usersMap.has(otherId)) {
@@ -844,7 +957,6 @@
             }
         });
         
-        // جلب أسماء المستخدمين
         const container = document.getElementById('convList');
         if (usersMap.size === 0) {
             container.innerHTML = '<div>لا توجد محادثات</div>';
@@ -896,113 +1008,10 @@
             el.onclick = () => {
                 const userId = el.dataset.userid;
                 const userName = el.dataset.username;
-                currentChatUserId = userId;
-                loadChatWithUser(userId, userName);
+                openChat(userId, userName);
             };
         });
     }
-    
-    async function loadChatWithUser(userId, userName) {
-        if (currentMessagesUnsubscribe) {
-            currentMessagesUnsubscribe();
-            currentMessagesUnsubscribe = null;
-        }
-        
-        currentChatUserId = userId;
-        document.getElementById('convList').style.display = 'none';
-        document.getElementById('chatBox').style.display = 'block';
-        
-        // تحديث حالة القراءة للرسائل
-        const unreadQuery = query(
-            collection(db, "messages"),
-            where("senderId", "==", userId),
-            where("receiverId", "==", currentUser.uid),
-            where("read", "==", false)
-        );
-        const unreadSnap = await getDocs(unreadQuery);
-        for (const msg of unreadSnap.docs) {
-            await updateDoc(doc(db, "messages", msg.id), { read: true });
-        }
-        
-        // إضافة chatId لكل رسالة جديدة (للتأكد من وجود الحقل)
-        // تحديث الرسائل الموجودة لإضافة chatId
-        const messagesRef = collection(db, "messages");
-        const chatId1 = currentUser.uid + "_" + userId;
-        const chatId2 = userId + "_" + currentUser.uid;
-        
-        const existingQuery = query(messagesRef, where("chatId", "in", [chatId1, chatId2]));
-        const existingSnap = await getDocs(existingQuery);
-        for (const docSnap of existingSnap.docs) {
-            const data = docSnap.data();
-            if (!data.chatId) {
-                await updateDoc(doc(db, "messages", docSnap.id), { chatId: data.senderId + "_" + data.receiverId });
-            }
-        }
-        
-        loadMessages(userId);
-        
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendMsg');
-        const attachBtn = document.getElementById('attachImageBtn');
-        const backBtn = document.getElementById('backConv');
-        
-        const newSendBtn = sendBtn.cloneNode(true);
-        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
-        newSendBtn.onclick = async () => {
-            const text = messageInput.value.trim();
-            if (text) {
-                await sendMessage(text);
-                messageInput.value = '';
-            }
-        };
-        
-        const newAttachBtn = attachBtn.cloneNode(true);
-        attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
-        newAttachBtn.onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    try {
-                        const imageUrl = await uploadToImgBB(file);
-                        await sendMessage("", imageUrl);
-                    } catch(e) {
-                        alert("خطأ في رفع الصورة: " + e.message);
-                    }
-                }
-            };
-            input.click();
-        };
-        
-        const newBackBtn = backBtn.cloneNode(true);
-        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
-        newBackBtn.onclick = () => {
-            if (currentMessagesUnsubscribe) {
-                currentMessagesUnsubscribe();
-                currentMessagesUnsubscribe = null;
-            }
-            document.getElementById('chatBox').style.display = 'none';
-            document.getElementById('convList').style.display = 'block';
-            loadConversations();
-        };
-    }
-    
-    window.openChat = async function(sellerId, sellerName) {
-        if (!currentUser) {
-            alert("تسجيل الدخول مطلوب");
-            return;
-        }
-        if (sellerId === currentUser.uid) {
-            alert("لا يمكن مراسلة نفسك");
-            return;
-        }
-        
-        currentChatUserId = sellerId;
-        await loadChatWithUser(sellerId, sellerName);
-        showPage('messages');
-    };
     
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -1102,7 +1111,7 @@
     window.showAddModal = function() {
         let imageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>➕ إضافة حساب</h3><form id="addForm"><select id="addPlatform" required><option value="">اختر المنصة</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="اسم الحساب" required><input id="addFollowers" placeholder="عدد المتابعين" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="السعر" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="الرابط" required><textarea id="addDesc" placeholder="الوصف"></textarea><label>صور الإثبات</label><input type="file" id="addImages" accept="image/*"><div id="preview"></div><button type="submit" class="btn-primary" id="submitPublishBtn">نشر الحساب</button><button type="button" id="cancelAdd" class="btn-outline">إلغاء</button></form></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('add_account')}</h3><form id="addForm"><select id="addPlatform" required><option value="">${t('platform')}</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="${t('name')}" required><input id="addFollowers" placeholder="${t('followers')}" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="${t('price')}" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="${t('link')}" required><textarea id="addDesc" placeholder="${t('description')}"></textarea><label>${t('images')}</label><input type="file" id="addImages" accept="image/*"><div id="preview"></div><button type="submit" class="btn-primary" id="submitPublishBtn">${t('publish')}</button><button type="button" id="cancelAdd" class="btn-outline">${t('cancel')}</button></form></div>`;
         document.body.appendChild(modal);
         const preview = modal.querySelector('#preview');
         modal.querySelector('#addImages').onchange = (e) => {
@@ -1126,7 +1135,7 @@
                 });
                 alert("تم النشر بنجاح"); playSound(); modal.remove(); loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
             } catch(err) { alert("خطأ: "+err.message); }
-            finally { btn.disabled = false; btn.textContent = 'نشر الحساب'; }
+            finally { btn.disabled = false; btn.textContent = t('publish'); }
         };
         modal.querySelector('#cancelAdd').onclick = () => modal.remove();
     };
@@ -1150,7 +1159,7 @@
     function showSettingsModal() {
         if (!currentUser || currentProfileUserId !== currentUser.uid) { alert("لا يمكنك تعديل إعدادات مستخدم آخر"); return; }
         const modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>⚙️ الإعدادات</h3><input type="text" id="setName" placeholder="الاسم"><input type="email" id="setEmail" placeholder="البريد الإلكتروني"><div style="display:flex; gap:8px;"><select id="setPhoneCode" style="width:35%;">${arabCountries.map(c => `<option value="${c.code}">${c.name} (${c.code})</option>`).join('')}</select><input type="tel" id="setPhone" placeholder="رقم الهاتف" style="flex:1"></div><input type="text" id="setCity" placeholder="المدينة"><select id="setCountry">${arabCountries.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}</select><input type="text" id="setZip" placeholder="الرمز البريدي"><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveSettings">حفظ</button><button class="btn-outline" id="closeSettings">إلغاء</button></div></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>⚙️ ${t('settings')}</h3><input type="text" id="setName" placeholder="${t('name')}"><input type="email" id="setEmail" placeholder="${t('email')}"><div style="display:flex; gap:8px;"><select id="setPhoneCode" style="width:35%;">${arabCountries.map(c => `<option value="${c.code}">${c.name} (${c.code})</option>`).join('')}</select><input type="tel" id="setPhone" placeholder="${t('phone')}" style="flex:1"></div><input type="text" id="setCity" placeholder="${t('city')}"><select id="setCountry">${arabCountries.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}</select><input type="text" id="setZip" placeholder="${t('zip')}"><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveSettings">${t('save')}</button><button class="btn-outline" id="closeSettings">${t('cancel')}</button></div></div>`;
         document.body.appendChild(modal);
         const userRef = doc(db, 'users', currentUser.uid);
         getDoc(userRef).then(snap => {
@@ -1176,7 +1185,7 @@
                 city: modal.querySelector('#setCity').value, country: modal.querySelector('#setCountry').value,
                 zip: modal.querySelector('#setZip').value
             });
-            alert('تم التحديث'); modal.remove(); refreshProfilePage();
+            alert(t('updated')); modal.remove(); refreshProfilePage();
         };
         modal.querySelector('#closeSettings').onclick = () => modal.remove();
     }
@@ -1193,7 +1202,7 @@
     function showLoginScreen() {
         if(authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><h2>🔐 تسجيل الدخول</h2><input id="loginEmail" placeholder="البريد الإلكتروني"><div class="password-wrapper"><input type="password" id="loginPassword" placeholder="كلمة المرور"><i class="fas fa-eye toggle-password" data-target="loginPassword"></i></div><div class="forgot-password" id="forgotPasswordBtn">نسيت كلمة المرور؟</div><button id="doLogin" class="btn-primary" style="width:100%; margin-top:10px;">تسجيل الدخول</button><button id="googleLoginBtn" class="btn-outline" style="width:100%; margin-top:10px;"><i class="fab fa-google"></i> تسجيل الدخول عبر Google</button><div class="auth-switch" id="toRegister">إنشاء حساب جديد</div><div id="loginError" style="color:red; margin-top:10px;"></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><h2>🔐 ${t('login')}</h2><input id="loginEmail" placeholder="${t('email')}"><div class="password-wrapper"><input type="password" id="loginPassword" placeholder="${t('password')}"><i class="fas fa-eye toggle-password" data-target="loginPassword"></i></div><div class="forgot-password" id="forgotPasswordBtn">${t('forgot_password')}</div><button id="doLogin" class="btn-primary" style="width:100%; margin-top:10px;">${t('login')}</button><button id="googleLoginBtn" class="btn-outline" style="width:100%; margin-top:10px;"><i class="fab fa-google"></i> ${t('google_login')}</button><div class="auth-switch" id="toRegister">${t('create_account')}</div><div id="loginError" style="color:red; margin-top:10px;"></div></div>`;
         document.body.appendChild(authContainer);
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', () => {
@@ -1218,7 +1227,7 @@
         document.getElementById('forgotPasswordBtn').onclick = async () => {
             const email = document.getElementById('loginEmail').value;
             if (!email) { document.getElementById('loginError').innerText = 'الرجاء إدخال البريد الإلكتروني أولاً'; return; }
-            try { await sendPasswordResetEmail(auth, email); alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني'); }
+            try { await sendPasswordResetEmail(auth, email); alert(t('reset_email_sent')); }
             catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
         document.getElementById('toRegister').onclick = () => showRegisterScreen();
@@ -1227,7 +1236,7 @@
     function showRegisterScreen() {
         if(authContainer) authContainer.remove();
         authContainer = document.createElement('div'); authContainer.className = 'auth-container';
-        authContainer.innerHTML = `<div class="auth-card"><h2>📝 إنشاء حساب</h2><input id="regName" placeholder="الاسم"><input id="regEmail" placeholder="البريد الإلكتروني"><div class="password-wrapper"><input type="password" id="regPassword" placeholder="كلمة المرور"><i class="fas fa-eye toggle-password" data-target="regPassword"></i></div><div class="suggest-password" id="suggestPasswordBtn">🔑 اقتراح كلمة مرور قوية</div><select id="regCountry">${arabCountries.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}</select><button id="doRegister" class="btn-primary" style="width:100%; margin-top:10px;">إنشاء حساب</button><div class="auth-switch" id="toLogin">تسجيل الدخول</div><div id="regError" style="color:red; margin-top:10px;"></div><div id="regLoading" style="display:none;"><div class="loading-circle"></div><div>جاري إنشاء حسابك...</div></div></div>`;
+        authContainer.innerHTML = `<div class="auth-card"><h2>📝 ${t('register')}</h2><input id="regName" placeholder="${t('name')}"><input id="regEmail" placeholder="${t('email')}"><div class="password-wrapper"><input type="password" id="regPassword" placeholder="${t('password')}"><i class="fas fa-eye toggle-password" data-target="regPassword"></i></div><div class="suggest-password" id="suggestPasswordBtn">🔑 اقتراح كلمة مرور قوية</div><select id="regCountry">${arabCountries.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}</select><button id="doRegister" class="btn-primary" style="width:100%; margin-top:10px;">${t('register')}</button><div class="auth-switch" id="toLogin">${t('login')}</div><div id="regError" style="color:red; margin-top:10px;"></div><div id="regLoading" style="display:none;"><div class="loading-circle"></div><div>جاري إنشاء حسابك...</div></div></div>`;
         document.body.appendChild(authContainer);
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', () => {
@@ -1272,9 +1281,9 @@
     document.getElementById('platformFilter')?.addEventListener('change', () => loadAccounts());
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     document.getElementById('langSelectSide').addEventListener('change', (e) => {
-        const lang = e.target.value;
-        localStorage.setItem('lang', lang);
-        location.reload();
+        currentLang = e.target.value;
+        localStorage.setItem('lang', currentLang);
+        applyLanguage();
     });
     
     const searchModal = document.getElementById('searchModal');
@@ -1318,6 +1327,7 @@
             await refreshProfilePage();
             await loadAccounts();
             showPage('home');
+            applyLanguage();
         } else {
             appDiv.style.display = 'none';
             splash.style.display = 'flex';
