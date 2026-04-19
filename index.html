@@ -434,7 +434,7 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ---------- تيليجرام ----------
+    // ---------- تيليجرام (إصلاح التكرار) ----------
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     let lastUpdateId = 0;
@@ -446,31 +446,17 @@
     
     async function sendToTelegram(userName, email, phone, issueType, message, imageUrl = null, ticketId) {
         try {
-            const caption = `📢 شكوى جديدة
-
-🆔 رقم التذكرة: ${ticketId}
-👤 الاسم: ${userName}
-📧 البريد: ${email || 'غير متوفر'}
-📱 الهاتف: ${phone || 'غير متوفر'}
-📋 نوع الشكوى: ${issueType}
-
-📝 الشكوى:
-${message}`;
-            
-            const keyboard = {
-                inline_keyboard: [[{ text: "💬 الرد على الشكوى", callback_data: `reply_${ticketId}` }]]
-            };
+            const caption = `📢 شكوى جديدة\n\n🆔 رقم التذكرة: ${ticketId}\n👤 الاسم: ${userName}\n📧 البريد: ${email || 'غير متوفر'}\n📱 الهاتف: ${phone || 'غير متوفر'}\n📋 نوع الشكوى: ${issueType}\n\n📝 الشكوى:\n${message}`;
+            const keyboard = { inline_keyboard: [[{ text: "💬 الرد على الشكوى", callback_data: `reply_${ticketId}` }]] };
             
             if (imageUrl) {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: imageUrl, caption, parse_mode: "HTML", reply_markup: keyboard })
                 });
             } else {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: caption, parse_mode: "HTML", reply_markup: keyboard })
                 });
             }
@@ -481,20 +467,12 @@ ${message}`;
     async function sendReplyToUser(userId, replyMessage, ticketId) {
         try {
             await addDoc(collection(db, 'support_replies'), {
-                userId,
-                message: replyMessage,
-                replyType: 'admin',
-                adminName: 'إدارة الموقع',
-                ticketId,
-                createdAt: Date.now(),
-                read: false
+                userId, message: replyMessage, replyType: 'admin', adminName: 'إدارة الموقع',
+                ticketId, createdAt: Date.now(), read: false
             });
-            
             const q = query(collection(db, 'support_tickets'), where('ticketId', '==', ticketId));
             const snap = await getDocs(q);
-            if (!snap.empty) {
-                await updateDoc(snap.docs[0].ref, { status: 'read', readAt: Date.now() });
-            }
+            if (!snap.empty) await updateDoc(snap.docs[0].ref, { status: 'read', readAt: Date.now() });
             return true;
         } catch(e) { console.error("Error sending reply:", e); return false; }
     }
@@ -518,26 +496,16 @@ ${message}`;
                         
                         if (callbackData.startsWith('reply_')) {
                             const ticketId = callbackData.replace('reply_', '');
-                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ 
-                                    chat_id: chatId, 
-                                    text: `✏️ أرسل الرد على التذكرة ${ticketId} (رد على هذه الرسالة)`,
-                                    reply_markup: { force_reply: true, selective: true }
-                                })
+                                method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: chatId, text: `✏️ أرسل الرد على التذكرة ${ticketId} (رد على هذه الرسالة)`, reply_markup: { force_reply: true, selective: true } })
                             });
-                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                method: "POST", headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ callback_query_id: callbackId })
                             });
-                            
                             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                method: "POST", headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } })
                             });
                         }
@@ -556,17 +524,12 @@ ${message}`;
                                 await sendReplyToUser(ticket.userId, replyText, ticketId);
                                 
                                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ 
-                                        chat_id: update.message.chat.id, 
-                                        text: `✅ تم إرسال الرد إلى المستخدم.\n\n📝 الرد: ${replyText}`
-                                    })
+                                    method: "POST", headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ تم إرسال الرد إلى المستخدم.\n\n📝 الرد: ${replyText}` })
                                 });
                             } else {
                                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
+                                    method: "POST", headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ chat_id: update.message.chat.id, text: `❌ لم يتم العثور على تذكرة برقم ${ticketId}` })
                                 });
                             }
@@ -787,16 +750,11 @@ ${message}`;
             <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
             <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
             <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
-            <label>${t('images')} (اختر صور جديدة، الحد الأقصى 3)</label>
-            <input type="file" id="editImages" accept="image/*" multiple>
+            <label>${t('images')} (الصور الحالية، يمكنك حذفها أو إضافة جديدة - الحد الأقصى 3)</label>
             <div id="editImagePreview" class="image-preview">
-                ${currentImages.map((img, i) => `
-                    <div class="image-preview-item">
-                        <img src="${img}">
-                        <span class="remove-image" data-index="${i}">×</span>
-                    </div>
-                `).join('')}
+                ${currentImages.map((img, i) => `<div class="image-preview-item"><img src="${img}"><span class="remove-image" data-index="${i}">×</span></div>`).join('')}
             </div>
+            <input type="file" id="editImages" accept="image/*" multiple>
             <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">${t('save')}</button><button class="btn-outline" id="cancelEdit">${t('cancel')}</button></div>
         </div>`;
         document.body.appendChild(modal);
@@ -806,15 +764,13 @@ ${message}`;
         
         modal.querySelector('#editImages').onchange = (e) => {
             newImageFiles = Array.from(e.target.files);
-            if (currentImages.length + newImageFiles.length > 3) {
-                alert("الحد الأقصى للصور هو 3 صور");
-                newImageFiles = newImageFiles.slice(0, 3 - currentImages.length);
+            if (currentImages.length + previewDiv.children.length - currentImages.length + newImageFiles.length > 3) {
+                alert("الحد الأقصى للصور هو 3 صور"); return;
             }
             for (const file of newImageFiles) {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                    const div = document.createElement('div');
-                    div.className = 'image-preview-item';
+                    const div = document.createElement('div'); div.className = 'image-preview-item';
                     div.innerHTML = `<img src="${ev.target.result}"><span class="remove-image new-image">×</span>`;
                     previewDiv.appendChild(div);
                     div.querySelector('.remove-image').onclick = () => div.remove();
@@ -826,7 +782,7 @@ ${message}`;
         previewDiv.querySelectorAll('.remove-image').forEach(btn => {
             btn.onclick = () => {
                 const index = parseInt(btn.dataset.index);
-                currentImages.splice(index, 1);
+                if (!isNaN(index)) currentImages.splice(index, 1);
                 btn.parentElement.remove();
             };
         });
@@ -834,12 +790,7 @@ ${message}`;
         modal.querySelector('#saveEdit').onclick = async () => {
             try {
                 let finalImages = [...currentImages];
-                
-                for (const file of newImageFiles) {
-                    const url = await uploadToImgBB(file);
-                    finalImages.push(url);
-                }
-                
+                for (const file of newImageFiles) { finalImages.push(await uploadToImgBB(file)); }
                 if (finalImages.length > 3) finalImages = finalImages.slice(0, 3);
                 
                 await updateDoc(doc(db, 'accounts', accountId), {
@@ -1053,14 +1004,14 @@ ${message}`;
                 const unreadCount = unreadSnap.size;
                 totalUnread += unreadCount;
                 
-                html += `<div class="conversation-item" data-convid="${docSnap.id}" data-otherid="${otherId}" data-othername="${name.replace(/'/g, "&apos;")}">
+                html += `<div class="conversation-item" data-convid="${docSnap.id}" data-othername="${name.replace(/'/g, "&apos;")}">
                     <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
                     <div class="conversation-info">
                         <div class="conversation-name">${name}</div>
                         <div class="conversation-last-msg">${conv.lastMessage || 'اضغط للدردشة'}</div>
                     </div>
                     <div class="conversation-time">${conv.lastMessageTime ? new Date(conv.lastMessageTime).toLocaleTimeString() : ''}</div>
-                    ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
+                    ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative;">${unreadCount}</div>` : ''}
                 </div>`;
             }
             container.innerHTML = html;
