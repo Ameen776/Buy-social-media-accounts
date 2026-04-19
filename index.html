@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
     
-    <!-- SEO و Open Graph للتواصل الاجتماعي - أيقونة التطبيق -->
+    <!-- Open Graph للتواصل الاجتماعي -->
     <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
     <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
     <meta property="og:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -14,16 +14,12 @@
     <meta property="og:image:width" content="256">
     <meta property="og:image:height" content="256">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://selling-accounts-90d8e.web.app">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="سوق الحسابات">
-    <meta name="twitter:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي">
     <meta name="twitter:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- أيقونات الموقع بجميع الأحجام -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="apple-touch-icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="shortcut icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -474,7 +470,6 @@
     
     setInterval(checkTelegramReplies, 3000);
     
-    // ============ دالة رفع الصور إلى ImgBB ============
     async function uploadToImgBB(file) {
         const formData = new FormData();
         formData.append("image", file);
@@ -506,7 +501,7 @@
     let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
     function playSound() { try { notificationSound.play(); } catch(e) {} }
     
-    // ============ الترجمة المتكاملة ============
+    // ============ الترجمة ============
     const translations = {
         ar: {
             menu: "القائمة", home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق",
@@ -669,7 +664,7 @@
         });
     }
     
-    // ============ عرض منشورات المستخدم مع إمكانية تعديل الصور ============
+    // ============ عرض منشورات المستخدم ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
@@ -756,7 +751,6 @@
         }
     }
     
-    // دالة تعديل الحساب مع إمكانية تعديل الصور
     async function showEditModalWithImages(acc) {
         let newImageFiles = [];
         let existingImages = acc.images || [];
@@ -777,7 +771,6 @@
         </div>`;
         document.body.appendChild(modal);
         
-        // عرض الصور الموجودة
         const existingDiv = modal.querySelector('#existingImages');
         existingImages.forEach((imgUrl, idx) => {
             const wrapper = document.createElement('div');
@@ -985,7 +978,11 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - مع إشعارات فورية ============
+    // ============ الشات والمراسلة - إصدار مبسط ومضمون ============
+    
+    // متغيرات للشات
+    let conversationsUnsubscribe = null;
+    let currentChatUnsubscribe = null;
     
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
@@ -1007,15 +1004,13 @@
             await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
             playSound();
-            // تحديث قائمة الدردشات فوراً
-            loadConversations();
         } catch (error) {
             console.error("خطأ في الإرسال:", error);
             alert("فشل إرسال الرسالة، حاول مرة أخرى.");
         }
     }
     
-    // دالة فتح المحادثة مع عرض الرسائل القديمة
+    // دالة فتح المحادثة مع عرض جميع الرسائل
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
@@ -1052,18 +1047,19 @@
             await updateDoc(doc(db, "messages", msg.id), { read: true });
         }
         
-        // الاستماع الفوري للرسائل (بما فيها القديمة والجديدة)
+        // إلغاء الاشتراك السابق
+        if (currentChatUnsubscribe) {
+            currentChatUnsubscribe();
+        }
+        
+        // الاستماع للرسائل (القديمة والجديدة)
         const q = query(
             collection(db, "messages"),
             where("chatId", "==", chatId),
             orderBy("timestamp", "asc")
         );
         
-        if (currentMessagesUnsubscribe) {
-            currentMessagesUnsubscribe();
-        }
-        
-        currentMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
+        currentChatUnsubscribe = onSnapshot(q, (snapshot) => {
             messagesContainer.innerHTML = "";
             if (snapshot.empty) {
                 messagesContainer.innerHTML = '<div class="loader">لا توجد رسائل بعد، ابدأ المحادثة</div>';
@@ -1125,9 +1121,9 @@
         const newBackBtn = backBtn.cloneNode(true);
         backBtn.parentNode.replaceChild(newBackBtn, backBtn);
         newBackBtn.onclick = () => {
-            if (currentMessagesUnsubscribe) {
-                currentMessagesUnsubscribe();
-                currentMessagesUnsubscribe = null;
+            if (currentChatUnsubscribe) {
+                currentChatUnsubscribe();
+                currentChatUnsubscribe = null;
             }
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
@@ -1139,36 +1135,37 @@
     async function loadConversations() {
         if (!currentUser) return;
         
-        // الاستماع الفوري للرسائل لتحديث قائمة الدردشات
-        const q = query(collection(db, "messages"));
-        
-        if (currentMessagesUnsubscribe) {
-            currentMessagesUnsubscribe();
+        // إلغاء الاشتراك السابق
+        if (conversationsUnsubscribe) {
+            conversationsUnsubscribe();
         }
         
-        currentMessagesUnsubscribe = onSnapshot(q, async (snap) => {
+        // الاستماع لجميع الرسائل لتحديث قائمة الدردشات
+        conversationsUnsubscribe = onSnapshot(collection(db, "messages"), async () => {
+            // جلب جميع المحادثات الفريدة
+            const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid));
+            const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid));
+            
+            const [senderSnap, receiverSnap] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
+            
             const usersMap = new Map();
             
-            snap.forEach(doc => {
+            senderSnap.forEach(doc => {
                 const data = doc.data();
-                if (data.senderId === currentUser.uid && data.receiverId) {
-                    const otherId = data.receiverId;
-                    if (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp) {
-                        usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                    }
-                } else if (data.receiverId === currentUser.uid && data.senderId) {
-                    const otherId = data.senderId;
-                    if (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp) {
-                        usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                        // إشعار صوتي عند وصول رسالة جديدة من شخص آخر (إذا لم نكن في صفحة المحادثة معه)
-                        if (currentChatUserId !== otherId) {
-                            playSound();
-                            // تحديث الإشعار المرئي
-                            const badge = document.getElementById('msgNotification');
-                            const currentCount = parseInt(badge.innerText) || 0;
-                            badge.innerText = currentCount + 1;
-                            badge.style.display = 'flex';
-                        }
+                const otherId = data.receiverId;
+                if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
+                    usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
+                }
+            });
+            
+            receiverSnap.forEach(doc => {
+                const data = doc.data();
+                const otherId = data.senderId;
+                if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
+                    usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
+                    // إشعار صوتي عند وصول رسالة جديدة من شخص آخر (إذا لم نكن في صفحة المحادثة معه)
+                    if (currentChatUserId !== otherId) {
+                        playSound();
                     }
                 }
             });
@@ -1176,6 +1173,8 @@
             const container = document.getElementById('convList');
             if (usersMap.size === 0) {
                 container.innerHTML = '<div>لا توجد محادثات</div>';
+                const badge = document.getElementById('msgNotification');
+                badge.style.display = 'none';
                 return;
             }
             
@@ -1183,7 +1182,7 @@
             let totalUnread = 0;
             
             // ترتيب المحادثات حسب آخر رسالة (الأحدث أولاً)
-            const sortedUsers = Array.from(usersMap.entries()).sort((a, b) => b[1].lastTime - a[1].lastTime);
+            const sortedUsers = Array.from(usersMap.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
             
             for (const [otherId, chatInfo] of sortedUsers) {
                 const userSnap = await getDoc(doc(db, 'users', otherId));
@@ -1328,7 +1327,7 @@
         container.innerHTML = html;
     }
     
-    // ============ إضافة حساب (مع صور اختيارية) ============
+    // ============ إضافة حساب ============
     window.showAddModal = function() {
         let imageFiles = [];
         const modal = document.createElement('div'); modal.className = 'modal';
@@ -1615,7 +1614,10 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
+            loadConversations(); // بدء الاستماع للمحادثات
         } else {
+            if (conversationsUnsubscribe) conversationsUnsubscribe();
+            if (currentChatUnsubscribe) currentChatUnsubscribe();
             appDiv.style.display = 'none';
             splash.style.display = 'flex';
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
