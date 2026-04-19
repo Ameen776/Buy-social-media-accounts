@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
     
-    <!-- Open Graph -->
+    <!-- Open Graph للتواصل الاجتماعي - أيقونة الموقع -->
     <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
     <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
     <meta property="og:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -27,7 +27,6 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="apple-touch-icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <link rel="shortcut icon" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
-    <meta name="theme-color" content="#0b0b1a">
     
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
@@ -128,7 +127,7 @@
         
         /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-header); display: flex; justify-content: space-around; padding: 12px; z-index: 100; border-top: 1px solid var(--border-color); backdrop-filter: blur(10px); }
-        .bottom-nav button { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; position: relative; }
+        .bottom-nav button { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
         .bottom-nav button i { font-size: 22px; }
         .bottom-nav button.active { color: var(--accent); }
         .bottom-nav button:hover { color: var(--accent); }
@@ -328,7 +327,7 @@
     </div>
 
     <div class="search-modal" id="searchModal">
-        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID...">
+        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID (10 أرقام)...">
         <div id="searchResults" class="search-results" style="display: none;"></div>
     </div>
     
@@ -398,11 +397,11 @@
         </form>
         <div id="supportTickets" class="support-reply">
             <h4><i class="fas fa-ticket-alt"></i> تذاكر الدعم</h4>
-            <div id="ticketsList">لا توجد تذاكر</div>
+            <div id="ticketsList">جار التحميل...</div>
         </div>
         <div id="supportReplies" class="support-reply" style="margin-top:15px;">
             <h4><i class="fas fa-reply-all"></i> ردود الدعم</h4>
-            <div id="repliesList">لا توجد ردود</div>
+            <div id="repliesList">جار التحميل...</div>
         </div>
     </div>
     
@@ -427,7 +426,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
     
     const firebaseConfig = {
@@ -445,7 +444,7 @@
     const googleProvider = new GoogleAuthProvider();
     const IMGBB_KEY = "a76371f79ef3069a4103d3493271efb5";
     
-    // ============ بوت التليجرام المحسن ============
+    // ============ بوت التليجرام ============
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     
@@ -591,6 +590,7 @@ ${message}`;
         return await getDownloadURL(storageRef);
     }
     
+    // ============ قائمة الدول العربية ============
     const arabCountries = [
         { name: "السعودية", code: "+966" }, { name: "مصر", code: "+20" }, { name: "الإمارات", code: "+971" },
         { name: "الأردن", code: "+962" }, { name: "الكويت", code: "+965" }, { name: "عمان", code: "+968" },
@@ -602,6 +602,7 @@ ${message}`;
         { name: "جزر القمر", code: "+269" }
     ];
     
+    // ============ الترجمة ============
     const translations = {
         ar: { menu: "القائمة", home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", app_name: "سوق الحسابات", available_accounts: "الحسابات المتاحة", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني", issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح", other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", publish: "نشر", chats: "الدردشات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟", reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة" },
         en: { menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About", dark_mode: "Dark Mode", logout: "Logout", app_name: "Accounts Market", available_accounts: "Available Accounts", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support", issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion", other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts", secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", publish: "Publish", chats: "Chats", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?", reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views" },
@@ -624,6 +625,7 @@ ${message}`;
     let currentUser = null;
     let currentProfileUserId = null;
     let currentPage = 'home';
+    let currentConversationId = null;
     let currentMessagesUnsubscribe = null;
     let mediaRecorder = null;
     let audioChunks = [];
@@ -854,12 +856,10 @@ ${message}`;
         showPage('profile');
     };
     
-    // ============ الشات (تم تعديله بالكامل حسب الطلب) ============
-    let currentConversationId = null;
-    
+    // ============ الشات والمراسلة - تم إصلاحها بالكامل ============
     window.openChat = async function(sellerId, sellerName) {
         if (!currentUser) {
-            alert("سجل دخول أولاً");
+            alert("تسجيل الدخول مطلوب");
             return;
         }
         if (sellerId === currentUser.uid) {
@@ -871,6 +871,7 @@ ${message}`;
         const convRef = doc(db, 'conversations', convId);
         const convSnap = await getDoc(convRef);
         
+        // 🔥 إنشاء المحادثة مع بيانات أولية لتظهر في الدردشات
         if (!convSnap.exists()) {
             await setDoc(convRef, {
                 participants: [currentUser.uid, sellerId],
@@ -885,10 +886,34 @@ ${message}`;
         loadConversation(convId, sellerName);
     };
     
+    // إرسال الرسالة مع تحديث lastMessage
+    async function sendMessageToConversation(convId, text, imageUrl = null, audioUrl = null) {
+        const messagesRef = collection(db, 'conversations', convId, 'messages');
+        const messageData = {
+            senderId: currentUser.uid,
+            timestamp: Date.now(),
+            read: false
+        };
+        if (text) messageData.text = text;
+        if (imageUrl) messageData.imageUrl = imageUrl;
+        if (audioUrl) messageData.audioUrl = audioUrl;
+        
+        await addDoc(messagesRef, messageData);
+        
+        // 🔥 تحديث آخر رسالة في المحادثة (مهم جدًا لظهورها في الدردشات)
+        const lastMessage = text || (imageUrl ? "📷 صورة" : "🎤 رسالة صوتية");
+        await updateDoc(doc(db, 'conversations', convId), {
+            lastMessage: lastMessage,
+            lastMessageTime: Date.now()
+        });
+        
+        playSound();
+        // تحديث قائمة الدردشات
+        loadConversations();
+    }
+    
     async function loadConversations() {
         if (!currentUser) return;
-        const container = document.getElementById('convList');
-        
         const q = query(
             collection(db, 'conversations'),
             where('participants', 'array-contains', currentUser.uid),
@@ -896,8 +921,9 @@ ${message}`;
         );
         
         onSnapshot(q, async (snap) => {
+            const container = document.getElementById('convList');
             if (snap.empty) {
-                container.innerHTML = '<div class="card" style="text-align:center; padding:20px;">لا توجد محادثات بعد</div>';
+                container.innerHTML = '<div>لا توجد محادثات</div>';
                 return;
             }
             
@@ -907,33 +933,34 @@ ${message}`;
             for (const docSnap of snap.docs) {
                 const conv = docSnap.data();
                 const otherId = conv.participants.find(id => id !== currentUser.uid);
-                if (!otherId) continue;
-                
                 const userSnap = await getDoc(doc(db, 'users', otherId));
-                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
+                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0, 6);
                 const avatar = userSnap.exists() ? userSnap.data().avatar : null;
                 
-                const unreadQuery = query(
-                    collection(db, 'conversations', docSnap.id, 'messages'),
-                    where('read', '==', false),
-                    where('senderId', '!=', currentUser.uid)
-                );
+                // حساب الرسائل غير المقروءة
+                const messagesRef = collection(db, 'conversations', docSnap.id, 'messages');
+                const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
                 const unreadSnap = await getDocs(unreadQuery);
                 const unreadCount = unreadSnap.size;
                 totalUnread += unreadCount;
                 
-                html += `<div class="conversation-item" data-convid="${docSnap.id}" data-othername="${name.replace(/'/g, "&apos;")}">
-                    <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
-                    <div class="conversation-info">
-                        <div class="conversation-name">${name}</div>
-                        <div class="conversation-last-msg">${conv.lastMessage || 'اضغط للدردشة'}</div>
+                const lastMsg = conv.lastMessage || "ابدأ المحادثة";
+                const time = conv.lastMessageTime ? new Date(conv.lastMessageTime).toLocaleTimeString() : '';
+                
+                html += `
+                    <div class="conversation-item" data-convid="${docSnap.id}" data-othername="${name}">
+                        <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">${name}</div>
+                            <div class="conversation-last-msg">${lastMsg}</div>
+                        </div>
+                        <div class="conversation-time">${time}</div>
+                        ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
                     </div>
-                    <div class="conversation-time">${conv.lastMessageTime ? new Date(conv.lastMessageTime).toLocaleTimeString() : ''}</div>
-                    ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative;">${unreadCount}</div>` : ''}
-                </div>`;
+                `;
             }
-            container.innerHTML = html;
             
+            container.innerHTML = html;
             const badge = document.getElementById('msgNotification');
             if (totalUnread > 0) {
                 badge.style.display = 'flex';
@@ -943,24 +970,33 @@ ${message}`;
             }
             
             document.querySelectorAll('.conversation-item').forEach(el => {
-                el.onclick = () => loadConversation(el.dataset.convid, el.dataset.othername);
+                el.onclick = () => {
+                    currentConversationId = el.dataset.convid;
+                    loadConversation(el.dataset.convid, el.dataset.othername);
+                };
             });
         });
     }
     
     async function loadConversation(convId, otherName) {
-        if (currentMessagesUnsubscribe) { currentMessagesUnsubscribe(); currentMessagesUnsubscribe = null; }
+        if (currentMessagesUnsubscribe) {
+            currentMessagesUnsubscribe();
+            currentMessagesUnsubscribe = null;
+        }
+        
         document.getElementById('convList').style.display = 'none';
         document.getElementById('chatBox').style.display = 'block';
         
         const messagesRef = collection(db, 'conversations', convId, 'messages');
         
+        // تحديث حالة القراءة للرسائل
         const unreadQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', currentUser.uid));
         const unreadSnap = await getDocs(unreadQuery);
         for (const msg of unreadSnap.docs) {
             await updateDoc(doc(db, 'conversations', convId, 'messages', msg.id), { read: true });
         }
         
+        // الاستماع للرسائل
         currentMessagesUnsubscribe = onSnapshot(query(messagesRef, orderBy('timestamp')), (snap) => {
             const div = document.getElementById('chatMessages');
             div.innerHTML = '';
@@ -971,45 +1007,57 @@ ${message}`;
                 if (data.text) content = `<div>${escapeHtml(data.text)}</div>`;
                 else if (data.imageUrl) content = `<img src="${data.imageUrl}" class="message-image" onclick="window.open('${data.imageUrl}','_blank')">`;
                 else if (data.audioUrl) content = `<div class="message-audio"><audio controls src="${data.audioUrl}"></audio></div>`;
-                div.innerHTML += `<div class="message ${isMe ? 'sent' : 'received'}"><div class="message-bubble">${content}<div style="font-size:0.6rem; margin-top:4px;">${data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : ''}</div></div></div>`;
+                div.innerHTML += `
+                    <div class="message ${isMe ? 'sent' : 'received'}">
+                        <div class="message-bubble">
+                            ${content}
+                            <div style="font-size:0.6rem; margin-top:4px;">${data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : ''}</div>
+                        </div>
+                    </div>
+                `;
             });
             div.scrollTop = div.scrollHeight;
         });
         
+        // إعداد أزرار الإرسال
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendMsg');
         const attachBtn = document.getElementById('attachImageBtn');
         const voiceBtn = document.getElementById('voiceRecordBtn');
         
+        // زر إرسال الرسالة النصية
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
         newSendBtn.onclick = async () => {
             const text = messageInput.value.trim();
             if (text) {
-                await addDoc(messagesRef, { text, senderId: currentUser.uid, timestamp: Date.now(), read: false });
-                await updateDoc(doc(db, 'conversations', convId), { lastMessage: text, lastMessageTime: Date.now() });
+                await sendMessageToConversation(convId, text);
                 messageInput.value = '';
-                playSound();
             }
         };
         
+        // زر إرفاق صورة
         const newAttachBtn = attachBtn.cloneNode(true);
         attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
         newAttachBtn.onclick = () => {
-            const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
             input.onchange = async (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     try {
                         const imageUrl = await uploadToImgBB(file);
-                        await addDoc(messagesRef, { imageUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
-                        await updateDoc(doc(db, 'conversations', convId), { lastMessage: '📷 صورة', lastMessageTime: Date.now() });
-                        playSound();
-                    } catch(e) { alert("خطأ في رفع الصورة: " + e.message); }
+                        await sendMessageToConversation(convId, null, imageUrl);
+                    } catch(e) {
+                        alert("خطأ في رفع الصورة: " + e.message);
+                    }
                 }
-            }; input.click();
+            };
+            input.click();
         };
         
+        // زر التسجيل الصوتي
         const newVoiceBtn = voiceBtn.cloneNode(true);
         voiceBtn.parentNode.replaceChild(newVoiceBtn, voiceBtn);
         newVoiceBtn.onclick = async () => {
@@ -1018,39 +1066,63 @@ ${message}`;
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
+                    
                     mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
                     mediaRecorder.onstop = async () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         try {
                             const audioUrl = await uploadToStorage(audioBlob, `chat_audio/${convId}`);
-                            await addDoc(messagesRef, { audioUrl, senderId: currentUser.uid, timestamp: Date.now(), read: false });
-                            await updateDoc(doc(db, 'conversations', convId), { lastMessage: '🎤 رسالة صوتية', lastMessageTime: Date.now() });
-                            playSound();
-                        } catch(e) { alert("خطأ في رفع الصوت: " + e.message); }
+                            await sendMessageToConversation(convId, null, null, audioUrl);
+                        } catch(e) {
+                            alert("خطأ في رفع الصوت: " + e.message);
+                        }
                         stream.getTracks().forEach(t => t.stop());
                         newVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
                         isRecording = false;
                     };
-                    mediaRecorder.start(); isRecording = true;
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
                     newVoiceBtn.innerHTML = '<span class="recording-indicator"><span class="pulse"></span> تسجيل...</span>';
-                    setTimeout(() => { if (mediaRecorder && isRecording) mediaRecorder.stop(); }, 30000);
-                } catch(e) { alert("لا يمكن الوصول إلى الميكروفون: " + e.message); }
-            } else { if (mediaRecorder && isRecording) mediaRecorder.stop(); }
+                    
+                    setTimeout(() => {
+                        if (mediaRecorder && isRecording) mediaRecorder.stop();
+                    }, 30000);
+                } catch(e) {
+                    alert("لا يمكن الوصول إلى الميكروفون: " + e.message);
+                }
+            } else {
+                if (mediaRecorder && isRecording) mediaRecorder.stop();
+            }
         };
         
-        document.getElementById('backConv').onclick = () => {
-            if (currentMessagesUnsubscribe) { currentMessagesUnsubscribe(); currentMessagesUnsubscribe = null; }
+        // زر الرجوع
+        const backBtn = document.getElementById('backConv');
+        const newBackBtn = backBtn.cloneNode(true);
+        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+        newBackBtn.onclick = () => {
+            if (currentMessagesUnsubscribe) {
+                currentMessagesUnsubscribe();
+                currentMessagesUnsubscribe = null;
+            }
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
             loadConversations();
         };
     }
     
-    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
     
-    // ============ باقي الدوال (البحث، التذاكر، النشر) ============
+    // ============ البحث عن المستخدمين ============
     async function searchUsers(searchTerm) {
-        if (!searchTerm || searchTerm.length < 2) { document.getElementById('searchResults').style.display = 'none'; return; }
+        if (!searchTerm || searchTerm.length < 2) {
+            document.getElementById('searchResults').style.display = 'none';
+            return;
+        }
         try {
             const usersRef = collection(db, 'users');
             const nameQuery = query(usersRef, where('name', '>=', searchTerm), where('name', '<=', searchTerm + '\uf8ff'), limit(10));
@@ -1062,19 +1134,28 @@ ${message}`;
             nameSnap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             idSnap.forEach(doc => { if (doc.id !== currentUser?.uid && !results.find(r => r.id === doc.id)) results.push({ id: doc.id, ...doc.data() }); });
             const resultsContainer = document.getElementById('searchResults');
-            if (results.length === 0) { resultsContainer.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>'; resultsContainer.style.display = 'block'; return; }
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>';
+                resultsContainer.style.display = 'block';
+                return;
+            }
             let html = '';
             for (const user of results) {
                 html += `<div class="search-result-item" data-userid="${user.id}" data-username="${user.name || 'مستخدم'}">
                     <img class="search-result-avatar" src="${user.avatar || 'https://via.placeholder.com/40'}">
-                    <div class="search-result-info"><div class="search-result-name">${user.name || 'مستخدم'}</div><div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div></div>
+                    <div class="search-result-info">
+                        <div class="search-result-name">${user.name || 'مستخدم'}</div>
+                        <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
+                    </div>
                     <i class="fas fa-comment" style="color:var(--accent);"></i>
                 </div>`;
             }
-            resultsContainer.innerHTML = html; resultsContainer.style.display = 'block';
+            resultsContainer.innerHTML = html;
+            resultsContainer.style.display = 'block';
             document.querySelectorAll('.search-result-item').forEach(el => {
                 el.onclick = () => {
-                    const userId = el.dataset.userid; const userName = el.dataset.username;
+                    const userId = el.dataset.userid;
+                    const userName = el.dataset.username;
                     document.getElementById('searchModal').classList.remove('open');
                     openChat(userId, userName);
                 };
@@ -1082,51 +1163,53 @@ ${message}`;
         } catch(e) { console.error(e); }
     }
     
+    // ============ الدعم الفني ============
     async function loadUserTickets() {
         if (!currentUser) return;
+        const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
         const container = document.getElementById('ticketsList');
-        try {
-            const q = query(collection(db, 'support_tickets'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-            const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = '<div class="card" style="padding:15px; text-align:center;">لا توجد تذاكر دعم</div>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const ticket = doc.data();
-                const statusClass = ticket.status === 'read' ? 'status-read' : 'status-pending';
-                const statusText = ticket.status === 'read' ? 'تمت القراءة ✓' : 'جاري الانتظار ⏳';
-                html += `<div class="reply-item">
-                    <strong>📌 تذكرة رقم: ${ticket.ticketId}</strong>
-                    <span class="ticket-status ${statusClass}">${statusText}</span><br>
-                    <small>${new Date(ticket.createdAt).toLocaleString()}</small><br>
-                    📝 ${ticket.issueType}<br>
-                    📄 ${ticket.message.substring(0, 100)}${ticket.message.length > 100 ? '...' : ''}
-                </div>`;
-            });
-            container.innerHTML = html;
-        } catch(e) { container.innerHTML = '<div class="card" style="padding:15px; text-align:center; color:red;">خطأ في تحميل التذاكر</div>'; }
+        if (snap.empty) { container.innerHTML = 'لا توجد تذاكر دعم'; return; }
+        let html = '';
+        snap.forEach(doc => {
+            const ticket = doc.data();
+            const statusClass = ticket.status === 'read' ? 'status-read' : 'status-pending';
+            const statusText = ticket.status === 'read' ? 'تمت القراءة ✓' : 'جاري الانتظار ⏳';
+            html += `<div class="reply-item">
+                <strong>📌 تذكرة رقم: ${ticket.ticketId}</strong>
+                <span class="ticket-status ${statusClass}">${statusText}</span><br>
+                <small>${new Date(ticket.createdAt).toLocaleString()}</small><br>
+                📝 ${ticket.issueType}<br>
+                📄 ${ticket.message.substring(0, 100)}${ticket.message.length > 100 ? '...' : ''}
+            </div>`;
+        });
+        container.innerHTML = html;
     }
     
     async function loadSupportReplies() {
         if (!currentUser) return;
+        const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
         const container = document.getElementById('repliesList');
-        try {
-            const q = query(collection(db, 'support_replies'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-            const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = '<div class="card" style="padding:15px; text-align:center;">لا توجد ردود حتى الآن</div>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const reply = doc.data();
-                const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
-                const icon = reply.replyType === 'admin' ? '📌' : (reply.replyType === 'system' ? '⚙️' : '📝');
-                html += `<div class="reply-item ${replyClass}"><strong>${icon} ${reply.replyType === 'admin' ? 'إدارة الموقع' : (reply.replyType === 'system' ? 'النظام' : 'ردك')}:</strong><br>${reply.message}<br><small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small></div>`;
-            });
-            container.innerHTML = html;
-        } catch(e) { container.innerHTML = '<div class="card" style="padding:15px; text-align:center; color:red;">خطأ في تحميل الردود</div>'; }
+        if (snap.empty) { container.innerHTML = 'لا توجد ردود حتى الآن'; return; }
+        let html = '';
+        snap.forEach(doc => {
+            const reply = doc.data();
+            const replyClass = reply.replyType === 'admin' ? 'reply-admin' : '';
+            const icon = reply.replyType === 'admin' ? '📌' : (reply.replyType === 'system' ? '⚙️' : '📝');
+            html += `<div class="reply-item ${replyClass}">
+                <strong>${icon} ${reply.replyType === 'admin' ? 'إدارة الموقع' : (reply.replyType === 'system' ? 'النظام' : 'ردك')}:</strong><br>
+                ${reply.message}<br>
+                <small style="color:var(--text-secondary);">${new Date(reply.createdAt).toLocaleString()}</small>
+            </div>`;
+        });
+        container.innerHTML = html;
     }
     
     window.showAddModal = function() {
         let imageFiles = [];
-        const modal = document.createElement('div'); modal.className = 'modal';
+        const modal = document.createElement('div');
+        modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content"><h3>➕ ${t('add_account')}</h3><form id="addForm"><select id="addPlatform" required><option value="">${t('platform')}</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select><input id="addName" placeholder="${t('name')}" required><input id="addFollowers" placeholder="${t('followers')}" type="number" required><div class="price-currency-row"><input id="addPrice" placeholder="${t('price')}" type="number" required><select id="addCurrency"><option>ريال سعودي</option><option>ريال يمني</option><option>دولار</option></select></div><input id="addLink" placeholder="${t('link')}" required><textarea id="addDesc" placeholder="${t('description')}"></textarea><label>${t('images')}</label><input type="file" id="addImages" accept="image/*"><div id="preview"></div><button type="submit" class="btn-primary" id="submitPublishBtn">${t('publish')}</button><button type="button" id="cancelAdd" class="btn-outline">${t('cancel')}</button></form></div>`;
         document.body.appendChild(modal);
         const preview = modal.querySelector('#preview');
