@@ -262,25 +262,25 @@
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     
     <div class="sidebar" id="sidebar">
-        <div style="font-size:20px; margin-bottom:20px; font-weight:bold;">القائمة</div>
-        <button onclick="window.showPage('home')"><i class="fas fa-home"></i> الرئيسية</button>
-        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i> إضافة حساب</button>
-        <button onclick="window.showPage('messages')"><i class="fas fa-comment-dots"></i> الرسائل</button>
-        <button onclick="window.showPage('support')"><i class="fas fa-headset"></i> الدعم الفني</button>
-        <button onclick="window.showPage('about')"><i class="fas fa-info-circle"></i> عن التطبيق</button>
-        <button id="themeToggleSide"><i class="fas fa-moon"></i> الوضع الليلي</button>
+        <div style="font-size:20px; margin-bottom:20px; font-weight:bold;" data-i18n="menu">القائمة</div>
+        <button onclick="window.showPage('home')" data-i18n="home"><i class="fas fa-home"></i> الرئيسية</button>
+        <button onclick="window.showAddModal()" data-i18n="add_account"><i class="fas fa-plus-circle"></i> إضافة حساب</button>
+        <button onclick="window.showPage('messages')" data-i18n="messages"><i class="fas fa-comment-dots"></i> الرسائل</button>
+        <button onclick="window.showPage('support')" data-i18n="support"><i class="fas fa-headset"></i> الدعم الفني</button>
+        <button onclick="window.showPage('about')" data-i18n="about"><i class="fas fa-info-circle"></i> عن التطبيق</button>
+        <button id="themeToggleSide" data-i18n="dark_mode"><i class="fas fa-moon"></i> الوضع الليلي</button>
         <select id="langSelectSide" style="margin-top:10px;">
             <option value="ar">🇸🇦 العربية</option><option value="en">🇺🇸 English</option>
             <option value="fr">🇫🇷 Français</option><option value="tr">🇹🇷 Türkçe</option>
         </select>
-        <button id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button id="logoutBtnSide" data-i18n="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </div>
     
     <div class="header">
         <div class="header-left">
             <button class="profile-icon" id="profileIcon"><i class="fas fa-user-circle"></i></button>
         </div>
-        <div class="logo">سوق الحسابات</div>
+        <div class="logo" data-i18n="app_name">سوق الحسابات</div>
         <div class="header-right">
             <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
             <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
@@ -293,10 +293,10 @@
     </div>
     
     <div id="homePage" class="page active-page">
-        <h2>الحسابات المتاحة</h2>
+        <h2 data-i18n="available_accounts">الحسابات المتاحة</h2>
         <div class="filter-row">
-            <input type="text" id="searchInput" placeholder="بحث...">
-            <select id="platformFilter"><option value="all">الكل</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
+            <input type="text" id="searchInput" placeholder="بحث..." data-i18n-placeholder="search">
+            <select id="platformFilter"><option value="all" data-i18n="all">الكل</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Snapchat</option><option>Twitter</option><option>Facebook</option></select>
         </div>
         <div id="accountsList" class="accounts-grid">جار التحميل...</div>
     </div>
@@ -304,7 +304,7 @@
     <div id="profilePage" class="page">
         <div class="profile-header">
             <div class="settings-icon" id="settingsIcon"><i class="fas fa-cog"></i></div>
-            <h2 id="profileTitle" style="text-align:center;">الملف الشخصي</h2>
+            <h2 id="profileTitle" style="text-align:center;" data-i18n="profile">الملف الشخصي</h2>
         </div>
         <div style="text-align:center;">
             <img id="avatarImg" class="profile-avatar" src="https://via.placeholder.com/80">
@@ -314,40 +314,46 @@
             
             <div class="profile-stats-container">
                 <div class="profile-stats-inline">
-                    <div class="profile-stat"><span id="followersCount">0</span><small>متابع</small></div>
-                    <div class="profile-stat"><span id="followingCount">0</span><small>يتابع</small></div>
+                    <div class="profile-stat"><span id="followersCount">0</span><small data-i18n="followers">متابع</small></div>
+                    <div class="profile-stat"><span id="followingCount">0</span><small data-i18n="following">يتابع</small></div>
                 </div>
                 <div id="followButtonContainer"></div>
             </div>
         </div>
         
         <div style="margin-top:20px;">
-            <h3>المنشورات</h3>
+            <h3 data-i18n="posts">المنشورات</h3>
             <div id="userAccountsList" class="my-accounts-grid">جار التحميل...</div>
         </div>
     </div>
     
     <div id="messagesPage" class="page">
-        <h2>المحادثات</h2>
+        <h2 data-i18n="conversations">المحادثات</h2>
         <div id="convList" class="chat-container"></div>
         <div id="chatBox" style="display:none;">
             <div id="chatMessages" class="chat-messages"></div>
             <div class="chat-input-area">
                 <button class="attach-btn" id="attachImageBtn"><i class="fas fa-image"></i></button>
-                <input type="text" id="messageInput" placeholder="اكتب رسالة...">
+                <input type="text" id="messageInput" placeholder="اكتب رسالة..." data-i18n-placeholder="type_message">
                 <button class="send-btn" id="sendMsg"><i class="fas fa-paper-plane"></i></button>
             </div>
-            <button id="backConv" class="btn-outline" style="margin-top:10px;">رجوع</button>
+            <button id="backConv" class="btn-outline" style="margin-top:10px;" data-i18n="back">رجوع</button>
         </div>
     </div>
     
     <div id="supportPage" class="page">
-        <h2>الدعم الفني</h2>
+        <h2 data-i18n="support_title">الدعم الفني</h2>
         <form id="supportForm">
-            <select id="issueType"><option>مشكلة في الشراء</option><option>مشكلة في البيع</option><option>مشكلة في الدردشة</option><option>اقتراح</option><option>أخرى</option></select>
-            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..."></textarea>
-            <div><label>إرفاق صورة</label><input type="file" id="supportImage" accept="image/*"><div id="supportImagePreview" class="support-preview"></div></div>
-            <button type="submit" class="btn-primary">إرسال</button>
+            <select id="issueType">
+                <option data-i18n="issue_buy">مشكلة في الشراء</option>
+                <option data-i18n="issue_sell">مشكلة في البيع</option>
+                <option data-i18n="issue_chat">مشكلة في الدردشة</option>
+                <option data-i18n="suggestion">اقتراح</option>
+                <option data-i18n="other">أخرى</option>
+            </select>
+            <textarea id="supportMsg" placeholder="اكتب مشكلتك بالتفصيل..." data-i18n-placeholder="support_placeholder"></textarea>
+            <div><label data-i18n="attach_image">إرفاق صورة</label><input type="file" id="supportImage" accept="image/*"><div id="supportImagePreview" class="support-preview"></div></div>
+            <button type="submit" class="btn-primary" data-i18n="send">إرسال</button>
         </form>
         <div id="supportTickets" class="support-reply">
             <h4><i class="fas fa-ticket-alt"></i> تذاكر الدعم</h4>
@@ -361,19 +367,19 @@
     
     <div id="aboutPage" class="page">
         <div class="about-3d"><div class="about-card-3d"><div class="about-shield-3d"><i class="fas fa-shield-alt"></i></div>
-        <h1>Social Accounts Market</h1><p>المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي</p>
+        <h1>Social Accounts Market</h1><p data-i18n="about_desc">المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي</p>
         <div style="display:flex; justify-content:center; gap:30px; margin:30px 0;">
-            <div><i class="fas fa-lock" style="color:var(--accent); font-size:2rem;"></i><br>آمن ومضمون</div>
-            <div><i class="fas fa-bolt" style="color:var(--accent); font-size:2rem;"></i><br>فوري وسريع</div>
-            <div><i class="fas fa-headset" style="color:var(--accent); font-size:2rem;"></i><br>دعم 24/7</div>
+            <div><i class="fas fa-lock" style="color:var(--accent); font-size:2rem;"></i><br><span data-i18n="secure">آمن ومضمون</span></div>
+            <div><i class="fas fa-bolt" style="color:var(--accent); font-size:2rem;"></i><br><span data-i18n="fast">فوري وسريع</span></div>
+            <div><i class="fas fa-headset" style="color:var(--accent); font-size:2rem;"></i><br><span data-i18n="support247">دعم 24/7</span></div>
         </div>
-        <p>تم التطوير بواسطة</p><div class="developer-name">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</div><p>مطور ويب وتطبيقات</p></div></div>
+        <p data-i18n="developed_by">تم التطوير بواسطة</p><div class="developer-name">𝘼𝙢𝙚𝙚𝙣 𝘼𝙡-𝙕𝙖𝙬𝙖𝙝𝙞</div><p>مطور ويب وتطبيقات</p></div></div>
     </div>
     
     <div class="bottom-nav">
-        <button onclick="window.showPage('home')"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i><span>نشر</span></button>
-        <button onclick="window.showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span>الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
+        <button onclick="window.showPage('home')"><i class="fas fa-home"></i><span data-i18n="home">الرئيسية</span></button>
+        <button onclick="window.showAddModal()"><i class="fas fa-plus-circle"></i><span data-i18n="publish">نشر</span></button>
+        <button onclick="window.showPage('messages')" id="navMessagesBtn"><i class="fas fa-comment-dots"></i><span data-i18n="chats">الدردشات</span><span id="msgNotification" class="notification-badge" style="display:none;">0</span></button>
     </div>
 </div>
 
@@ -515,20 +521,89 @@
     let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
     function playSound() { try { notificationSound.play(); } catch(e) {} }
     
-    // ============ الترجمة ============
+    // ============ الترجمة المتكاملة ============
     const translations = {
-        ar: { home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق", dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات", edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات", name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي", save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث", login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد", platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", publish: "نشر", conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني", issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح", other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي", secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", chats: "الدردشات", forgot_password: "نسيت كلمة المرور؟", reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة" },
-        en: { home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About", dark_mode: "Dark Mode", logout: "Logout", search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts", edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings", name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code", save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated", login: "Login", register: "Register", password: "Password", create_account: "Create Account", platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", publish: "Publish", conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support", issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion", other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts", secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", chats: "Chats", forgot_password: "Forgot password?", reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views" },
-        fr: { home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos", dark_mode: "Mode nuit", logout: "Déconnexion", search: "Rechercher...", all: "Tous", profile: "Profil", followers: "Abonnés", following: "Abonnements", posts: "Annonces", edit: "Modifier", delete: "Supprimer", chat: "Discuter", details: "Détails", follow: "Suivre", unfollow: "Ne plus suivre", settings: "Paramètres", name: "Nom", email: "Email", phone: "Téléphone", city: "Ville", country: "Pays", zip: "Code postal", save: "Enregistrer", cancel: "Annuler", confirm_delete: "Supprimer ?", deleted: "Supprimé", updated: "Mis à jour", login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte", platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", publish: "Publier", conversations: "Conversations", type_message: "Écrivez...", send: "Envoyer", back: "Retour", support_title: "Support", issue_buy: "Achat", issue_sell: "Vente", issue_chat: "Chat", suggestion: "Suggestion", other: "Autre", support_placeholder: "Décrivez...", attach_image: "Image", about_desc: "Plateforme d'achat/vente de comptes", secure: "Sécurisé", fast: "Rapide", support247: "Support 24/7", developed_by: "Développé par", chats: "Discussions", forgot_password: "Mot de passe oublié ?", reset_email_sent: "Email de réinitialisation envoyé", google_login: "Connexion avec Google", views: "Vues" },
-        tr: { home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında", dark_mode: "Gece Modu", logout: "Çıkış", search: "Ara...", all: "Tümü", profile: "Profil", followers: "Takipçi", following: "Takip", posts: "İlanlar", edit: "Düzenle", delete: "Sil", chat: "Sohbet", details: "Detaylar", follow: "Takip Et", unfollow: "Takibi Bırak", settings: "Ayarlar", name: "İsim", email: "E-posta", phone: "Telefon", city: "Şehir", country: "Ülke", zip: "Posta kodu", save: "Kaydet", cancel: "İptal", confirm_delete: "Silmek istediğinize emin misiniz?", deleted: "Silindi", updated: "Güncellendi", login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur", platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", publish: "Yayınla", conversations: "Sohbetler", type_message: "Mesaj yaz...", send: "Gönder", back: "Geri", support_title: "Destek", issue_buy: "Satın alma", issue_sell: "Satış", issue_chat: "Sohbet", suggestion: "Öneri", other: "Diğer", support_placeholder: "Sorununuzu yazın...", attach_image: "Resim ekle", about_desc: "Sosyal medya hesap platformu", secure: "Güvenli", fast: "Hızlı", support247: "7/24 Destek", developed_by: "Geliştiren", chats: "Sohbetler", forgot_password: "Şifremi unuttum?", reset_email_sent: "Şifre sıfırlama e-postası gönderildi", google_login: "Google ile giriş yap", views: "Görüntülenme" }
+        ar: {
+            menu: "القائمة", home: "الرئيسية", add_account: "إضافة حساب", messages: "الرسائل", support: "الدعم الفني", about: "عن التطبيق",
+            dark_mode: "الوضع الليلي", logout: "تسجيل الخروج", app_name: "سوق الحسابات", available_accounts: "الحسابات المتاحة",
+            search: "بحث...", all: "الكل", profile: "الملف الشخصي", followers: "متابع", following: "يتابع", posts: "المنشورات",
+            conversations: "المحادثات", type_message: "اكتب رسالة...", send: "إرسال", back: "رجوع", support_title: "الدعم الفني",
+            issue_buy: "مشكلة في الشراء", issue_sell: "مشكلة في البيع", issue_chat: "مشكلة في الدردشة", suggestion: "اقتراح",
+            other: "أخرى", support_placeholder: "اكتب مشكلتك بالتفصيل...", attach_image: "إرفاق صورة", about_desc: "المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي",
+            secure: "آمن ومضمون", fast: "فوري وسريع", support247: "دعم 24/7", developed_by: "تم التطوير بواسطة", publish: "نشر", chats: "الدردشات",
+            edit: "تعديل", delete: "حذف", chat: "مراسلة", details: "تفاصيل", follow: "متابعة", unfollow: "إلغاء المتابعة", settings: "الإعدادات",
+            name: "الاسم", email: "البريد الإلكتروني", phone: "رقم الهاتف", city: "المدينة", country: "الدولة", zip: "الرمز البريدي",
+            save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث",
+            login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد",
+            platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟",
+            reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة"
+        },
+        en: {
+            menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About",
+            dark_mode: "Dark Mode", logout: "Logout", app_name: "Accounts Market", available_accounts: "Available Accounts",
+            search: "Search...", all: "All", profile: "Profile", followers: "Followers", following: "Following", posts: "Posts",
+            conversations: "Conversations", type_message: "Type a message...", send: "Send", back: "Back", support_title: "Support",
+            issue_buy: "Purchase Issue", issue_sell: "Selling Issue", issue_chat: "Chat Issue", suggestion: "Suggestion",
+            other: "Other", support_placeholder: "Describe your issue...", attach_image: "Attach Image", about_desc: "The first platform for buying and selling social media accounts",
+            secure: "Secure & Guaranteed", fast: "Fast & Instant", support247: "24/7 Support", developed_by: "Developed by", publish: "Publish", chats: "Chats",
+            edit: "Edit", delete: "Delete", chat: "Chat", details: "Details", follow: "Follow", unfollow: "Unfollow", settings: "Settings",
+            name: "Name", email: "Email", phone: "Phone", city: "City", country: "Country", zip: "Postal Code",
+            save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated",
+            login: "Login", register: "Register", password: "Password", create_account: "Create Account",
+            platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?",
+            reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views"
+        },
+        fr: {
+            menu: "Menu", home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos",
+            dark_mode: "Mode nuit", logout: "Déconnexion", app_name: "Marché des comptes", available_accounts: "Comptes disponibles",
+            search: "Rechercher...", all: "Tous", profile: "Profil", followers: "Abonnés", following: "Abonnements", posts: "Annonces",
+            conversations: "Conversations", type_message: "Écrivez...", send: "Envoyer", back: "Retour", support_title: "Support",
+            issue_buy: "Achat", issue_sell: "Vente", issue_chat: "Chat", suggestion: "Suggestion", other: "Autre",
+            support_placeholder: "Décrivez...", attach_image: "Image", about_desc: "Plateforme d'achat/vente de comptes",
+            secure: "Sécurisé", fast: "Rapide", support247: "Support 24/7", developed_by: "Développé par", publish: "Publier", chats: "Discussions",
+            edit: "Modifier", delete: "Supprimer", chat: "Discuter", details: "Détails", follow: "Suivre", unfollow: "Ne plus suivre",
+            settings: "Paramètres", name: "Nom", email: "Email", phone: "Téléphone", city: "Ville", country: "Pays", zip: "Code postal",
+            save: "Enregistrer", cancel: "Annuler", confirm_delete: "Supprimer ?", deleted: "Supprimé", updated: "Mis à jour",
+            login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte",
+            platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", forgot_password: "Mot de passe oublié ?",
+            reset_email_sent: "Email de réinitialisation envoyé", google_login: "Connexion avec Google", views: "Vues"
+        },
+        tr: {
+            menu: "Menü", home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında",
+            dark_mode: "Gece Modu", logout: "Çıkış", app_name: "Hesap Pazarı", available_accounts: "Mevcut Hesaplar",
+            search: "Ara...", all: "Tümü", profile: "Profil", followers: "Takipçi", following: "Takip", posts: "İlanlar",
+            conversations: "Sohbetler", type_message: "Mesaj yaz...", send: "Gönder", back: "Geri", support_title: "Destek",
+            issue_buy: "Satın alma", issue_sell: "Satış", issue_chat: "Sohbet", suggestion: "Öneri", other: "Diğer",
+            support_placeholder: "Sorununuzu yazın...", attach_image: "Resim ekle", about_desc: "Sosyal medya hesap platformu",
+            secure: "Güvenli", fast: "Hızlı", support247: "7/24 Destek", developed_by: "Geliştiren", publish: "Yayınla", chats: "Sohbetler",
+            edit: "Düzenle", delete: "Sil", chat: "Sohbet", details: "Detaylar", follow: "Takip Et", unfollow: "Takibi Bırak",
+            settings: "Ayarlar", name: "İsim", email: "E-posta", phone: "Telefon", city: "Şehir", country: "Ülke", zip: "Posta kodu",
+            save: "Kaydet", cancel: "İptal", confirm_delete: "Silmek istediğinize emin misiniz?", deleted: "Silindi", updated: "Güncellendi",
+            login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur",
+            platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", forgot_password: "Şifremi unuttum?",
+            reset_email_sent: "Şifre sıfırlama e-postası gönderildi", google_login: "Google ile giriş yap", views: "Görüntülenme"
+        }
     };
+    
     let currentLang = localStorage.getItem('lang') || 'ar';
-    function t(key) { return translations[currentLang]?.[key] || translations.ar[key] || key; }
+    
+    function t(key) {
+        return translations[currentLang]?.[key] || translations.ar[key] || key;
+    }
+    
     function applyLanguage() {
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(k) el.innerText = t(k); });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if(k) el.placeholder = t(k); });
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key) el.innerText = t(key);
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (key) el.placeholder = t(key);
+        });
         document.getElementById('langSelectSide').value = currentLang;
+        
+        // تحديث الصفحة الحالية دون إعادة تحميل
         if (currentPage === 'home') loadAccounts();
         else if (currentPage === 'profile' && currentProfileUserId) refreshProfilePage();
         else if (currentPage === 'messages') loadConversations();
@@ -551,6 +626,7 @@
         document.getElementById('sidebarOverlay').classList.remove('active');
     };
     
+    // ============ تحديث الملف الشخصي ============
     async function refreshProfilePage() {
         if (!currentProfileUserId) return;
         await loadProfileData(currentProfileUserId);
@@ -561,8 +637,15 @@
         const settingsIcon = document.getElementById('settingsIcon');
         if (settingsIcon) isOwnProfile ? settingsIcon.classList.remove('hidden') : settingsIcon.classList.add('hidden');
         const avatarImg = document.getElementById('avatarImg');
-        if (isOwnProfile) { avatarImg.classList.add('own-profile-avatar'); avatarImg.classList.remove('other-profile-avatar'); avatarImg.onclick = () => changeAvatar(); }
-        else { avatarImg.classList.add('other-profile-avatar'); avatarImg.classList.remove('own-profile-avatar'); avatarImg.onclick = null; }
+        if (isOwnProfile) {
+            avatarImg.classList.add('own-profile-avatar');
+            avatarImg.classList.remove('other-profile-avatar');
+            avatarImg.onclick = () => changeAvatar();
+        } else {
+            avatarImg.classList.add('other-profile-avatar');
+            avatarImg.classList.remove('own-profile-avatar');
+            avatarImg.onclick = null;
+        }
     }
     
     async function loadProfileData(userId) {
@@ -603,41 +686,71 @@
         });
     }
     
-    // ============ عرض منشورات المستخدم ============
+    // ============ عرض منشورات المستخدم (تم إصلاحها بالكامل) ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
+            const q = query(collection(db, 'accounts'), where("sellerId", "==", userId), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
+            
             if (querySnapshot.empty) {
                 container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
                 return;
             }
+            
             const isOwner = (currentUser && currentUser.uid === userId);
             let html = '';
+            
             for (const docSnap of querySnapshot.docs) {
                 const acc = docSnap.data();
-                html += `<div class="my-account-card">
-                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
-                    <p>💰 ${acc.price} ${acc.currency} | 👥 ${acc.followers?.toLocaleString()}</p>
+                const accountId = docSnap.id;
+                
+                html += `<div class="my-account-card" data-id="${accountId}">
+                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
+                    <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>✏️ ${t('edit')}</button>
-                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ ${t('delete')}</button>` : ''}
-                        <button onclick="window.openChat('${acc.sellerId}', '${acc.name.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
-                        <button class="details-btn btn-outline" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${accountId}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ ${t('edit')}</button>
+                        <button class="delete-account-btn btn-danger" data-id="${accountId}">🗑️ ${t('delete')}</button>` : ''}
+                        <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
+                        <button class="details-account-btn btn-outline" data-id="${accountId}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
             container.innerHTML = html;
-            document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc));
+            
+            document.querySelectorAll('.details-account-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const acc = {
+                        name: btn.dataset.name,
+                        platform: btn.dataset.platform,
+                        followers: parseInt(btn.dataset.followers),
+                        price: parseFloat(btn.dataset.price),
+                        currency: btn.dataset.currency,
+                        link: btn.dataset.link,
+                        description: btn.dataset.desc,
+                        views: parseInt(btn.dataset.views),
+                        images: JSON.parse(btn.dataset.images)
+                    };
+                    showDetails(acc, btn.dataset.id);
+                };
             });
+            
             if(isOwner) {
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.onclick = () => showEditModal(btn.dataset.id, JSON.parse(btn.dataset.acc));
+                document.querySelectorAll('.edit-account-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const acc = {
+                            name: btn.dataset.name,
+                            link: btn.dataset.link,
+                            followers: parseInt(btn.dataset.followers),
+                            price: parseFloat(btn.dataset.price),
+                            currency: btn.dataset.currency,
+                            description: btn.dataset.desc
+                        };
+                        showEditModal(btn.dataset.id, acc);
+                    };
                 });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
+                document.querySelectorAll('.delete-account-btn').forEach(btn => {
                     btn.onclick = async () => {
                         if(confirm(t('confirm_delete'))) {
                             await deleteDoc(doc(db, 'accounts', btn.dataset.id));
@@ -649,16 +762,16 @@
                 });
             }
         } catch(e) {
-            console.error(e);
-            container.innerHTML = '<div class="card">خطأ في تحميل المنشورات</div>';
+            console.error("خطأ في تحميل المنشورات:", e);
+            container.innerHTML = '<div class="card">خطأ في تحميل المنشورات: ' + e.message + '</div>';
         }
     }
     
-    async function showDetails(account) {
+    async function showDetails(account, accountId) {
         const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
         if (account.images && account.images.length) {
-            imagesHtml = `<div class="details-images">${account.images.map(img => `<img src="${img}" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
+            imagesHtml = `<div style="display:flex; gap:8px; margin-top:10px; overflow-x:auto;">${account.images.map(img => `<img src="${img}" style="width:80px; height:80px; border-radius:8px; object-fit:cover; cursor:pointer;" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
         }
         modal.innerHTML = `<div class="modal-content details-modal">
             <div class="details-header"><h2>${account.name}</h2><span class="details-platform"><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</span></div>
@@ -676,7 +789,9 @@
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeDetailsModal').onclick = () => modal.remove();
-        await updateDoc(doc(db, 'accounts', account.id), { views: increment(1) });
+        if (accountId) {
+            await updateDoc(doc(db, 'accounts', accountId), { views: increment(1) });
+        }
     }
     
     async function showEditModal(accountId, acc) {
@@ -693,44 +808,57 @@
         document.body.appendChild(modal);
         modal.querySelector('#saveEdit').onclick = async () => {
             await updateDoc(doc(db, 'accounts', accountId), {
-                name: modal.querySelector('#editName').value, link: modal.querySelector('#editLink').value,
-                followers: parseInt(modal.querySelector('#editFollowers').value), price: parseFloat(modal.querySelector('#editPrice').value),
-                currency: modal.querySelector('#editCurrency').value, description: modal.querySelector('#editDesc').value
+                name: modal.querySelector('#editName').value,
+                link: modal.querySelector('#editLink').value,
+                followers: parseInt(modal.querySelector('#editFollowers').value),
+                price: parseFloat(modal.querySelector('#editPrice').value),
+                currency: modal.querySelector('#editCurrency').value,
+                description: modal.querySelector('#editDesc').value
             });
             alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
         };
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
+    // ============ تحميل الحسابات في الصفحة الرئيسية (مع تحديث فوري) ============
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
-        container.innerHTML = 'جار التحميل...';
+        container.innerHTML = '<div class="loader">جار التحميل...</div>';
         try {
             let followingIds = [];
             if (currentUser) {
                 const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
                 followingIds = userSnap.data()?.following || [];
             }
+            
             const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
             let accounts = [];
             snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+            
             accounts.sort((a,b) => {
                 const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId);
                 if(aF && !bF) return -1;
                 if(!aF && bF) return 1;
-                return b.createdAt - a.createdAt;
+                return (b.createdAt || 0) - (a.createdAt || 0);
             });
+            
             const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
             const platform = document.getElementById('platformFilter')?.value || "all";
             let filtered = accounts.filter(a => (a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search)) && (platform === "all" || a.platform === platform));
-            if (filtered.length === 0) { container.innerHTML = '<div>لا توجد حسابات</div>'; return; }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div>لا توجد حسابات</div>';
+                return;
+            }
+            
             let html = '';
             for (const acc of filtered) {
                 let sellerName = "مستخدم", sellerAvatar = null;
                 const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
                 if (userSnap.exists()) { sellerName = userSnap.data().name || sellerName; sellerAvatar = userSnap.data().avatar; }
                 const isFollowing = followingIds.includes(acc.sellerId);
+                
                 html += `<div class="card">
                     <div style="display:flex; align-items:center; gap:10px;">
                         ${sellerAvatar ? `<img src="${sellerAvatar}" class="profile-thumb" onclick="window.viewOtherProfile('${acc.sellerId}')">` : '<div class="profile-thumb" style="background:#555; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}
@@ -742,16 +870,33 @@
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-acc='${JSON.stringify(acc)}'>🔍 ${t('details')}</button>
+                        <button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
                         <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
                     </div>
                 </div>`;
             }
             container.innerHTML = html;
+            
             document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc));
+                btn.onclick = () => {
+                    const acc = {
+                        name: btn.dataset.name,
+                        platform: btn.dataset.platform,
+                        followers: parseInt(btn.dataset.followers),
+                        price: parseFloat(btn.dataset.price),
+                        currency: btn.dataset.currency,
+                        link: btn.dataset.link,
+                        description: btn.dataset.desc,
+                        views: parseInt(btn.dataset.views),
+                        images: JSON.parse(btn.dataset.images)
+                    };
+                    showDetails(acc, btn.dataset.id);
+                };
             });
-        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
+        } catch(e) {
+            console.error("خطأ في تحميل الحسابات:", e);
+            container.innerHTML = '<div>خطأ في التحميل</div>';
+        }
     }
     
     window.viewOtherProfile = function(userId) {
@@ -760,9 +905,8 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - مع onSnapshot الفوري ============
+    // ============ الشات والمراسلة - مع تحديث فوري ============
     
-    // دالة إرسال الرسالة (نص وصورة)
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
         if (!currentChatUserId) return;
@@ -789,7 +933,7 @@
         }
     }
     
-    // دالة فتح المحادثة مع onSnapshot الفوري (بدون تحديث الصفحة)
+    // دالة فتح المحادثة مباشرة (بدون نافذة منبثقة)
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
@@ -801,6 +945,9 @@
         }
         
         currentChatUserId = otherUserId;
+        
+        // الانتقال إلى صفحة المحادثات
+        showPage('messages');
         
         // إخفاء قائمة المحادثات وإظهار صندوق المحادثة
         document.getElementById('convList').style.display = 'none';
@@ -823,7 +970,7 @@
             await updateDoc(doc(db, "messages", msg.id), { read: true });
         }
         
-        // الاستماع الفوري للرسائل (صفر ثانية تأخير)
+        // الاستماع الفوري للرسائل
         const q = query(
             collection(db, "messages"),
             where("chatId", "==", chatId),
@@ -906,18 +1053,18 @@
         };
     };
     
-    // دالة تحميل المحادثات (قائمة الدردشات) - مع تحديث فوري
+    // دالة تحميل قائمة المحادثات (مع تحديث فوري)
     async function loadConversations() {
         if (!currentUser) return;
         
         // الاستماع الفوري للرسائل لتحديث قائمة الدردشات
-        const q = query(collection(db, "messages"), where("chatId", "!=", ""));
+        const q = query(collection(db, "messages"));
         
         if (currentMessagesUnsubscribe) {
             currentMessagesUnsubscribe();
         }
         
-        onSnapshot(q, async (snap) => {
+        currentMessagesUnsubscribe = onSnapshot(q, async (snap) => {
             const usersMap = new Map();
             
             snap.forEach(doc => {
