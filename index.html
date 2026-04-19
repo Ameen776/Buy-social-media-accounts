@@ -48,7 +48,6 @@
         }
         body{background:var(--bg-body);color:var(--text-primary);transition:0.3s;padding-bottom:70px;}
         
-        /* شاشة البداية */
         .splash-screen {
             position: fixed; inset: 0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e);
             display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -73,7 +72,6 @@
         .splash-text { color: var(--accent); font-size: 1.2rem; letter-spacing: 2px; animation: blink 1.5s infinite; }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        /* الهيدر */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-header); position: sticky; top: 0; z-index: 99; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .profile-icon { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; }
@@ -82,7 +80,6 @@
         .search-btn { background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer; }
         .menu-btn { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; }
         
-        /* شريط البحث المنبثق */
         .search-modal {
             position: fixed; top: 0; left: 0; right: 0; background: var(--bg-card);
             padding: 15px; z-index: 1001; border-bottom: 1px solid var(--border-color);
@@ -98,39 +95,32 @@
         .search-result-name { font-weight: bold; }
         .search-result-id { font-size: 0.7rem; color: var(--text-secondary); }
         
-        /* القائمة الجانبية */
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--bg-header); transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid var(--border-color); overflow-y: auto; }
         .sidebar.open { right: 0; }
         .sidebar button { display: block; width: 100%; text-align: right; padding: 12px; margin: 5px 0; background: none; border: none; color: var(--text-primary); font-size: 15px; cursor: pointer; border-radius: 8px; }
         .sidebar button:hover { background: var(--border-color); }
         
-        /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-header); display: flex; justify-content: space-around; padding: 12px; z-index: 100; border-top: 1px solid var(--border-color); }
         .bottom-nav button { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
         .bottom-nav button i { font-size: 22px; }
         .bottom-nav button.active { color: var(--accent); }
         .notification-badge { position: absolute; top: -5px; right: -10px; background: #ff4444; color: #fff; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
         
-        /* الصفحات */
         .page { display: none; padding: 15px; }
         .active-page { display: block; }
         
-        /* شبكة الحسابات */
         .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .card { background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid var(--border-color); }
         .card h3 { font-size: 0.95rem; margin-bottom: 6px; }
         .card p { font-size: 0.7rem; margin: 3px 0; color: var(--text-secondary); }
         .profile-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent); }
         
-        /* الأزرار */
         .btn-primary { background: var(--accent); border: none; padding: 6px 12px; border-radius: 25px; color: #111; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
         .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 25px; cursor: pointer; font-size: 0.7rem; }
         .btn-danger { background: #ff4444; border: none; padding: 6px 12px; border-radius: 25px; color: #fff; cursor: pointer; font-size: 0.7rem; }
-        
         .btn-follow-green { background: #2ecc71; border: none; padding: 8px 20px; border-radius: 25px; color: #fff; cursor: pointer; font-weight: bold; font-size: 0.9rem; min-width: 110px; }
         .btn-follow-green.unfollow { background: #555; }
         
-        /* الملف الشخصي */
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px; display: block; border: 2px solid var(--accent); object-fit: cover; }
         .own-profile-avatar { cursor: pointer; }
         .own-profile-avatar:hover { opacity: 0.8; }
@@ -144,20 +134,16 @@
         .settings-icon.hidden { display: none; }
         .profile-header { position: relative; }
         
-        /* منشورات المستخدم */
         .my-accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
         .my-account-card { background: var(--bg-card); padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); }
         
-        /* نماذج */
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 10px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
         .filter-row { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 8px; border-radius: 20px; }
         
-        /* المشروطات */
         .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .modal-content { background: var(--bg-card); padding: 20px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
         
-        /* نافذة التفاصيل */
         .details-modal { max-width: 550px; width: 90%; background: var(--bg-card); border-radius: 24px; }
         .details-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--accent); }
         .details-header h2 { color: var(--accent); font-size: 1.5rem; }
@@ -175,7 +161,6 @@
         .details-images { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin: 10px 0; }
         .details-images img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 2px solid var(--border-color); }
         
-        /* الدردشات */
         .chat-container { display: flex; flex-direction: column; gap: 10px; }
         .conversation-item { padding: 15px; border-radius: 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; position: relative; background: var(--bg-card); border: 1px solid var(--border-color); }
         .conversation-item:hover { transform: translateX(-5px); background: var(--border-color); }
@@ -200,7 +185,6 @@
         .attach-btn { background: none; border: none; color: var(--accent); font-size: 22px; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.2s; }
         .attach-btn:hover { background: var(--border-color); }
         
-        /* شاشات المصادقة */
         .auth-container { position: fixed; inset: 0; background: linear-gradient(135deg, #0a0a1a, #1a0f2e); display: flex; align-items: center; justify-content: center; z-index: 10001; }
         .auth-card { background: rgba(30, 30, 46, 0.95); backdrop-filter: blur(15px); border-radius: 30px; padding: 30px; width: 90%; max-width: 380px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3); }
         .password-wrapper { position: relative; }
@@ -213,7 +197,6 @@
         .auth-switch { margin-top: 15px; color: var(--accent); cursor: pointer; }
         .forgot-password { font-size: 0.8rem; color: var(--accent); cursor: pointer; text-align: left; margin-top: 5px; }
         
-        /* صفحة الدعم الفني */
         .support-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .support-preview img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
         .support-reply { margin-top: 20px; padding: 15px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); }
@@ -225,7 +208,6 @@
         .status-pending { background: #ff9800; color: #fff; }
         .status-read { background: #4caf50; color: #fff; }
         
-        /* صفحة عن التطبيق */
         .about-3d { text-align: center; perspective: 1000px; }
         .about-card-3d { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(0,212,255,0.2)); backdrop-filter: blur(10px); border-radius: 40px; padding: 40px 20px; transform-style: preserve-3d; transform: rotateY(5deg) rotateX(5deg); transition: 0.4s; border: 1px solid rgba(0,212,255,0.3); }
         .about-card-3d:hover { transform: rotateY(0deg) rotateX(0deg) scale(1.02); }
@@ -244,7 +226,6 @@
         
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .sidebar-overlay.active { display: block; }
-        
         .loader { text-align: center; padding: 20px; color: var(--text-secondary); }
     </style>
 </head>
@@ -603,7 +584,6 @@
         });
         document.getElementById('langSelectSide').value = currentLang;
         
-        // تحديث الصفحة الحالية دون إعادة تحميل
         if (currentPage === 'home') loadAccounts();
         else if (currentPage === 'profile' && currentProfileUserId) refreshProfilePage();
         else if (currentPage === 'messages') loadConversations();
@@ -626,7 +606,6 @@
         document.getElementById('sidebarOverlay').classList.remove('active');
     };
     
-    // ============ تحديث الملف الشخصي ============
     async function refreshProfilePage() {
         if (!currentProfileUserId) return;
         await loadProfileData(currentProfileUserId);
@@ -686,12 +665,14 @@
         });
     }
     
-    // ============ عرض منشورات المستخدم (تم إصلاحها بالكامل) ============
+    // ============ عرض منشورات المستخدم (تم إصلاح مشكلة الفهرس) ============
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="card">جار التحميل...</div>';
         try {
-            const q = query(collection(db, 'accounts'), where("sellerId", "==", userId), orderBy("createdAt", "desc"));
+            // الحل: نجلب جميع الحسابات ثم نقوم بتصفيتها في الكود (بدون استخدام orderBy مع where)
+            const accountsRef = collection(db, 'accounts');
+            const q = query(accountsRef, where("sellerId", "==", userId));
             const querySnapshot = await getDocs(q);
             
             if (querySnapshot.empty) {
@@ -699,21 +680,25 @@
                 return;
             }
             
+            // ترتيب النتائج يدوياً حسب createdAt (تنازلي)
+            let accounts = [];
+            querySnapshot.forEach(docSnap => {
+                accounts.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            accounts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
             const isOwner = (currentUser && currentUser.uid === userId);
             let html = '';
             
-            for (const docSnap of querySnapshot.docs) {
-                const acc = docSnap.data();
-                const accountId = docSnap.id;
-                
-                html += `<div class="my-account-card" data-id="${accountId}">
+            for (const acc of accounts) {
+                html += `<div class="my-account-card" data-id="${acc.id}">
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
                     <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${accountId}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ ${t('edit')}</button>
-                        <button class="delete-account-btn btn-danger" data-id="${accountId}">🗑️ ${t('delete')}</button>` : ''}
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${acc.id}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}">✏️ ${t('edit')}</button>
+                        <button class="delete-account-btn btn-danger" data-id="${acc.id}">🗑️ ${t('delete')}</button>` : ''}
                         <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
-                        <button class="details-account-btn btn-outline" data-id="${accountId}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
+                        <button class="details-account-btn btn-outline" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
@@ -820,7 +805,7 @@
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
-    // ============ تحميل الحسابات في الصفحة الرئيسية (مع تحديث فوري) ============
+    // ============ تحميل الحسابات في الصفحة الرئيسية ============
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
@@ -933,7 +918,7 @@
         }
     }
     
-    // دالة فتح المحادثة مباشرة (بدون نافذة منبثقة)
+    // دالة فتح المحادثة مباشرة
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
