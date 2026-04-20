@@ -1194,163 +1194,119 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات - نسخة جديدة قوية
+    // دالة تحميل قائمة المحادثات - نسخة مبسطة ومضمونة
     async function loadConversations() {
         if (!currentUser) return;
         
         const container = document.getElementById('convList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
-        try {
-            // إلغاء الاشتراك السابق
-            if (conversationsUnsubscribe) conversationsUnsubscribe();
-            
-            // الاستماع لكل رسائل المستخدم (مرسل أو مستقبل)
-            const q = query(
-                collection(db, "messages"),
-                where("participants", "array-contains", currentUser.uid),
-                orderBy("timestamp", "desc")
-            );
-            
-            // في حال لم يكن لديك حقل participants، نستخدم استعلامين منفصلين
-            // سأستخدم الطريقة المزدوجة لأنها الأكثر توافقاً مع بنية البيانات الحالية
-            const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
-            const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
-            
-            // استخدام onSnapshot على كليهما
-            const unsubscribeSender = onSnapshot(senderQuery, async (senderSnap) => {
-                await updateConversationsList(senderSnap, 'sender');
-            });
-            
-            const unsubscribeReceiver = onSnapshot(receiverQuery, async (receiverSnap) => {
-                await updateConversationsList(receiverSnap, 'receiver');
-            });
-            
-            let conversationsCache = new Map();
-            
-            async function updateConversationsList(snapshot, type) {
-                // تحديث الخريطة بناءً على النوع
-                snapshot.docChanges().forEach(change => {
+        // إلغاء الاشتراك السابق
+        if (conversationsUnsubscribe) conversationsUnsubscribe();
+        
+        // إنشاء استعلامين بسيطين للمحادثات
+        const sentQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        const receivedQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        
+        // استخدام onSnapshot مباشر على الاستعلامين
+        const unsubscribeSent = onSnapshot(sentQuery, (snap) => {
+            updateConversationsUI(snap, 'sent');
+        });
+        
+        const unsubscribeReceived = onSnapshot(receivedQuery, (snap) => {
+            updateConversationsUI(snap, 'received');
+        });
+        
+        // خريطة لتخزين أحدث رسالة لكل محادثة
+        const latestMessages = new Map();
+        
+        async function updateConversationsUI(snapshot, type) {
+            // تحديث الخريطة
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added' || change.type === 'modified') {
                     const msg = change.doc.data();
-                    const otherId = type === 'sender' ? msg.receiverId : msg.senderId;
+                    const otherId = type === 'sent' ? msg.receiverId : msg.senderId;
                     if (!otherId) return;
                     
-                    if (change.type === 'removed') {
-                        // لا نفعل شيئاً هنا، ولكن يمكن إعادة بناء الخريطة لاحقاً
-                    } else {
-                        const existing = conversationsCache.get(otherId);
-                        if (!existing || existing.lastTime < msg.timestamp) {
-                            conversationsCache.set(otherId, {
-                                lastMessage: msg.text || "📷 صورة",
-                                lastTime: msg.timestamp,
-                                otherId: otherId
-                            });
-                        }
-                    }
-                });
-                
-                // إعادة بناء واجهة المحادثات من الخريطة
-                await renderConversationsList(conversationsCache);
-            }
-            
-            async function renderConversationsList(cache) {
-                if (cache.size === 0) {
-                    container.innerHTML = '<div>لا توجد محادثات</div>';
-                    document.getElementById('msgNotification').style.display = 'none';
-                    return;
-                }
-                
-                let html = '';
-                let totalUnread = 0;
-                
-                // ترتيب تنازلي حسب الوقت
-                const sorted = Array.from(cache.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
-                
-                for (const [otherId, info] of sorted) {
-                    const userSnap = await getDoc(doc(db, 'users', otherId));
-                    const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
-                    const avatar = userSnap.exists() ? userSnap.data().avatar : null;
-                    
-                    const unreadQuery = query(
-                        collection(db, "messages"),
-                        where("senderId", "==", otherId),
-                        where("receiverId", "==", currentUser.uid),
-                        where("read", "==", false)
-                    );
-                    const unreadSnap = await getDocs(unreadQuery);
-                    const unreadCount = unreadSnap.size;
-                    totalUnread += unreadCount;
-                    
-                    html += `
-                        <div class="conversation-item" data-userid="${otherId}" data-username="${name}">
-                            <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
-                            <div class="conversation-info">
-                                <div class="conversation-name">${name}</div>
-                                <div class="conversation-last-msg">${info.lastMessage || "ابدأ المحادثة"}</div>
-                            </div>
-                            <div class="conversation-time">${info.lastTime ? new Date(info.lastTime).toLocaleTimeString() : ''}</div>
-                            ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
-                        </div>
-                    `;
-                }
-                
-                container.innerHTML = html;
-                const badge = document.getElementById('msgNotification');
-                if (totalUnread > 0) {
-                    badge.style.display = 'flex';
-                    badge.innerText = totalUnread > 9 ? '9+' : totalUnread;
-                } else {
-                    badge.style.display = 'none';
-                }
-                
-                document.querySelectorAll('.conversation-item').forEach(el => {
-                    el.onclick = () => {
-                        const userId = el.dataset.userid;
-                        const userName = el.dataset.username;
-                        window.openChat(userId, userName);
-                    };
-                });
-            }
-            
-            // تخزين دوال الإلغاء
-            conversationsUnsubscribe = () => {
-                unsubscribeSender();
-                unsubscribeReceiver();
-            };
-            
-            // تحميل أولي للبيانات من كلا الاستعلامين
-            const [initialSender, initialReceiver] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
-            initialSender.forEach(doc => {
-                const msg = doc.data();
-                const otherId = msg.receiverId;
-                if (otherId) {
-                    conversationsCache.set(otherId, {
-                        lastMessage: msg.text || "📷 صورة",
-                        lastTime: msg.timestamp,
-                        otherId: otherId
-                    });
-                }
-            });
-            initialReceiver.forEach(doc => {
-                const msg = doc.data();
-                const otherId = msg.senderId;
-                if (otherId) {
-                    const existing = conversationsCache.get(otherId);
-                    if (!existing || existing.lastTime < msg.timestamp) {
-                        conversationsCache.set(otherId, {
+                    const existing = latestMessages.get(otherId);
+                    if (!existing || existing.timestamp < msg.timestamp) {
+                        latestMessages.set(otherId, {
                             lastMessage: msg.text || "📷 صورة",
-                            lastTime: msg.timestamp,
+                            timestamp: msg.timestamp,
                             otherId: otherId
                         });
                     }
                 }
             });
-            await renderConversationsList(conversationsCache);
             
-        } catch(e) {
-            console.error("خطأ في تحميل المحادثات:", e);
-            container.innerHTML = '<div>خطأ في تحميل المحادثات. راجع الإعدادات.</div>';
+            // إعادة رسم الواجهة
+            await renderConversations();
         }
+        
+        async function renderConversations() {
+            if (latestMessages.size === 0) {
+                container.innerHTML = '<div>لا توجد محادثات</div>';
+                document.getElementById('msgNotification').style.display = 'none';
+                return;
+            }
+            
+            let html = '';
+            let totalUnread = 0;
+            
+            // ترتيب تنازلي حسب الوقت
+            const sorted = Array.from(latestMessages.entries()).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+            
+            for (const [otherId, info] of sorted) {
+                const userSnap = await getDoc(doc(db, 'users', otherId));
+                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
+                const avatar = userSnap.exists() ? userSnap.data().avatar : null;
+                
+                const unreadQuery = query(
+                    collection(db, "messages"),
+                    where("senderId", "==", otherId),
+                    where("receiverId", "==", currentUser.uid),
+                    where("read", "==", false)
+                );
+                const unreadSnap = await getDocs(unreadQuery);
+                const unreadCount = unreadSnap.size;
+                totalUnread += unreadCount;
+                
+                html += `
+                    <div class="conversation-item" data-userid="${otherId}" data-username="${name}">
+                        <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">${name}</div>
+                            <div class="conversation-last-msg">${info.lastMessage || "ابدأ المحادثة"}</div>
+                        </div>
+                        <div class="conversation-time">${info.timestamp ? new Date(info.timestamp).toLocaleTimeString() : ''}</div>
+                        ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            const badge = document.getElementById('msgNotification');
+            if (totalUnread > 0) {
+                badge.style.display = 'flex';
+                badge.innerText = totalUnread > 9 ? '9+' : totalUnread;
+            } else {
+                badge.style.display = 'none';
+            }
+            
+            document.querySelectorAll('.conversation-item').forEach(el => {
+                el.onclick = () => {
+                    const userId = el.dataset.userid;
+                    const userName = el.dataset.username;
+                    window.openChat(userId, userName);
+                };
+            });
+        }
+        
+        // تخزين دوال الإلغاء
+        conversationsUnsubscribe = () => {
+            unsubscribeSent();
+            unsubscribeReceived();
+        };
     }
     
     function escapeHtml(text) {
