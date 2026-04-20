@@ -497,9 +497,17 @@
     let currentProfileUserId = null;
     let currentPage = 'home';
     let currentChatUserId = null;
-    let currentMessagesUnsubscribe = null;
+    let conversationsUnsubscribe = null;
+    let currentChatUnsubscribe = null;
+    
+    // صوت الإشعارات
     let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-    function playSound() { try { notificationSound.play(); } catch(e) {} }
+    function playSound() { 
+        try { 
+            notificationSound.currentTime = 0;
+            notificationSound.play(); 
+        } catch(e) { console.log("صوت غير مدعوم"); } 
+    }
     
     // ============ الترجمة ============
     const translations = {
@@ -978,11 +986,7 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - إصدار مبسط ومضمون ============
-    
-    // متغيرات للشات
-    let conversationsUnsubscribe = null;
-    let currentChatUnsubscribe = null;
+    // ============ الشات والمراسلة - نسخة فورية مع أصوات ============
     
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
@@ -1010,7 +1014,7 @@
         }
     }
     
-    // دالة فتح المحادثة مع عرض جميع الرسائل
+    // دالة فتح المحادثة مع عرض جميع الرسائل فوراً
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
@@ -1035,7 +1039,7 @@
         
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         
-        // تحديث حالة القراءة للرسائل
+        // تحديث حالة القراءة للرسائل الواردة من هذا الشخص
         const unreadQuery = query(
             collection(db, "messages"),
             where("senderId", "==", otherUserId),
@@ -1052,7 +1056,7 @@
             currentChatUnsubscribe();
         }
         
-        // الاستماع للرسائل (القديمة والجديدة)
+        // الاستماع للرسائل (القديمة والجديدة) بشكل فوري
         const q = query(
             collection(db, "messages"),
             where("chatId", "==", chatId),
@@ -1080,6 +1084,16 @@
                 `;
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // تشغيل صوت إذا كانت الرسالة جديدة وليست مني
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const msg = change.doc.data();
+                    if (msg.senderId !== currentUser.uid) {
+                        playSound();
+                    }
+                }
+            });
         });
         
         // إعداد أزرار الإرسال
@@ -1614,7 +1628,7 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
-            loadConversations(); // بدء الاستماع للمحادثات
+            loadConversations();
         } else {
             if (conversationsUnsubscribe) conversationsUnsubscribe();
             if (currentChatUnsubscribe) currentChatUnsubscribe();
