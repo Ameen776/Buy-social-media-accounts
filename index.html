@@ -500,39 +500,14 @@
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
     
-    // ============ ميزة الصوت - التشغيل عند وصول رسالة جديدة ============
-    // استخدام ملف الصوت المطلوب من الرابط الخارجي
-    let notificationSound = new Audio("https://files.catbox.moe/ow1xx4.wav");
-    
-    // دالة تشغيل الصوت مع التعامل مع قيود المتصفح
-    function playNotificationSound() {
-        if (notificationSound) {
-            notificationSound.currentTime = 0; // إعادة الصوت للبداية
-            notificationSound.play().catch(e => {
-                console.log("مطلوب تفاعل أول من المستخدم لتشغيل الصوت");
-            });
-        }
+    // صوت الإشعارات
+    let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+    function playSound() { 
+        try { 
+            notificationSound.currentTime = 0;
+            notificationSound.play(); 
+        } catch(e) { console.log("صوت غير مدعوم"); } 
     }
-    
-    // دالة لتفعيل الصوت عند أول تفاعل من المستخدم (لحل مشكلة قيود المتصفح)
-    function enableAudioOnUserInteraction() {
-        if (notificationSound) {
-            // محاولة تشغيل صوت وهمي ومن ثم إيقافه فوراً لتفعيل سياسة المتصفح
-            notificationSound.volume = 0;
-            notificationSound.play().then(() => {
-                notificationSound.pause();
-                notificationSound.currentTime = 0;
-                notificationSound.volume = 1;
-                console.log("✅ تم تفعيل الصوت بنجاح بعد أول تفاعل من المستخدم");
-            }).catch(e => console.log("لا يزال الصوت بحاجة لتفاعل"));
-        }
-    }
-    
-    // إضافة مستمع لأول نقرة أو لمس في الصفحة لتفعيل الصوت
-    document.body.addEventListener('click', function enableAudio() {
-        enableAudioOnUserInteraction();
-        document.body.removeEventListener('click', enableAudio);
-    }, { once: true });
     
     // ============ الترجمة ============
     const translations = {
@@ -725,10 +700,10 @@
                     <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
                     <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${acc.id}" data-name="${acc.name.replace(/"/g, '&quot;')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-images='${JSON.stringify(acc.images || [])}'>✏️ ${t('edit')}</button>
+                        ${isOwner ? `<button class="edit-account-btn btn-primary" data-id="${acc.id}" data-name="${acc.name.replace(/"/g, '"')}" data-link="${acc.link || ''}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال سعودي'}" data-desc="${(acc.description || '').replace(/"/g, '"')}" data-images='${JSON.stringify(acc.images || [])}'>✏️ ${t('edit')}</button>
                         <button class="delete-account-btn btn-danger" data-id="${acc.id}">🗑️ ${t('delete')}</button>` : ''}
                         <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
-                        <button class="details-account-btn btn-outline" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
+                        <button class="details-account-btn btn-outline" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '"')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
@@ -791,7 +766,7 @@
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
             <h3>✏️ ${t('edit')}</h3>
-            <input type="text" id="editName" value="${acc.name.replace(/"/g, '&quot;')}" placeholder="${t('name')}">
+            <input type="text" id="editName" value="${acc.name.replace(/"/g, '"')}" placeholder="${t('name')}">
             <input type="url" id="editLink" value="${acc.link}" placeholder="${t('link')}">
             <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
             <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
@@ -976,7 +951,7 @@
                     <p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p>
                     <p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '&quot;')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
+                        <button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers || 0}" data-price="${acc.price || 0}" data-currency="${acc.currency || 'ريال'}" data-link="${acc.link || ''}" data-desc="${(acc.description || '').replace(/"/g, '"')}" data-views="${acc.views || 0}" data-images='${JSON.stringify(acc.images || [])}'>🔍 ${t('details')}</button>
                         <button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
                     </div>
                 </div>`;
@@ -1032,8 +1007,7 @@
         try {
             await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
-            // تشغيل صوت عند إرسال رسالة (اختياري - للتأكيد ولتفعيل الصوت)
-            playNotificationSound();
+            playSound();
         } catch (error) {
             console.error("خطأ في الإرسال:", error);
             alert("فشل إرسال الرسالة، حاول مرة أخرى.");
@@ -1050,9 +1024,6 @@
             alert("لا يمكن مراسلة نفسك");
             return;
         }
-        
-        // تفعيل الصوت عند فتح المحادثة (أول تفاعل من المستخدم)
-        enableAudioOnUserInteraction();
         
         currentChatUserId = otherUserId;
         
@@ -1114,12 +1085,12 @@
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // ✅ تشغيل الصوت فقط عند وصول رسالة جديدة (added) وليست مني
+            // تشغيل صوت إذا كانت الرسالة جديدة وليست مني
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
                     if (msg.senderId !== currentUser.uid) {
-                        playNotificationSound();  // 🔔 صوت عند وصول رسالة جديدة
+                        playSound();
                     }
                 }
             });
@@ -1206,20 +1177,9 @@
                 const otherId = data.senderId;
                 if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
                     usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                    
-                    // ✅ تشغيل صوت عند وصول رسالة جديدة من شخص لست في محادثة معه حالياً
+                    // إشعار صوتي عند وصول رسالة جديدة من شخص آخر (إذا لم نكن في صفحة المحادثة معه)
                     if (currentChatUserId !== otherId) {
-                        // التحقق من أن هذه رسالة جديدة غير مقروءة
-                        const unreadCheck = query(
-                            collection(db, "messages"),
-                            where("senderId", "==", otherId),
-                            where("receiverId", "==", currentUser.uid),
-                            where("read", "==", false)
-                        );
-                        const unreadSnap = await getDocs(unreadCheck);
-                        if (unreadSnap.size > 0) {
-                            playNotificationSound();  // 🔔 صوت عند وصول رسالة جديدة
-                        }
+                        playSound();
                     }
                 }
             });
@@ -1466,7 +1426,7 @@
                     createdAt: Date.now()
                 });
                 alert("تم النشر بنجاح");
-                playNotificationSound();
+                playSound();
                 modal.remove();
                 loadAccounts();
                 if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
@@ -1552,7 +1512,7 @@
             });
         });
         document.getElementById('doLogin').onclick = async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); playNotificationSound(); }
+            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); playSound(); }
             catch(e) { document.getElementById('loginError').innerText = e.message.includes('auth/wrong-password') ? 'كلمة مرور خاطئة' : 'خطأ في البريد أو كلمة المرور'; }
         };
         document.getElementById('googleLoginBtn').onclick = async () => {
@@ -1561,7 +1521,7 @@
                 const user = result.user;
                 const userRef = doc(db, 'users', user.uid);
                 if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { userIdRandom: Math.floor(1e9 + Math.random() * 9e9), email: user.email, name: user.displayName || 'مستخدم Google', country: '', createdAt: Date.now(), followers: [], following: [] }); }
-                authContainer.remove(); playNotificationSound();
+                authContainer.remove(); playSound();
             } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
         document.getElementById('forgotPasswordBtn').onclick = async () => {
