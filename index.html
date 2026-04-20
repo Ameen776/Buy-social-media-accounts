@@ -500,14 +500,39 @@
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
     
-    // صوت الإشعارات
-    let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-    function playSound() { 
-        try { 
-            notificationSound.currentTime = 0;
-            notificationSound.play(); 
-        } catch(e) { console.log("صوت غير مدعوم"); } 
+    // ============ ميزة الصوت - التشغيل عند وصول رسالة جديدة ============
+    // استخدام ملف الصوت المطلوب من الرابط الخارجي
+    let notificationSound = new Audio("https://files.catbox.moe/ow1xx4.wav");
+    
+    // دالة تشغيل الصوت مع التعامل مع قيود المتصفح
+    function playNotificationSound() {
+        if (notificationSound) {
+            notificationSound.currentTime = 0; // إعادة الصوت للبداية
+            notificationSound.play().catch(e => {
+                console.log("مطلوب تفاعل أول من المستخدم لتشغيل الصوت");
+            });
+        }
     }
+    
+    // دالة لتفعيل الصوت عند أول تفاعل من المستخدم (لحل مشكلة قيود المتصفح)
+    function enableAudioOnUserInteraction() {
+        if (notificationSound) {
+            // محاولة تشغيل صوت وهمي ومن ثم إيقافه فوراً لتفعيل سياسة المتصفح
+            notificationSound.volume = 0;
+            notificationSound.play().then(() => {
+                notificationSound.pause();
+                notificationSound.currentTime = 0;
+                notificationSound.volume = 1;
+                console.log("✅ تم تفعيل الصوت بنجاح بعد أول تفاعل من المستخدم");
+            }).catch(e => console.log("لا يزال الصوت بحاجة لتفاعل"));
+        }
+    }
+    
+    // إضافة مستمع لأول نقرة أو لمس في الصفحة لتفعيل الصوت
+    document.body.addEventListener('click', function enableAudio() {
+        enableAudioOnUserInteraction();
+        document.body.removeEventListener('click', enableAudio);
+    }, { once: true });
     
     // ============ الترجمة ============
     const translations = {
@@ -1007,7 +1032,8 @@
         try {
             await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
-            playSound();
+            // تشغيل صوت عند إرسال رسالة (اختياري - للتأكيد ولتفعيل الصوت)
+            playNotificationSound();
         } catch (error) {
             console.error("خطأ في الإرسال:", error);
             alert("فشل إرسال الرسالة، حاول مرة أخرى.");
@@ -1024,6 +1050,9 @@
             alert("لا يمكن مراسلة نفسك");
             return;
         }
+        
+        // تفعيل الصوت عند فتح المحادثة (أول تفاعل من المستخدم)
+        enableAudioOnUserInteraction();
         
         currentChatUserId = otherUserId;
         
@@ -1085,12 +1114,12 @@
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // تشغيل صوت إذا كانت الرسالة جديدة وليست مني
+            // ✅ تشغيل الصوت فقط عند وصول رسالة جديدة (added) وليست مني
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
                     if (msg.senderId !== currentUser.uid) {
-                        playSound();
+                        playNotificationSound();  // 🔔 صوت عند وصول رسالة جديدة
                     }
                 }
             });
@@ -1177,9 +1206,20 @@
                 const otherId = data.senderId;
                 if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
                     usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                    // إشعار صوتي عند وصول رسالة جديدة من شخص آخر (إذا لم نكن في صفحة المحادثة معه)
+                    
+                    // ✅ تشغيل صوت عند وصول رسالة جديدة من شخص لست في محادثة معه حالياً
                     if (currentChatUserId !== otherId) {
-                        playSound();
+                        // التحقق من أن هذه رسالة جديدة غير مقروءة
+                        const unreadCheck = query(
+                            collection(db, "messages"),
+                            where("senderId", "==", otherId),
+                            where("receiverId", "==", currentUser.uid),
+                            where("read", "==", false)
+                        );
+                        const unreadSnap = await getDocs(unreadCheck);
+                        if (unreadSnap.size > 0) {
+                            playNotificationSound();  // 🔔 صوت عند وصول رسالة جديدة
+                        }
                     }
                 }
             });
@@ -1426,7 +1466,7 @@
                     createdAt: Date.now()
                 });
                 alert("تم النشر بنجاح");
-                playSound();
+                playNotificationSound();
                 modal.remove();
                 loadAccounts();
                 if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid);
@@ -1512,7 +1552,7 @@
             });
         });
         document.getElementById('doLogin').onclick = async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); playSound(); }
+            try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); authContainer.remove(); playNotificationSound(); }
             catch(e) { document.getElementById('loginError').innerText = e.message.includes('auth/wrong-password') ? 'كلمة مرور خاطئة' : 'خطأ في البريد أو كلمة المرور'; }
         };
         document.getElementById('googleLoginBtn').onclick = async () => {
@@ -1521,7 +1561,7 @@
                 const user = result.user;
                 const userRef = doc(db, 'users', user.uid);
                 if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { userIdRandom: Math.floor(1e9 + Math.random() * 9e9), email: user.email, name: user.displayName || 'مستخدم Google', country: '', createdAt: Date.now(), followers: [], following: [] }); }
-                authContainer.remove(); playSound();
+                authContainer.remove(); playNotificationSound();
             } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
         document.getElementById('forgotPasswordBtn').onclick = async () => {
