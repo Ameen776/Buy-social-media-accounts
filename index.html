@@ -499,7 +499,7 @@
     let currentChatUserId = null;
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
-    let globalMessagesListener = null; // مستمع عام للرسائل للإشعارات الصوتية
+    let globalMessagesListener = null;
     
     // ========== نظام الصوت ==========
     let notificationSound = new Audio('https://files.catbox.moe/ow1xx4.wav');
@@ -1017,7 +1017,7 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - نسخة محسنة مع صوت فوري ============
+    // ============ الشات والمراسلة - نسخة محسنة ============
     
     // مستمع عام لجميع الرسائل الجديدة لتشغيل الصوت خارج المحادثة
     function setupGlobalMessageListener() {
@@ -1029,7 +1029,6 @@
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    // تشغيل الصوت إذا كانت الرسالة موجهة للمستخدم الحالي، وليست منه، ولسنا حالياً في محادثة مع المرسل
                     if (msg.receiverId === currentUser.uid && 
                         msg.senderId !== currentUser.uid && 
                         currentChatUserId !== msg.senderId) {
@@ -1100,10 +1099,7 @@
             await updateDoc(doc(db, "messages", msg.id), { read: true });
         }
         
-        // إلغاء الاشتراك السابق
-        if (currentChatUnsubscribe) {
-            currentChatUnsubscribe();
-        }
+        if (currentChatUnsubscribe) currentChatUnsubscribe();
         
         let initialLoadComplete = false;
         
@@ -1124,7 +1120,6 @@
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    // تشغيل الصوت فقط للرسائل الجديدة الواردة بعد التحميل الأولي
                     if (initialLoadComplete && msg.senderId !== currentUser.uid) {
                         playSound();
                     }
@@ -1150,13 +1145,11 @@
             initialLoadComplete = true;
         });
         
-        // ربط أزرار الإرسال
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendMsg');
         const attachBtn = document.getElementById('attachImageBtn');
         const backBtn = document.getElementById('backConv');
         
-        // إزالة المستمعين السابقين باستنساخ العناصر
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
         newSendBtn.onclick = async () => {
@@ -1201,28 +1194,25 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات
+    // دالة تحميل قائمة المحادثات - نسخة مستقرة
     async function loadConversations() {
         if (!currentUser) return;
-        
-        if (conversationsUnsubscribe) {
-            conversationsUnsubscribe();
-        }
         
         const container = document.getElementById('convList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
-        // استعلام عن المحادثات التي شارك فيها المستخدم
-        const messagesRef = collection(db, "messages");
-        const senderQuery = query(messagesRef, where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
-        const receiverQuery = query(messagesRef, where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        // إنشاء استعلامين للمحادثات التي شارك فيها المستخدم (مرسل أو مستقبل)
+        const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         
-        conversationsUnsubscribe = onSnapshot(messagesRef, async () => {
-            // نعيد بناء القائمة عند أي تغيير في الرسائل
-            const [senderSnap, receiverSnap] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
-            
+        // إلغاء الاشتراك السابق
+        if (conversationsUnsubscribe) conversationsUnsubscribe();
+        
+        // دالة مساعدة لبناء قائمة المحادثات من البيانات
+        const buildConversationsList = async (senderSnap, receiverSnap) => {
             const usersMap = new Map();
             
+            // معالجة الرسائل الصادرة
             senderSnap.forEach(doc => {
                 const data = doc.data();
                 const otherId = data.receiverId;
@@ -1231,6 +1221,7 @@
                 }
             });
             
+            // معالجة الرسائل الواردة
             receiverSnap.forEach(doc => {
                 const data = doc.data();
                 const otherId = data.senderId;
@@ -1294,7 +1285,24 @@
                     window.openChat(userId, userName);
                 };
             });
+        };
+        
+        // استخدام onSnapshot على كلا الاستعلامين لتحديث القائمة فوراً
+        const unsubscribeSender = onSnapshot(senderQuery, async (senderSnap) => {
+            const receiverSnap = await getDocs(receiverQuery);
+            await buildConversationsList(senderSnap, receiverSnap);
         });
+        
+        const unsubscribeReceiver = onSnapshot(receiverQuery, async (receiverSnap) => {
+            const senderSnap = await getDocs(senderQuery);
+            await buildConversationsList(senderSnap, receiverSnap);
+        });
+        
+        // تخزين دوال الإلغاء
+        conversationsUnsubscribe = () => {
+            unsubscribeSender();
+            unsubscribeReceiver();
+        };
     }
     
     function escapeHtml(text) {
@@ -1678,7 +1686,7 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
-            setupGlobalMessageListener(); // بدء الاستماع العام للرسائل الجديدة للإشعارات الصوتية
+            setupGlobalMessageListener();
             loadConversations();
         } else {
             if (conversationsUnsubscribe) conversationsUnsubscribe();
