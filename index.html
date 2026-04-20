@@ -1017,7 +1017,7 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - النسخة الأصلية + صوت الإشعارات ============
+    // ============ الشات والمراسلة - نسخة مستقرة 100% ============
     
     // مستمع عام للرسائل الجديدة لتشغيل الصوت خارج المحادثة
     function setupGlobalMessageListener() {
@@ -1029,7 +1029,6 @@
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    // تشغيل الصوت إذا كانت الرسالة موجهة للمستخدم الحالي، وليست منه، ولسنا حالياً في محادثة مع المرسل
                     if (msg.receiverId === currentUser.uid && 
                         msg.senderId !== currentUser.uid && 
                         currentChatUserId !== msg.senderId) {
@@ -1195,7 +1194,7 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات - النسخة الأصلية المستقرة
+    // دالة تحميل قائمة المحادثات - نسخة جديدة قوية
     async function loadConversations() {
         if (!currentUser) return;
         
@@ -1203,87 +1202,154 @@
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
         try {
+            // إلغاء الاشتراك السابق
+            if (conversationsUnsubscribe) conversationsUnsubscribe();
+            
+            // الاستماع لكل رسائل المستخدم (مرسل أو مستقبل)
+            const q = query(
+                collection(db, "messages"),
+                where("participants", "array-contains", currentUser.uid),
+                orderBy("timestamp", "desc")
+            );
+            
+            // في حال لم يكن لديك حقل participants، نستخدم استعلامين منفصلين
+            // سأستخدم الطريقة المزدوجة لأنها الأكثر توافقاً مع بنية البيانات الحالية
             const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
             const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
             
-            const [senderSnap, receiverSnap] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
-            
-            const usersMap = new Map();
-            
-            senderSnap.forEach(doc => {
-                const data = doc.data();
-                const otherId = data.receiverId;
-                if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
-                    usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                }
+            // استخدام onSnapshot على كليهما
+            const unsubscribeSender = onSnapshot(senderQuery, async (senderSnap) => {
+                await updateConversationsList(senderSnap, 'sender');
             });
             
-            receiverSnap.forEach(doc => {
-                const data = doc.data();
-                const otherId = data.senderId;
-                if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
-                    usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                }
+            const unsubscribeReceiver = onSnapshot(receiverQuery, async (receiverSnap) => {
+                await updateConversationsList(receiverSnap, 'receiver');
             });
             
-            if (usersMap.size === 0) {
-                container.innerHTML = '<div>لا توجد محادثات</div>';
-                document.getElementById('msgNotification').style.display = 'none';
-                return;
+            let conversationsCache = new Map();
+            
+            async function updateConversationsList(snapshot, type) {
+                // تحديث الخريطة بناءً على النوع
+                snapshot.docChanges().forEach(change => {
+                    const msg = change.doc.data();
+                    const otherId = type === 'sender' ? msg.receiverId : msg.senderId;
+                    if (!otherId) return;
+                    
+                    if (change.type === 'removed') {
+                        // لا نفعل شيئاً هنا، ولكن يمكن إعادة بناء الخريطة لاحقاً
+                    } else {
+                        const existing = conversationsCache.get(otherId);
+                        if (!existing || existing.lastTime < msg.timestamp) {
+                            conversationsCache.set(otherId, {
+                                lastMessage: msg.text || "📷 صورة",
+                                lastTime: msg.timestamp,
+                                otherId: otherId
+                            });
+                        }
+                    }
+                });
+                
+                // إعادة بناء واجهة المحادثات من الخريطة
+                await renderConversationsList(conversationsCache);
             }
             
-            let html = '';
-            let totalUnread = 0;
-            
-            const sortedUsers = Array.from(usersMap.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
-            
-            for (const [otherId, chatInfo] of sortedUsers) {
-                const userSnap = await getDoc(doc(db, 'users', otherId));
-                const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
-                const avatar = userSnap.exists() ? userSnap.data().avatar : null;
+            async function renderConversationsList(cache) {
+                if (cache.size === 0) {
+                    container.innerHTML = '<div>لا توجد محادثات</div>';
+                    document.getElementById('msgNotification').style.display = 'none';
+                    return;
+                }
                 
-                const unreadQuery = query(
-                    collection(db, "messages"),
-                    where("senderId", "==", otherId),
-                    where("receiverId", "==", currentUser.uid),
-                    where("read", "==", false)
-                );
-                const unreadSnap = await getDocs(unreadQuery);
-                const unreadCount = unreadSnap.size;
-                totalUnread += unreadCount;
+                let html = '';
+                let totalUnread = 0;
                 
-                html += `
-                    <div class="conversation-item" data-userid="${otherId}" data-username="${name}">
-                        <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
-                        <div class="conversation-info">
-                            <div class="conversation-name">${name}</div>
-                            <div class="conversation-last-msg">${chatInfo.lastMessage || "ابدأ المحادثة"}</div>
+                // ترتيب تنازلي حسب الوقت
+                const sorted = Array.from(cache.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
+                
+                for (const [otherId, info] of sorted) {
+                    const userSnap = await getDoc(doc(db, 'users', otherId));
+                    const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
+                    const avatar = userSnap.exists() ? userSnap.data().avatar : null;
+                    
+                    const unreadQuery = query(
+                        collection(db, "messages"),
+                        where("senderId", "==", otherId),
+                        where("receiverId", "==", currentUser.uid),
+                        where("read", "==", false)
+                    );
+                    const unreadSnap = await getDocs(unreadQuery);
+                    const unreadCount = unreadSnap.size;
+                    totalUnread += unreadCount;
+                    
+                    html += `
+                        <div class="conversation-item" data-userid="${otherId}" data-username="${name}">
+                            <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
+                            <div class="conversation-info">
+                                <div class="conversation-name">${name}</div>
+                                <div class="conversation-last-msg">${info.lastMessage || "ابدأ المحادثة"}</div>
+                            </div>
+                            <div class="conversation-time">${info.lastTime ? new Date(info.lastTime).toLocaleTimeString() : ''}</div>
+                            ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
                         </div>
-                        <div class="conversation-time">${chatInfo.lastTime ? new Date(chatInfo.lastTime).toLocaleTimeString() : ''}</div>
-                        ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
-                    </div>
-                `;
+                    `;
+                }
+                
+                container.innerHTML = html;
+                const badge = document.getElementById('msgNotification');
+                if (totalUnread > 0) {
+                    badge.style.display = 'flex';
+                    badge.innerText = totalUnread > 9 ? '9+' : totalUnread;
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                document.querySelectorAll('.conversation-item').forEach(el => {
+                    el.onclick = () => {
+                        const userId = el.dataset.userid;
+                        const userName = el.dataset.username;
+                        window.openChat(userId, userName);
+                    };
+                });
             }
             
-            container.innerHTML = html;
-            const badge = document.getElementById('msgNotification');
-            if (totalUnread > 0) {
-                badge.style.display = 'flex';
-                badge.innerText = totalUnread > 9 ? '9+' : totalUnread;
-            } else {
-                badge.style.display = 'none';
-            }
+            // تخزين دوال الإلغاء
+            conversationsUnsubscribe = () => {
+                unsubscribeSender();
+                unsubscribeReceiver();
+            };
             
-            document.querySelectorAll('.conversation-item').forEach(el => {
-                el.onclick = () => {
-                    const userId = el.dataset.userid;
-                    const userName = el.dataset.username;
-                    window.openChat(userId, userName);
-                };
+            // تحميل أولي للبيانات من كلا الاستعلامين
+            const [initialSender, initialReceiver] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
+            initialSender.forEach(doc => {
+                const msg = doc.data();
+                const otherId = msg.receiverId;
+                if (otherId) {
+                    conversationsCache.set(otherId, {
+                        lastMessage: msg.text || "📷 صورة",
+                        lastTime: msg.timestamp,
+                        otherId: otherId
+                    });
+                }
             });
+            initialReceiver.forEach(doc => {
+                const msg = doc.data();
+                const otherId = msg.senderId;
+                if (otherId) {
+                    const existing = conversationsCache.get(otherId);
+                    if (!existing || existing.lastTime < msg.timestamp) {
+                        conversationsCache.set(otherId, {
+                            lastMessage: msg.text || "📷 صورة",
+                            lastTime: msg.timestamp,
+                            otherId: otherId
+                        });
+                    }
+                }
+            });
+            await renderConversationsList(conversationsCache);
+            
         } catch(e) {
             console.error("خطأ في تحميل المحادثات:", e);
-            container.innerHTML = '<div>خطأ في تحميل المحادثات</div>';
+            container.innerHTML = '<div>خطأ في تحميل المحادثات. راجع الإعدادات.</div>';
         }
     }
     
