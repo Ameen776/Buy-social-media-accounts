@@ -250,6 +250,9 @@
         <button onclick="window.showPage('support')" data-i18n="support"><i class="fas fa-headset"></i> الدعم الفني</button>
         <button onclick="window.showPage('about')" data-i18n="about"><i class="fas fa-info-circle"></i> عن التطبيق</button>
         <button id="themeToggleSide" data-i18n="dark_mode"><i class="fas fa-moon"></i> الوضع الليلي</button>
+        <button id="enableNotificationsBtn" class="btn-outline" style="margin:10px 0; text-align:center; justify-content:center;">
+            <i class="fas fa-bell"></i> <span data-i18n="enable_notifications">تفعيل الإشعارات</span>
+        </button>
         <select id="langSelectSide" style="margin-top:10px;">
             <option value="ar">🇸🇦 العربية</option><option value="en">🇺🇸 English</option>
             <option value="fr">🇫🇷 Français</option><option value="tr">🇹🇷 Türkçe</option>
@@ -500,13 +503,45 @@
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
     
-    // صوت الإشعارات
-    let notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-    function playSound() { 
-        try { 
+    // ============ نظام الإشعارات والصوت ============
+    const notificationSound = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+    let notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+    
+    function playSound() {
+        if (!notificationsEnabled) return;
+        try {
             notificationSound.currentTime = 0;
-            notificationSound.play(); 
-        } catch(e) { console.log("صوت غير مدعوم"); } 
+            notificationSound.play().catch(e => console.log("صوت غير مدعوم"));
+        } catch(e) { console.log("صوت غير مدعوم"); }
+    }
+    
+    function showBrowserNotification(title, body) {
+        if (!notificationsEnabled) return;
+        if (Notification.permission === "granted") {
+            new Notification(title, { body: body, icon: "https://i.ibb.co/VcT4bzWQ/1776423732636a.png" });
+        }
+    }
+    
+    function enableNotifications() {
+        if (Notification.permission === "default") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    notificationsEnabled = true;
+                    localStorage.setItem('notificationsEnabled', 'true');
+                    alert("✅ تم تفعيل الإشعارات الصوتية والمرئية");
+                    playSound();
+                } else {
+                    alert("❌ لم يتم تفعيل الإشعارات");
+                }
+            });
+        } else if (Notification.permission === "granted") {
+            notificationsEnabled = true;
+            localStorage.setItem('notificationsEnabled', 'true');
+            alert("✅ تم تفعيل الإشعارات");
+            playSound();
+        } else {
+            alert("❌ الإشعارات محظورة. يرجى السماح بالإشعارات من إعدادات المتصفح");
+        }
     }
     
     // ============ الترجمة ============
@@ -524,7 +559,8 @@
             save: "حفظ", cancel: "إلغاء", confirm_delete: "هل أنت متأكد من الحذف؟", deleted: "تم الحذف", updated: "تم التحديث",
             login: "تسجيل الدخول", register: "إنشاء حساب", password: "كلمة المرور", create_account: "إنشاء حساب جديد",
             platform: "المنصة", price: "السعر", link: "الرابط", description: "الوصف", images: "الصور", forgot_password: "نسيت كلمة المرور؟",
-            reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة"
+            reset_email_sent: "تم إرسال رابط إعادة تعيين كلمة المرور", google_login: "تسجيل الدخول عبر Google", views: "مشاهدة",
+            enable_notifications: "تفعيل الإشعارات"
         },
         en: {
             menu: "Menu", home: "Home", add_account: "Add Account", messages: "Messages", support: "Support", about: "About",
@@ -539,7 +575,8 @@
             save: "Save", cancel: "Cancel", confirm_delete: "Are you sure?", deleted: "Deleted", updated: "Updated",
             login: "Login", register: "Register", password: "Password", create_account: "Create Account",
             platform: "Platform", price: "Price", link: "Link", description: "Description", images: "Images", forgot_password: "Forgot password?",
-            reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views"
+            reset_email_sent: "Password reset email sent", google_login: "Login with Google", views: "Views",
+            enable_notifications: "Enable Notifications"
         },
         fr: {
             menu: "Menu", home: "Accueil", add_account: "Ajouter", messages: "Messages", support: "Support", about: "À propos",
@@ -554,7 +591,8 @@
             save: "Enregistrer", cancel: "Annuler", confirm_delete: "Supprimer ?", deleted: "Supprimé", updated: "Mis à jour",
             login: "Connexion", register: "Inscription", password: "Mot de passe", create_account: "Créer un compte",
             platform: "Plateforme", price: "Prix", link: "Lien", description: "Description", images: "Images", forgot_password: "Mot de passe oublié ?",
-            reset_email_sent: "Email de réinitialisation envoyé", google_login: "Connexion avec Google", views: "Vues"
+            reset_email_sent: "Email de réinitialisation envoyé", google_login: "Connexion avec Google", views: "Vues",
+            enable_notifications: "Activer notifications"
         },
         tr: {
             menu: "Menü", home: "Ana Sayfa", add_account: "Hesap Ekle", messages: "Mesajlar", support: "Destek", about: "Hakkında",
@@ -569,7 +607,8 @@
             save: "Kaydet", cancel: "İptal", confirm_delete: "Silmek istediğinize emin misiniz?", deleted: "Silindi", updated: "Güncellendi",
             login: "Giriş", register: "Kayıt Ol", password: "Şifre", create_account: "Hesap Oluştur",
             platform: "Platform", price: "Fiyat", link: "Bağlantı", description: "Açıklama", images: "Resimler", forgot_password: "Şifremi unuttum?",
-            reset_email_sent: "Şifre sıfırlama e-postası gönderildi", google_login: "Google ile giriş yap", views: "Görüntülenme"
+            reset_email_sent: "Şifre sıfırlama e-postası gönderildi", google_login: "Google ile giriş yap", views: "Görüntülenme",
+            enable_notifications: "Bildirimleri Etkinleştir"
         }
     };
     
@@ -986,7 +1025,7 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - نسخة فورية مع أصوات ============
+    // ============ الشات والمراسلة مع الإشعارات ============
     
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
@@ -1007,14 +1046,28 @@
         try {
             await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
-            playSound();
         } catch (error) {
             console.error("خطأ في الإرسال:", error);
             alert("فشل إرسال الرسالة، حاول مرة أخرى.");
         }
     }
     
-    // دالة فتح المحادثة مع عرض جميع الرسائل فوراً
+    // دالة إظهار إشعار عند وصول رسالة جديدة
+    function newMessageAlert(senderName, messageText) {
+        if (!notificationsEnabled) return;
+        
+        // تشغيل الصوت
+        playSound();
+        
+        // إظهار إشعار المتصفح
+        if (Notification.permission === "granted") {
+            new Notification("📩 رسالة جديدة من " + senderName, {
+                body: messageText.length > 50 ? messageText.substring(0, 50) + "..." : messageText,
+                icon: "https://i.ibb.co/VcT4bzWQ/1776423732636a.png"
+            });
+        }
+    }
+    
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
@@ -1027,10 +1080,8 @@
         
         currentChatUserId = otherUserId;
         
-        // الانتقال إلى صفحة المحادثات
         showPage('messages');
         
-        // إخفاء قائمة المحادثات وإظهار صندوق المحادثة
         document.getElementById('convList').style.display = 'none';
         document.getElementById('chatBox').style.display = 'block';
         
@@ -1039,7 +1090,7 @@
         
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         
-        // تحديث حالة القراءة للرسائل الواردة من هذا الشخص
+        // تحديث حالة القراءة للرسائل
         const unreadQuery = query(
             collection(db, "messages"),
             where("senderId", "==", otherUserId),
@@ -1051,12 +1102,10 @@
             await updateDoc(doc(db, "messages", msg.id), { read: true });
         }
         
-        // إلغاء الاشتراك السابق
         if (currentChatUnsubscribe) {
             currentChatUnsubscribe();
         }
         
-        // الاستماع للرسائل (القديمة والجديدة) بشكل فوري
         const q = query(
             collection(db, "messages"),
             where("chatId", "==", chatId),
@@ -1085,12 +1134,18 @@
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // تشغيل صوت إذا كانت الرسالة جديدة وليست مني
+            // تشغيل صوت وإشعار عند وصول رسالة جديدة من الشخص الآخر
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    if (msg.senderId !== currentUser.uid) {
+                    if (msg.senderId !== currentUser.uid && msg.senderId === otherUserId) {
                         playSound();
+                        if (Notification.permission === "granted") {
+                            new Notification("📩 رسالة جديدة من " + otherUserName, {
+                                body: msg.text ? (msg.text.length > 50 ? msg.text.substring(0, 50) + "..." : msg.text) : "📷 صورة",
+                                icon: "https://i.ibb.co/VcT4bzWQ/1776423732636a.png"
+                            });
+                        }
                     }
                 }
             });
@@ -1145,18 +1200,14 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات مع إشعارات فورية
     async function loadConversations() {
         if (!currentUser) return;
         
-        // إلغاء الاشتراك السابق
         if (conversationsUnsubscribe) {
             conversationsUnsubscribe();
         }
         
-        // الاستماع لجميع الرسائل لتحديث قائمة الدردشات
         conversationsUnsubscribe = onSnapshot(collection(db, "messages"), async () => {
-            // جلب جميع المحادثات الفريدة
             const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid));
             const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid));
             
@@ -1177,9 +1228,13 @@
                 const otherId = data.senderId;
                 if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
                     usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                    // إشعار صوتي عند وصول رسالة جديدة من شخص آخر (إذا لم نكن في صفحة المحادثة معه)
+                    
+                    // إشعار عند وصول رسالة جديدة (إذا لم نكن في صفحة المحادثة معه)
                     if (currentChatUserId !== otherId) {
-                        playSound();
+                        // جلب اسم المرسل للإشعار
+                        const userSnap = await getDoc(doc(db, 'users', otherId));
+                        const senderName = userSnap.exists() ? userSnap.data().name : "مستخدم";
+                        newMessageAlert(senderName, data.text || "📷 صورة");
                     }
                 }
             });
@@ -1195,7 +1250,6 @@
             let html = '';
             let totalUnread = 0;
             
-            // ترتيب المحادثات حسب آخر رسالة (الأحدث أولاً)
             const sortedUsers = Array.from(usersMap.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
             
             for (const [otherId, chatInfo] of sortedUsers) {
@@ -1203,7 +1257,6 @@
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
                 const avatar = userSnap.exists() ? userSnap.data().avatar : null;
                 
-                // حساب الرسائل غير المقروءة
                 const unreadQuery = query(
                     collection(db, "messages"),
                     where("senderId", "==", otherId),
@@ -1586,6 +1639,11 @@
         applyLanguage();
     });
     
+    // زر تفعيل الإشعارات
+    document.getElementById('enableNotificationsBtn').onclick = () => {
+        enableNotifications();
+    };
+    
     const searchModal = document.getElementById('searchModal');
     document.getElementById('searchBtn').onclick = () => { searchModal.classList.toggle('open'); document.getElementById('searchInputModal').focus(); };
     document.getElementById('searchInputModal')?.addEventListener('input', (e) => { searchUsers(e.target.value.trim()); });
@@ -1616,6 +1674,14 @@
         loadUserTickets();
     });
     document.getElementById('supportImage')?.addEventListener('change', (e) => { const preview = document.getElementById('supportImagePreview'); preview.innerHTML = ''; const file = e.target.files[0]; if (file) { const img = document.createElement('img'); img.src = URL.createObjectURL(file); preview.appendChild(img); } });
+    
+    // تفعيل الإشعارات تلقائياً إذا كان مصرحاً مسبقاً
+    if (Notification.permission === "granted") {
+        notificationsEnabled = true;
+        localStorage.setItem('notificationsEnabled', 'true');
+    } else if (localStorage.getItem('notificationsEnabled') === 'true') {
+        notificationsEnabled = true;
+    }
     
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
