@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>سوق الحسابات - المنصة الاحترافية</title>
     
-    <!-- Open Graph للتواصل الاجتماعي -->
+    <!-- Open Graph -->
     <meta property="og:title" content="سوق الحسابات - المنصة الاحترافية">
     <meta property="og:description" content="المنصة الأولى لبيع وشراء حسابات التواصل الاجتماعي بأمان وسرعة">
     <meta property="og:image" content="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
@@ -80,20 +80,66 @@
         .search-btn { background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer; }
         .menu-btn { background: none; border: none; color: var(--text-primary); font-size: 26px; cursor: pointer; }
         
+        /* نافذة البحث المتقدم */
         .search-modal {
-            position: fixed; top: 0; left: 0; right: 0; background: var(--bg-card);
-            padding: 15px; z-index: 1001; border-bottom: 1px solid var(--border-color);
-            transform: translateY(-100%); transition: 0.3s;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; padding: 15px;
         }
-        .search-modal.open { transform: translateY(0); }
-        .search-modal input { width: 100%; padding: 12px; border-radius: 30px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 1rem; }
-        .search-results { background: var(--bg-card); border-radius: 16px; margin-top: 10px; max-height: 300px; overflow-y: auto; }
-        .search-result-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .search-result-item:hover { background: var(--border-color); }
-        .search-result-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .search-modal-content {
+            background: var(--bg-card); border-radius: 24px;
+            width: 100%; max-width: 500px; max-height: 80vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .search-header {
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .search-header h3 { flex: 1; margin: 0; color: var(--accent); }
+        .close-search { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; }
+        .search-box {
+            padding: 15px 20px; display: flex; gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-box input {
+            flex: 1; padding: 12px 15px; border-radius: 30px;
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            color: var(--text-primary); font-size: 1rem;
+        }
+        .search-box button {
+            background: var(--accent); border: none; color: #111;
+            width: 50px; height: 50px; border-radius: 50%;
+            cursor: pointer; font-size: 1.2rem; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .search-results-container {
+            flex: 1; overflow-y: auto; padding: 10px;
+        }
+        .search-result-item {
+            padding: 12px; border-radius: 16px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            transition: 0.2s; background: var(--bg-card);
+            border: 1px solid transparent; margin-bottom: 8px;
+        }
+        .search-result-item:hover {
+            background: var(--border-color); border-color: var(--accent);
+        }
+        .search-result-avatar {
+            width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+        }
         .search-result-info { flex: 1; }
         .search-result-name { font-weight: bold; }
+        .search-result-username { font-size: 0.8rem; color: var(--accent); }
         .search-result-id { font-size: 0.7rem; color: var(--text-secondary); }
+        .search-result-actions {
+            display: flex; gap: 8px;
+        }
+        .search-result-actions button {
+            background: none; border: none; color: var(--accent);
+            font-size: 1.2rem; cursor: pointer; padding: 5px;
+        }
         
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--bg-header); transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid var(--border-color); overflow-y: auto; }
         .sidebar.open { right: 0; }
@@ -268,9 +314,23 @@
         </div>
     </div>
 
-    <div class="search-modal" id="searchModal">
-        <input type="text" id="searchInputModal" placeholder="بحث بالاسم أو ID...">
-        <div id="searchResults" class="search-results" style="display: none;"></div>
+    <!-- نافذة البحث المتقدم -->
+    <div id="searchModal" class="search-modal" style="display: none;">
+        <div class="search-modal-content">
+            <div class="search-header">
+                <h3>🔍 بحث عن مستخدم</h3>
+                <button class="close-search" id="closeSearchModal">&times;</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="advancedSearchInput" placeholder="اسم المستخدم أو ID...">
+                <button id="performSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="search-results-container" id="advancedSearchResults">
+                <div style="text-align:center; padding:20px; color:var(--text-secondary);">
+                    اكتب اسم أو ID للبحث
+                </div>
+            </div>
+        </div>
     </div>
     
     <div id="homePage" class="page active-page">
@@ -367,7 +427,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, increment, addDoc, arrayUnion, arrayRemove, limit, startAt, endAt } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
     
     const firebaseConfig = {
@@ -499,7 +559,7 @@
     let currentChatUserId = null;
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
-    let globalMessageListener = null; // للإشعارات الصوتية
+    let globalMessageListener = null;
     
     // ========== نظام الصوت ==========
     let notificationSound = new Audio('https://files.catbox.moe/ow1xx4.wav');
@@ -1019,7 +1079,6 @@
     
     // ============ الشات والمراسلة - نسخة مستقرة 100% ============
     
-    // مستمع عام للرسائل الجديدة لتشغيل الصوت خارج المحادثة
     function setupGlobalMessageListener() {
         if (globalMessageListener) globalMessageListener();
         if (!currentUser) return;
@@ -1087,7 +1146,6 @@
         
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         
-        // تحديث حالة القراءة
         const unreadQuery = query(
             collection(db, "messages"),
             where("senderId", "==", otherUserId),
@@ -1194,21 +1252,17 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات - نسخة مبسطة ومضمونة
     async function loadConversations() {
         if (!currentUser) return;
         
         const container = document.getElementById('convList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
-        // إلغاء الاشتراك السابق
         if (conversationsUnsubscribe) conversationsUnsubscribe();
         
-        // إنشاء استعلامين بسيطين للمحادثات
         const sentQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         const receivedQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         
-        // استخدام onSnapshot مباشر على الاستعلامين
         const unsubscribeSent = onSnapshot(sentQuery, (snap) => {
             updateConversationsUI(snap, 'sent');
         });
@@ -1217,11 +1271,9 @@
             updateConversationsUI(snap, 'received');
         });
         
-        // خريطة لتخزين أحدث رسالة لكل محادثة
         const latestMessages = new Map();
         
         async function updateConversationsUI(snapshot, type) {
-            // تحديث الخريطة
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const msg = change.doc.data();
@@ -1239,7 +1291,6 @@
                 }
             });
             
-            // إعادة رسم الواجهة
             await renderConversations();
         }
         
@@ -1253,7 +1304,6 @@
             let html = '';
             let totalUnread = 0;
             
-            // ترتيب تنازلي حسب الوقت
             const sorted = Array.from(latestMessages.entries()).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
             
             for (const [otherId, info] of sorted) {
@@ -1302,7 +1352,6 @@
             });
         }
         
-        // تخزين دوال الإلغاء
         conversationsUnsubscribe = () => {
             unsubscribeSent();
             unsubscribeReceived();
@@ -1315,51 +1364,101 @@
         return div.innerHTML;
     }
     
-    // ============ البحث عن المستخدمين ============
-    async function searchUsers(searchTerm) {
-        if (!searchTerm || searchTerm.length < 2) {
-            document.getElementById('searchResults').style.display = 'none';
-            return;
-        }
+    // ============ نظام البحث المتقدم ============
+    const searchModal = document.getElementById('searchModal');
+    const searchBtn = document.getElementById('searchBtn');
+    const closeSearchBtn = document.getElementById('closeSearchModal');
+    const advancedSearchInput = document.getElementById('advancedSearchInput');
+    const performSearchBtn = document.getElementById('performSearchBtn');
+    const advancedSearchResults = document.getElementById('advancedSearchResults');
+    
+    searchBtn.onclick = () => {
+        searchModal.style.display = 'flex';
+        advancedSearchInput.focus();
+    };
+    
+    closeSearchBtn.onclick = () => {
+        searchModal.style.display = 'none';
+        advancedSearchInput.value = '';
+        advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">اكتب اسم أو ID للبحث</div>';
+    };
+    
+    async function performAdvancedSearch() {
+        const term = advancedSearchInput.value.trim();
+        if (!term) return;
+        
+        advancedSearchResults.innerHTML = '<div class="loader">جار البحث...</div>';
+        
         try {
             const usersRef = collection(db, 'users');
-            const nameQuery = query(usersRef, where('name', '>=', searchTerm), where('name', '<=', searchTerm + '\uf8ff'), limit(10));
-            const idNum = parseInt(searchTerm);
-            let idQuery = null;
-            if (!isNaN(idNum)) idQuery = query(usersRef, where('userIdRandom', '==', idNum));
-            const [nameSnap, idSnap] = await Promise.all([getDocs(nameQuery), idQuery ? getDocs(idQuery) : Promise.resolve({ docs: [] })]);
+            let q;
+            
+            if (/^\d+$/.test(term)) {
+                // بحث بالرقم (userIdRandom)
+                q = query(usersRef, where("userIdRandom", "==", Number(term)), limit(10));
+            } else {
+                // بحث نصي
+                const searchTermLower = term.toLowerCase();
+                q = query(
+                    usersRef,
+                    orderBy("nameLowerCase"),
+                    startAt(searchTermLower),
+                    endAt(searchTermLower + '\uf8ff'),
+                    limit(10)
+                );
+            }
+            
+            const snapshot = await getDocs(q);
             const results = [];
-            nameSnap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
-            idSnap.forEach(doc => { if (doc.id !== currentUser?.uid && !results.find(r => r.id === doc.id)) results.push({ id: doc.id, ...doc.data() }); });
-            const resultsContainer = document.getElementById('searchResults');
+            snapshot.forEach(doc => {
+                if (doc.id !== currentUser?.uid) {
+                    results.push({ id: doc.id, ...doc.data() });
+                }
+            });
+            
             if (results.length === 0) {
-                resultsContainer.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>';
-                resultsContainer.style.display = 'block';
+                advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد نتائج</div>';
                 return;
             }
+            
             let html = '';
             for (const user of results) {
-                html += `<div class="search-result-item" data-userid="${user.id}" data-username="${user.name || 'مستخدم'}">
-                    <img class="search-result-avatar" src="${user.avatar || 'https://via.placeholder.com/40'}">
-                    <div class="search-result-info">
-                        <div class="search-result-name">${user.name || 'مستخدم'}</div>
-                        <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
+                html += `
+                    <div class="search-result-item">
+                        <img class="search-result-avatar" src="${user.avatar || 'https://via.placeholder.com/50'}">
+                        <div class="search-result-info">
+                            <div class="search-result-name">${user.name || 'مستخدم'}</div>
+                            <div class="search-result-username">@${user.username || user.name?.replace(/\s+/g, '.') || 'user'}</div>
+                            <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
+                        </div>
+                        <div class="search-result-actions">
+                            <button onclick="window.viewOtherProfile('${user.id}')" title="عرض الملف"><i class="fas fa-user"></i></button>
+                            <button onclick="window.openChat('${user.id}', '${(user.name || 'مستخدم').replace(/'/g, "\\'")}')" title="مراسلة"><i class="fas fa-comment"></i></button>
+                        </div>
                     </div>
-                    <i class="fas fa-comment" style="color:var(--accent);"></i>
-                </div>`;
+                `;
             }
-            resultsContainer.innerHTML = html;
-            resultsContainer.style.display = 'block';
-            document.querySelectorAll('.search-result-item').forEach(el => {
-                el.onclick = () => {
-                    const userId = el.dataset.userid;
-                    const userName = el.dataset.username;
-                    document.getElementById('searchModal').classList.remove('open');
-                    window.openChat(userId, userName);
-                };
-            });
-        } catch(e) { console.error(e); }
+            advancedSearchResults.innerHTML = html;
+            
+        } catch (error) {
+            console.error("خطأ في البحث:", error);
+            advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px; color:red;">حدث خطأ أثناء البحث</div>';
+        }
     }
+    
+    performSearchBtn.onclick = performAdvancedSearch;
+    advancedSearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performAdvancedSearch();
+    });
+    
+    // إغلاق المودال عند النقر خارجه
+    searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) {
+            searchModal.style.display = 'none';
+            advancedSearchInput.value = '';
+            advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">اكتب اسم أو ID للبحث</div>';
+        }
+    });
     
     // ============ الدعم الفني ============
     async function loadUserTickets() {
@@ -1541,10 +1640,14 @@
             }
         });
         modal.querySelector('#saveSettings').onclick = async () => {
+            const newName = modal.querySelector('#setName').value;
             await updateDoc(userRef, {
-                name: modal.querySelector('#setName').value, email: modal.querySelector('#setEmail').value,
+                name: newName,
+                nameLowerCase: newName.toLowerCase(),
+                email: modal.querySelector('#setEmail').value,
                 phone: modal.querySelector('#setPhoneCode').value + ' ' + modal.querySelector('#setPhone').value,
-                city: modal.querySelector('#setCity').value, country: modal.querySelector('#setCountry').value,
+                city: modal.querySelector('#setCity').value,
+                country: modal.querySelector('#setCountry').value,
                 zip: modal.querySelector('#setZip').value
             });
             alert(t('updated')); modal.remove(); refreshProfilePage();
@@ -1582,7 +1685,21 @@
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
                 const userRef = doc(db, 'users', user.uid);
-                if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { userIdRandom: Math.floor(1e9 + Math.random() * 9e9), email: user.email, name: user.displayName || 'مستخدم Google', country: '', createdAt: Date.now(), followers: [], following: [] }); }
+                if (!(await getDoc(userRef)).exists()) {
+                    const name = user.displayName || 'مستخدم Google';
+                    const username = name.replace(/\s+/g, '.');
+                    await setDoc(userRef, {
+                        userIdRandom: Math.floor(1e9 + Math.random() * 9e9),
+                        email: user.email,
+                        name: name,
+                        nameLowerCase: name.toLowerCase(),
+                        username: username,
+                        country: '',
+                        createdAt: Date.now(),
+                        followers: [],
+                        following: []
+                    });
+                }
                 authContainer.remove();
             } catch(e) { document.getElementById('loginError').innerText = e.message; }
         };
@@ -1617,7 +1734,12 @@
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 await updateProfile(userCred.user, { displayName: name });
-                await setDoc(doc(db, 'users', userCred.user.uid), { userIdRandom: Math.floor(1e9 + Math.random()*9e9), email, name, country, createdAt: Date.now(), followers: [], following: [] });
+                const username = name.replace(/\s+/g, '.');
+                await setDoc(doc(db, 'users', userCred.user.uid), {
+                    userIdRandom: Math.floor(1e9 + Math.random()*9e9),
+                    email, name, nameLowerCase: name.toLowerCase(), username, country,
+                    createdAt: Date.now(), followers: [], following: []
+                });
                 loadingDiv.innerHTML = '<div class="success-check">✓</div><div>تم إنشاء حسابك بنجاح</div>';
                 setTimeout(() => { authContainer.remove(); showLoginScreen(); }, 1500);
             } catch(e) {
@@ -1647,11 +1769,6 @@
         localStorage.setItem('lang', currentLang);
         applyLanguage();
     });
-    
-    const searchModal = document.getElementById('searchModal');
-    document.getElementById('searchBtn').onclick = () => { searchModal.classList.toggle('open'); document.getElementById('searchInputModal').focus(); };
-    document.getElementById('searchInputModal')?.addEventListener('input', (e) => { searchUsers(e.target.value.trim()); });
-    document.addEventListener('click', (e) => { if (!searchModal.contains(e.target) && e.target.id !== 'searchBtn') { searchModal.classList.remove('open'); } });
     
     document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1690,7 +1807,7 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
-            setupGlobalMessageListener(); // بدء الاستماع للإشعارات الصوتية
+            setupGlobalMessageListener();
             loadConversations();
         } else {
             if (conversationsUnsubscribe) conversationsUnsubscribe();
