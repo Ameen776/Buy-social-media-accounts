@@ -499,7 +499,7 @@
     let currentChatUserId = null;
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
-    let globalMessagesListener = null;
+    let globalMessageListener = null; // للإشعارات الصوتية
     
     // ========== نظام الصوت ==========
     let notificationSound = new Audio('https://files.catbox.moe/ow1xx4.wav');
@@ -1017,18 +1017,19 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - نسخة محسنة ============
+    // ============ الشات والمراسلة - النسخة الأصلية + صوت الإشعارات ============
     
-    // مستمع عام لجميع الرسائل الجديدة لتشغيل الصوت خارج المحادثة
+    // مستمع عام للرسائل الجديدة لتشغيل الصوت خارج المحادثة
     function setupGlobalMessageListener() {
-        if (globalMessagesListener) globalMessagesListener();
+        if (globalMessageListener) globalMessageListener();
         if (!currentUser) return;
         
         const messagesRef = collection(db, "messages");
-        globalMessagesListener = onSnapshot(messagesRef, (snapshot) => {
+        globalMessageListener = onSnapshot(messagesRef, (snapshot) => {
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
+                    // تشغيل الصوت إذا كانت الرسالة موجهة للمستخدم الحالي، وليست منه، ولسنا حالياً في محادثة مع المرسل
                     if (msg.receiverId === currentUser.uid && 
                         msg.senderId !== currentUser.uid && 
                         currentChatUserId !== msg.senderId) {
@@ -1194,25 +1195,21 @@
         };
     };
     
-    // دالة تحميل قائمة المحادثات - نسخة مستقرة
+    // دالة تحميل قائمة المحادثات - النسخة الأصلية المستقرة
     async function loadConversations() {
         if (!currentUser) return;
         
         const container = document.getElementById('convList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
-        // إنشاء استعلامين للمحادثات التي شارك فيها المستخدم (مرسل أو مستقبل)
-        const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
-        const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
-        
-        // إلغاء الاشتراك السابق
-        if (conversationsUnsubscribe) conversationsUnsubscribe();
-        
-        // دالة مساعدة لبناء قائمة المحادثات من البيانات
-        const buildConversationsList = async (senderSnap, receiverSnap) => {
+        try {
+            const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            
+            const [senderSnap, receiverSnap] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
+            
             const usersMap = new Map();
             
-            // معالجة الرسائل الصادرة
             senderSnap.forEach(doc => {
                 const data = doc.data();
                 const otherId = data.receiverId;
@@ -1221,7 +1218,6 @@
                 }
             });
             
-            // معالجة الرسائل الواردة
             receiverSnap.forEach(doc => {
                 const data = doc.data();
                 const otherId = data.senderId;
@@ -1285,24 +1281,10 @@
                     window.openChat(userId, userName);
                 };
             });
-        };
-        
-        // استخدام onSnapshot على كلا الاستعلامين لتحديث القائمة فوراً
-        const unsubscribeSender = onSnapshot(senderQuery, async (senderSnap) => {
-            const receiverSnap = await getDocs(receiverQuery);
-            await buildConversationsList(senderSnap, receiverSnap);
-        });
-        
-        const unsubscribeReceiver = onSnapshot(receiverQuery, async (receiverSnap) => {
-            const senderSnap = await getDocs(senderQuery);
-            await buildConversationsList(senderSnap, receiverSnap);
-        });
-        
-        // تخزين دوال الإلغاء
-        conversationsUnsubscribe = () => {
-            unsubscribeSender();
-            unsubscribeReceiver();
-        };
+        } catch(e) {
+            console.error("خطأ في تحميل المحادثات:", e);
+            container.innerHTML = '<div>خطأ في تحميل المحادثات</div>';
+        }
     }
     
     function escapeHtml(text) {
@@ -1686,12 +1668,12 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
-            setupGlobalMessageListener();
+            setupGlobalMessageListener(); // بدء الاستماع للإشعارات الصوتية
             loadConversations();
         } else {
             if (conversationsUnsubscribe) conversationsUnsubscribe();
             if (currentChatUnsubscribe) currentChatUnsubscribe();
-            if (globalMessagesListener) globalMessagesListener();
+            if (globalMessageListener) globalMessageListener();
             appDiv.style.display = 'none';
             splash.style.display = 'flex';
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
