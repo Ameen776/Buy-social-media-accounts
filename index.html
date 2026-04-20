@@ -499,18 +499,15 @@
     let currentChatUserId = null;
     let conversationsUnsubscribe = null;
     let currentChatUnsubscribe = null;
+    let globalMessagesListener = null; // مستمع عام للرسائل للإشعارات الصوتية
     
     // ========== نظام الصوت ==========
-    // إنشاء كائن الصوت باستخدام الرابط المطلوب
     let notificationSound = new Audio('https://files.catbox.moe/ow1xx4.wav');
-    // متغير لتتبع ما إذا كان المستخدم قد تفاعل مع الصفحة (لتفعيل الصوت)
     let audioEnabled = false;
     
-    // دالة تشغيل الصوت (لن تعمل إلا بعد أول تفاعل)
     function playSound() {
-        if (!audioEnabled) return; // لا تشغل الصوت حتى يتم تفعيله
+        if (!audioEnabled) return;
         try {
-            // إعادة ضبط وقت التشغيل لضمان التشغيل الفوري
             notificationSound.currentTime = 0;
             notificationSound.play().catch(e => console.log("تشغيل الصوت منع:", e));
         } catch(e) {
@@ -518,12 +515,10 @@
         }
     }
     
-    // تفعيل الصوت عند أول نقرة أو لمس في أي مكان بالصفحة
     function enableAudioOnFirstInteraction() {
         if (audioEnabled) return;
         
         const enableAudio = () => {
-            // محاولة تشغيل كتم الصوت ثم إيقافه لتفعيل السياق الصوتي
             notificationSound.volume = 0;
             notificationSound.play().then(() => {
                 notificationSound.pause();
@@ -535,7 +530,6 @@
                 console.log("لم يتم تفعيل الصوت بعد:", e);
             });
             
-            // إزالة المستمعين بعد أول تفاعل
             document.removeEventListener('click', enableAudio);
             document.removeEventListener('touchstart', enableAudio);
         };
@@ -544,7 +538,6 @@
         document.addEventListener('touchstart', enableAudio);
     }
     
-    // استدعاء تفعيل الصوت عند تحميل الصفحة
     enableAudioOnFirstInteraction();
     
     // ============ الترجمة ============
@@ -1024,7 +1017,29 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - نسخة فورية مع أصوات ============
+    // ============ الشات والمراسلة - نسخة محسنة مع صوت فوري ============
+    
+    // مستمع عام لجميع الرسائل الجديدة لتشغيل الصوت خارج المحادثة
+    function setupGlobalMessageListener() {
+        if (globalMessagesListener) globalMessagesListener();
+        if (!currentUser) return;
+        
+        const messagesRef = collection(db, "messages");
+        globalMessagesListener = onSnapshot(messagesRef, (snapshot) => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const msg = change.doc.data();
+                    // تشغيل الصوت إذا كانت الرسالة موجهة للمستخدم الحالي، وليست منه، ولسنا حالياً في محادثة مع المرسل
+                    if (msg.receiverId === currentUser.uid && 
+                        msg.senderId !== currentUser.uid && 
+                        currentChatUserId !== msg.senderId) {
+                        console.log("📨 رسالة جديدة واردة من", msg.senderId);
+                        playSound();
+                    }
+                }
+            });
+        });
+    }
     
     async function sendMessage(text, imageUrl = null) {
         if (!text && !imageUrl) return;
@@ -1045,14 +1060,12 @@
         try {
             await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
-            // لا داعي لتشغيل الصوت عند الإرسال، فقط عند الاستقبال
         } catch (error) {
             console.error("خطأ في الإرسال:", error);
             alert("فشل إرسال الرسالة، حاول مرة أخرى.");
         }
     }
     
-    // دالة فتح المحادثة مع عرض جميع الرسائل فوراً
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) {
             alert("تسجيل الدخول مطلوب");
@@ -1065,10 +1078,8 @@
         
         currentChatUserId = otherUserId;
         
-        // الانتقال إلى صفحة المحادثات
         showPage('messages');
         
-        // إخفاء قائمة المحادثات وإظهار صندوق المحادثة
         document.getElementById('convList').style.display = 'none';
         document.getElementById('chatBox').style.display = 'block';
         
@@ -1077,7 +1088,7 @@
         
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         
-        // تحديث حالة القراءة للرسائل الواردة من هذا الشخص
+        // تحديث حالة القراءة
         const unreadQuery = query(
             collection(db, "messages"),
             where("senderId", "==", otherUserId),
@@ -1094,10 +1105,8 @@
             currentChatUnsubscribe();
         }
         
-        // متغير لتتبع التحميل الأولي لمنع تشغيل الصوت للرسائل القديمة
         let initialLoadComplete = false;
         
-        // الاستماع للرسائل (القديمة والجديدة) بشكل فوري
         const q = query(
             collection(db, "messages"),
             where("chatId", "==", chatId),
@@ -1112,20 +1121,16 @@
                 return;
             }
             
-            // معالجة تغييرات المستندات للصوت
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    // تشغيل الصوت فقط إذا:
-                    // - التحميل الأولي قد اكتمل
-                    // - الرسالة ليست من المستخدم الحالي
+                    // تشغيل الصوت فقط للرسائل الجديدة الواردة بعد التحميل الأولي
                     if (initialLoadComplete && msg.senderId !== currentUser.uid) {
                         playSound();
                     }
                 }
             });
             
-            // عرض جميع الرسائل
             snapshot.forEach((doc) => {
                 const msg = doc.data();
                 const isMe = msg.senderId === currentUser.uid;
@@ -1142,17 +1147,16 @@
             });
             
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            // بعد أول تحديث، نعتبر التحميل الأولي مكتملاً
             initialLoadComplete = true;
         });
         
-        // إعداد أزرار الإرسال
+        // ربط أزرار الإرسال
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendMsg');
         const attachBtn = document.getElementById('attachImageBtn');
         const backBtn = document.getElementById('backConv');
         
+        // إزالة المستمعين السابقين باستنساخ العناصر
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
         newSendBtn.onclick = async () => {
@@ -1190,30 +1194,31 @@
                 currentChatUnsubscribe();
                 currentChatUnsubscribe = null;
             }
+            currentChatUserId = null;
             document.getElementById('chatBox').style.display = 'none';
             document.getElementById('convList').style.display = 'block';
             loadConversations();
         };
     };
     
-    // دالة تحميل قائمة المحادثات مع إشعارات فورية
+    // دالة تحميل قائمة المحادثات
     async function loadConversations() {
         if (!currentUser) return;
         
-        // إلغاء الاشتراك السابق
         if (conversationsUnsubscribe) {
             conversationsUnsubscribe();
         }
         
-        // متغير لمنع تشغيل الصوت عند التحميل الأولي للقائمة
-        let initialConversationsLoad = true;
+        const container = document.getElementById('convList');
+        container.innerHTML = '<div class="loader">جار التحميل...</div>';
         
-        // الاستماع لجميع الرسائل لتحديث قائمة الدردشات
-        conversationsUnsubscribe = onSnapshot(collection(db, "messages"), async (snapshot) => {
-            // جلب جميع المحادثات الفريدة
-            const senderQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid));
-            const receiverQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid));
-            
+        // استعلام عن المحادثات التي شارك فيها المستخدم
+        const messagesRef = collection(db, "messages");
+        const senderQuery = query(messagesRef, where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        const receiverQuery = query(messagesRef, where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        
+        conversationsUnsubscribe = onSnapshot(messagesRef, async () => {
+            // نعيد بناء القائمة عند أي تغيير في الرسائل
             const [senderSnap, receiverSnap] = await Promise.all([getDocs(senderQuery), getDocs(receiverQuery)]);
             
             const usersMap = new Map();
@@ -1231,47 +1236,18 @@
                 const otherId = data.senderId;
                 if (otherId && (!usersMap.has(otherId) || usersMap.get(otherId).lastTime < data.timestamp)) {
                     usersMap.set(otherId, { lastMessage: data.text || "📷 صورة", lastTime: data.timestamp });
-                    
-                    // تشغيل الصوت فقط إذا:
-                    // - ليست المرة الأولى لتحميل القائمة
-                    // - لسنا حالياً في صفحة المحادثة مع هذا الشخص
-                    // - الرسالة جديدة (نعتمد على أن onSnapshot سيستدعى مع تغييرات جديدة)
-                    if (!initialConversationsLoad && currentChatUserId !== otherId) {
-                        // لكن للتأكد من أن الرسالة فعلاً جديدة، نفحص docChanges
-                        // لكن لدينا مشكلة أننا نستخدم getDocs وليس snapshot مباشرة،
-                        // لذلك سنعتمد على أن onSnapshot للكل سيتم استدعاؤه عند تغيير أي رسالة
-                        // وهنا نقوم بتشغيل الصوت فقط إذا كان التغيير إضافة جديدة
-                        // سنقوم بفحص docChanges في المستوى الأعلى
-                    }
                 }
             });
             
-            // فحص docChanges من snapshot الأساسي (الاستماع لكل الرسائل)
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const msg = change.doc.data();
-                    // إذا كانت رسالة جديدة واردة من شخص آخر ولسنا في محادثة معه
-                    if (!initialConversationsLoad && 
-                        msg.receiverId === currentUser.uid && 
-                        currentChatUserId !== msg.senderId) {
-                        playSound();
-                    }
-                }
-            });
-            
-            const container = document.getElementById('convList');
             if (usersMap.size === 0) {
                 container.innerHTML = '<div>لا توجد محادثات</div>';
-                const badge = document.getElementById('msgNotification');
-                badge.style.display = 'none';
-                initialConversationsLoad = false;
+                document.getElementById('msgNotification').style.display = 'none';
                 return;
             }
             
             let html = '';
             let totalUnread = 0;
             
-            // ترتيب المحادثات حسب آخر رسالة (الأحدث أولاً)
             const sortedUsers = Array.from(usersMap.entries()).sort((a, b) => (b[1].lastTime || 0) - (a[1].lastTime || 0));
             
             for (const [otherId, chatInfo] of sortedUsers) {
@@ -1279,7 +1255,6 @@
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
                 const avatar = userSnap.exists() ? userSnap.data().avatar : null;
                 
-                // حساب الرسائل غير المقروءة
                 const unreadQuery = query(
                     collection(db, "messages"),
                     where("senderId", "==", otherId),
@@ -1319,8 +1294,6 @@
                     window.openChat(userId, userName);
                 };
             });
-            
-            initialConversationsLoad = false;
         });
     }
     
@@ -1705,10 +1678,12 @@
             await loadAccounts();
             showPage('home');
             applyLanguage();
+            setupGlobalMessageListener(); // بدء الاستماع العام للرسائل الجديدة للإشعارات الصوتية
             loadConversations();
         } else {
             if (conversationsUnsubscribe) conversationsUnsubscribe();
             if (currentChatUnsubscribe) currentChatUnsubscribe();
+            if (globalMessagesListener) globalMessagesListener();
             appDiv.style.display = 'none';
             splash.style.display = 'flex';
             setTimeout(() => { splash.style.display = 'none'; showLoginScreen(); }, 800);
