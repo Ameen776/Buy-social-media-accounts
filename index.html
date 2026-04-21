@@ -133,13 +133,6 @@
         .search-result-name { font-weight: bold; }
         .search-result-username { font-size: 0.8rem; color: var(--accent); }
         .search-result-id { font-size: 0.7rem; color: var(--text-secondary); }
-        .search-result-actions {
-            display: flex; gap: 8px;
-        }
-        .search-result-actions button {
-            background: none; border: none; color: var(--accent);
-            font-size: 1.2rem; cursor: pointer; padding: 5px;
-        }
         
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--bg-header); transition: 0.3s; padding: 20px; z-index: 1000; border-left: 1px solid var(--border-color); overflow-y: auto; }
         .sidebar.open { right: 0; }
@@ -360,6 +353,9 @@
                 </div>
                 <div id="followButtonContainer"></div>
             </div>
+            
+            <!-- زر المراسلة سيظهر هنا للملفات الشخصية الأخرى -->
+            <div id="profileChatButtonContainer" style="margin-top: 15px;"></div>
         </div>
         
         <div style="margin-top:20px;">
@@ -709,10 +705,13 @@
         await loadProfileData(currentProfileUserId);
         await loadUserAccounts(currentProfileUserId);
         await loadFollowStats(currentProfileUserId);
+        
         const isOwnProfile = (currentUser && currentProfileUserId === currentUser.uid);
         document.getElementById('profileTitle').innerText = isOwnProfile ? t('profile') : `@${document.getElementById('userName').innerText || 'مستخدم'}`;
+        
         const settingsIcon = document.getElementById('settingsIcon');
         if (settingsIcon) isOwnProfile ? settingsIcon.classList.remove('hidden') : settingsIcon.classList.add('hidden');
+        
         const avatarImg = document.getElementById('avatarImg');
         if (isOwnProfile) {
             avatarImg.classList.add('own-profile-avatar');
@@ -722,6 +721,18 @@
             avatarImg.classList.add('other-profile-avatar');
             avatarImg.classList.remove('own-profile-avatar');
             avatarImg.onclick = null;
+        }
+        
+        // زر المراسلة في الملف الشخصي
+        const chatBtnContainer = document.getElementById('profileChatButtonContainer');
+        if (!isOwnProfile && currentUser) {
+            chatBtnContainer.innerHTML = `<button class="btn-primary" id="profileChatBtn" style="padding: 10px 30px; font-size: 1rem;"><i class="fas fa-comment"></i> مراسلة</button>`;
+            document.getElementById('profileChatBtn').onclick = () => {
+                const userName = document.getElementById('userName').innerText;
+                window.openChat(currentProfileUserId, userName);
+            };
+        } else {
+            chatBtnContainer.innerHTML = '';
         }
     }
     
@@ -1077,7 +1088,7 @@
         showPage('profile');
     };
     
-    // ============ الشات والمراسلة - نسخة مستقرة 100% ============
+    // ============ الشات والمراسلة - نسخة محسنة وخفيفة ============
     
     function setupGlobalMessageListener() {
         if (globalMessageListener) globalMessageListener();
@@ -1085,6 +1096,7 @@
         
         const messagesRef = collection(db, "messages");
         globalMessageListener = onSnapshot(messagesRef, (snapshot) => {
+            let hasNew = false;
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
@@ -1093,10 +1105,27 @@
                         currentChatUserId !== msg.senderId) {
                         console.log("📨 رسالة جديدة واردة من", msg.senderId);
                         playSound();
+                        hasNew = true;
                     }
                 }
             });
+            // تحديث عداد الإشعارات فوراً
+            if (hasNew) updateUnreadBadge();
         });
+    }
+    
+    async function updateUnreadBadge() {
+        if (!currentUser) return;
+        const q = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), where("read", "==", false));
+        const snap = await getDocs(q);
+        const count = snap.size;
+        const badge = document.getElementById('msgNotification');
+        if (count > 0) {
+            badge.style.display = 'flex';
+            badge.innerText = count > 9 ? '9+' : count;
+        } else {
+            badge.style.display = 'none';
+        }
     }
     
     async function sendMessage(text, imageUrl = null) {
@@ -1142,10 +1171,11 @@
         document.getElementById('chatBox').style.display = 'block';
         
         const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.innerHTML = '<div class="loader">جار التحميل...</div>';
+        messagesContainer.innerHTML = ''; // لا نعرض "جار التحميل"
         
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         
+        // تحديث حالة القراءة
         const unreadQuery = query(
             collection(db, "messages"),
             where("senderId", "==", otherUserId),
@@ -1156,6 +1186,7 @@
         for (const msg of unreadSnap.docs) {
             await updateDoc(doc(db, "messages", msg.id), { read: true });
         }
+        updateUnreadBadge();
         
         if (currentChatUnsubscribe) currentChatUnsubscribe();
         
@@ -1170,7 +1201,7 @@
         currentChatUnsubscribe = onSnapshot(q, (snapshot) => {
             messagesContainer.innerHTML = "";
             if (snapshot.empty) {
-                messagesContainer.innerHTML = '<div class="loader">لا توجد رسائل بعد، ابدأ المحادثة</div>';
+                // لا نعرض أي شيء، فقط ننتظر الرسائل
                 initialLoadComplete = true;
                 return;
             }
@@ -1256,7 +1287,8 @@
         if (!currentUser) return;
         
         const container = document.getElementById('convList');
-        container.innerHTML = '<div class="loader">جار التحميل...</div>';
+        // لا نعرض "جار التحميل" بل نعرض محتوى فارغاً حتى تصل البيانات
+        container.innerHTML = '';
         
         if (conversationsUnsubscribe) conversationsUnsubscribe();
         
@@ -1272,6 +1304,7 @@
         });
         
         const latestMessages = new Map();
+        let renderScheduled = false;
         
         async function updateConversationsUI(snapshot, type) {
             snapshot.docChanges().forEach(change => {
@@ -1291,12 +1324,18 @@
                 }
             });
             
-            await renderConversations();
+            if (!renderScheduled) {
+                renderScheduled = true;
+                setTimeout(async () => {
+                    await renderConversations();
+                    renderScheduled = false;
+                }, 50); // تجميع التحديثات لتجنب إعادة الرسم المتكررة
+            }
         }
         
         async function renderConversations() {
             if (latestMessages.size === 0) {
-                container.innerHTML = '<div>لا توجد محادثات</div>';
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">لا توجد محادثات بعد</div>';
                 document.getElementById('msgNotification').style.display = 'none';
                 return;
             }
@@ -1356,6 +1395,9 @@
             unsubscribeSent();
             unsubscribeReceived();
         };
+        
+        // تحديث العداد عند تحميل القائمة
+        updateUnreadBadge();
     }
     
     function escapeHtml(text) {
@@ -1394,10 +1436,8 @@
             let q;
             
             if (/^\d+$/.test(term)) {
-                // بحث بالرقم (userIdRandom)
                 q = query(usersRef, where("userIdRandom", "==", Number(term)), limit(10));
             } else {
-                // بحث نصي
                 const searchTermLower = term.toLowerCase();
                 q = query(
                     usersRef,
@@ -1424,21 +1464,29 @@
             let html = '';
             for (const user of results) {
                 html += `
-                    <div class="search-result-item">
+                    <div class="search-result-item" data-userid="${user.id}">
                         <img class="search-result-avatar" src="${user.avatar || 'https://via.placeholder.com/50'}">
                         <div class="search-result-info">
                             <div class="search-result-name">${user.name || 'مستخدم'}</div>
                             <div class="search-result-username">@${user.username || user.name?.replace(/\s+/g, '.') || 'user'}</div>
                             <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
                         </div>
-                        <div class="search-result-actions">
-                            <button onclick="window.viewOtherProfile('${user.id}')" title="عرض الملف"><i class="fas fa-user"></i></button>
-                            <button onclick="window.openChat('${user.id}', '${(user.name || 'مستخدم').replace(/'/g, "\\'")}')" title="مراسلة"><i class="fas fa-comment"></i></button>
-                        </div>
+                        <i class="fas fa-chevron-left" style="color:var(--accent);"></i>
                     </div>
                 `;
             }
             advancedSearchResults.innerHTML = html;
+            
+            document.querySelectorAll('.search-result-item').forEach(el => {
+                el.onclick = () => {
+                    const userId = el.dataset.userid;
+                    searchModal.style.display = 'none';
+                    advancedSearchInput.value = '';
+                    advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">اكتب اسم أو ID للبحث</div>';
+                    // فتح الملف الشخصي للمستخدم
+                    window.viewOtherProfile(userId);
+                };
+            });
             
         } catch (error) {
             console.error("خطأ في البحث:", error);
@@ -1451,7 +1499,6 @@
         if (e.key === 'Enter') performAdvancedSearch();
     });
     
-    // إغلاق المودال عند النقر خارجه
     searchModal.addEventListener('click', (e) => {
         if (e.target === searchModal) {
             searchModal.style.display = 'none';
