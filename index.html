@@ -118,7 +118,7 @@
         .message-bubble { max-width: 70%; padding: 10px 15px; border-radius: 20px; word-break: break-word; position: relative; }
         .message.sent .message-bubble { background: #9b59b6; color: white; border-bottom-right-radius: 5px; }
         .message.received .message-bubble { background: var(--bg-card); color: var(--text-primary); border-bottom-left-radius: 5px; border: 1px solid var(--border-color); }
-        .message-image { max-width: 200px; border-radius: 10px; margin-top: 5px; cursor: pointer; }
+        .message-image { max-width: 200px; border-radius: 10px; margin-top: 5px; cursor: pointer; max-width: 100%; height: auto; }
         .message-footer { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 4px; font-size: 10px; }
         .message-time { opacity: 0.7; }
         .message-status { font-size: 10px; }
@@ -139,7 +139,7 @@
         .search-modal.open { transform: translateY(0); }
         .search-modal input { width: 100%; padding: 12px; border-radius: 30px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); }
         .search-results { background: var(--bg-card); border-radius: 16px; margin-top: 10px; max-height: 300px; overflow-y: auto; }
-        .search-result-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .search-result-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; flex-wrap: wrap; }
         .search-result-item:hover { background: var(--border-color); }
         .search-result-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .online-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
@@ -483,12 +483,12 @@
         } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
     }
     
-    // تصميم تفاصيل الحساب الاحترافي (مثل الأول)
+    // تصميم تفاصيل الحساب الاحترافي (مع صور)
     async function showDetails(account) {
         const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
         if (account.images && account.images.length) {
-            imagesHtml = `<div class="details-images">${account.images.map(img => `<img src="${img}" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
+            imagesHtml = `<div class="details-images">${account.images.map(img => `<img src="${img}" onclick="window.open('${img}','_blank')" loading="lazy">`).join('')}</div>`;
         }
         modal.innerHTML = `<div class="modal-content details-modal">
             <div class="details-header">
@@ -518,7 +518,7 @@
         showPage('profile');
     };
     
-    // ============ الملف الشخصي والمنشورات - بدون فهرس ============
+    // ============ الملف الشخصي والمنشورات (بدون فهرس) ============
     async function refreshProfilePage() {
         if (!currentProfileUserId) return;
         await loadProfileData(currentProfileUserId);
@@ -579,17 +579,14 @@
         });
     }
     
-    // تحميل منشورات المستخدم بدون الحاجة إلى فهرس (بدون orderBy في الاستعلام)
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         try {
-            // استعلام بدون orderBy لتجنب الحاجة إلى فهرس
             const q = query(collection(db, 'accounts'), where('sellerId', '==', userId));
             const querySnapshot = await getDocs(q);
             let accounts = [];
             querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
-            // ترتيب من جانب العميل (بما أن العدد قليل)
             accounts.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
             
             if (accounts.length === 0) {
@@ -660,7 +657,7 @@
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
-    // ============ نظام البحث المتقدم (جميع المستخدمين) ============
+    // ============ نظام البحث الشامل (جميع المستخدمين) ============
     async function performSearch(searchTerm) {
         const resultsContainer = document.getElementById('searchResults');
         if (!searchTerm || searchTerm.length < 2) {
@@ -675,12 +672,12 @@
             let results = [];
             const termNum = parseInt(searchTerm);
             if (!isNaN(termNum) && searchTerm.length >= 8 && searchTerm.length <= 12) {
-                const q = query(usersRef, where("userIdRandom", "==", termNum), limit(20));
+                const q = query(usersRef, where("userIdRandom", "==", termNum), limit(50));
                 const snap = await getDocs(q);
                 snap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             } else {
                 const searchLower = searchTerm.toLowerCase();
-                const q = query(usersRef, orderBy("nameLowerCase"), startAt(searchLower), endAt(searchLower + '\uf8ff'), limit(20));
+                const q = query(usersRef, orderBy("nameLowerCase"), startAt(searchLower), endAt(searchLower + '\uf8ff'), limit(50));
                 const snap = await getDocs(q);
                 snap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             }
@@ -726,7 +723,7 @@
         } catch(e) { console.error(e); resultsContainer.innerHTML = '<div class="search-result-item">حدث خطأ أثناء البحث</div>'; }
     }
     
-    // ============ نظام الدردشة ============
+    // ============ نظام الدردشة المحسن (فوري) ============
     function addLocalMessage(tempId, text, imageUrl = null, status = 'sending') {
         const messagesContainer = document.getElementById('chatMessages');
         const messageElement = document.createElement('div');
@@ -735,7 +732,7 @@
         const time = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
         messageElement.innerHTML = `<div class="message-bubble">
             ${text ? `<div>${escapeHtml(text)}</div>` : ''}
-            ${imageUrl ? `<img src="${imageUrl}" class="message-image" onclick="window.open('${imageUrl}','_blank')">` : ''}
+            ${imageUrl ? `<img src="${imageUrl}" class="message-image" loading="lazy">` : ''}
             <div class="message-footer"><span class="message-time">${time}</span><span class="message-status status-${status}">${getStatusText(status)}</span></div>
         </div>`;
         messagesContainer.appendChild(messageElement);
@@ -805,7 +802,7 @@
             let statusHtml = '';
             if (isMe && !msg.isFromServer && msg.status) statusHtml = `<span class="message-status status-${msg.status}">${getStatusText(msg.status)}</span>`;
             else if (isMe && msg.isFromServer) statusHtml = `<span class="message-status status-read">✓✓✓</span>`;
-            messageDiv.innerHTML = `<div class="message-bubble">${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ''}${msg.image ? `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">` : ''}<div class="message-footer"><span class="message-time">${time}</span>${statusHtml}</div></div>`;
+            messageDiv.innerHTML = `<div class="message-bubble">${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ''}${msg.image ? `<img src="${msg.image}" class="message-image" loading="lazy">` : ''}<div class="message-footer"><span class="message-time">${time}</span>${statusHtml}</div></div>`;
             container.appendChild(messageDiv);
         });
         container.scrollTop = container.scrollHeight;
@@ -814,12 +811,13 @@
     window.openChat = async function(otherUserId, otherUserName) {
         if (!currentUser) { alert(t('login')); return; }
         if (otherUserId === currentUser.uid) { alert("لا يمكن مراسلة نفسك"); return; }
-        currentChatUserId = otherUserId;
         if (chatUnsubscribe) chatUnsubscribe();
         localMessages.clear();
+        currentChatUserId = otherUserId;
         showPage('messages');
         document.getElementById('convList').style.display = 'none';
         document.getElementById('chatBox').style.display = 'block';
+        
         const userSnap = await getDoc(doc(db, 'users', otherUserId));
         if (userSnap.exists()) {
             const data = userSnap.data();
@@ -832,10 +830,12 @@
             if (isOnline) statusEl.innerHTML = '<span class="online-dot"></span> متصل الآن';
             else statusEl.innerHTML = `<span class="offline-text">آخر ظهور ${formatLastSeen(lastSeen)}</span>`;
         });
+        
         const unreadQuery = query(collection(db, "messages"), where("senderId", "==", otherUserId), where("receiverId", "==", currentUser.uid), where("read", "==", false));
         const unreadSnap = await getDocs(unreadQuery);
         for (const msg of unreadSnap.docs) await updateDoc(doc(db, "messages", msg.id), { read: true });
         updateUnreadBadge();
+        
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         const q = query(collection(db, "messages"), where("chatId", "==", chatId), orderBy("timestamp", "asc"));
         chatUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -843,13 +843,16 @@
             snapshot.forEach(doc => messagesData.push({ id: doc.id, ...doc.data() }));
             renderMessagesFromSnapshot(messagesData);
         });
+        
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendMsg');
         const attachBtn = document.getElementById('attachImageBtn');
         const backBtn = document.getElementById('backConv');
+        
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
         newSendBtn.onclick = async () => { const text = messageInput.value.trim(); if(text) { messageInput.value = ''; await sendMessageWithOptimistic(text); } };
+        
         const newAttachBtn = attachBtn.cloneNode(true);
         attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
         newAttachBtn.onclick = () => {
@@ -860,6 +863,7 @@
             };
             input.click();
         };
+        
         const newBackBtn = backBtn.cloneNode(true);
         backBtn.parentNode.replaceChild(newBackBtn, backBtn);
         newBackBtn.onclick = () => {
@@ -870,6 +874,7 @@
             document.getElementById('convList').style.display = 'block';
             loadConversations();
         };
+        
         messageInput.onkeypress = (e) => { if(e.key === 'Enter') newSendBtn.click(); };
     };
     
