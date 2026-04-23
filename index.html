@@ -91,8 +91,9 @@
         .price-currency-row input { flex: 2; }
         .price-currency-row select { width: auto; flex: 1; }
         .image-preview { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-        .image-preview img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
-        /* تصميم تفاصيل الحساب الاحترافي */
+        .image-preview-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .preview-wrapper { position: relative; display: inline-block; margin: 4px; }
+        .remove-img-btn { position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; }
         .details-modal { max-width: 550px; width: 90%; background: var(--bg-card); border-radius: 28px; overflow: hidden; }
         .details-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--accent); }
         .details-header h2 { color: var(--accent); font-size: 1.6rem; }
@@ -613,7 +614,7 @@
             document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc)); });
             if(isOwner) {
                 document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.onclick = () => showEditModal(btn.dataset.id, JSON.parse(btn.dataset.acc));
+                    btn.onclick = () => showEditModalWithImages(btn.dataset.id, JSON.parse(btn.dataset.acc));
                 });
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.onclick = async () => {
@@ -632,7 +633,11 @@
         }
     }
     
-    async function showEditModal(accountId, acc) {
+    // ============ تعديل المنشورات مع الصور (مطور) ============
+    async function showEditModalWithImages(accountId, acc) {
+        let newImageFiles = [];
+        let existingImages = acc.images || [];
+        
         const modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-content">
             <h3>✏️ ${t('edit')}</h3>
@@ -641,18 +646,76 @@
             <input type="number" id="editFollowers" value="${acc.followers}" placeholder="${t('followers')}">
             <div class="price-currency-row"><input type="number" id="editPrice" value="${acc.price}" placeholder="${t('price')}"><select id="editCurrency"><option ${acc.currency === 'ريال سعودي' ? 'selected' : ''}>ريال سعودي</option><option ${acc.currency === 'ريال يمني' ? 'selected' : ''}>ريال يمني</option><option ${acc.currency === 'دولار' ? 'selected' : ''}>دولار</option></select></div>
             <textarea id="editDesc" placeholder="${t('description')}">${acc.description || ''}</textarea>
-            <div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-primary" id="saveEdit">${t('save')}</button><button class="btn-outline" id="cancelEdit">${t('cancel')}</button></div>
+            <label>الصور الحالية (اضغط على ✖ لحذف صورة)</label>
+            <div id="existingImages" style="display:flex; flex-wrap:wrap; gap:10px; margin:8px 0;"></div>
+            <label>إضافة صور جديدة (حد أقصى 3 صور)</label>
+            <input type="file" id="editImages" multiple accept="image/*">
+            <div id="newImagesPreview" style="display:flex; flex-wrap:wrap; gap:10px; margin:8px 0;"></div>
+            <div style="display:flex; gap:8px; margin-top:15px;">
+                <button class="btn-primary" id="saveEdit">${t('save')}</button>
+                <button class="btn-outline" id="cancelEdit">${t('cancel')}</button>
+            </div>
         </div>`;
         document.body.appendChild(modal);
+        
+        // عرض الصور الحالية
+        const existingDiv = modal.querySelector('#existingImages');
+        existingImages.forEach((imgUrl, idx) => {
+            const wrapper = document.createElement('div'); wrapper.className = 'preview-wrapper';
+            const img = document.createElement('img'); img.src = imgUrl; img.className = 'image-preview-img';
+            const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.className = 'remove-img-btn';
+            removeBtn.onclick = () => {
+                existingImages.splice(idx, 1);
+                wrapper.remove();
+            };
+            wrapper.appendChild(img); wrapper.appendChild(removeBtn);
+            existingDiv.appendChild(wrapper);
+        });
+        
+        // معاينة الصور الجديدة
+        const previewDiv = modal.querySelector('#newImagesPreview');
+        const imagesInput = modal.querySelector('#editImages');
+        imagesInput.addEventListener('change', () => {
+            previewDiv.innerHTML = '';
+            newImageFiles = Array.from(imagesInput.files).slice(0, 3);
+            newImageFiles.forEach((file, idx) => {
+                const wrapper = document.createElement('div'); wrapper.className = 'preview-wrapper';
+                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.className = 'image-preview-img';
+                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.className = 'remove-img-btn';
+                removeBtn.onclick = () => {
+                    newImageFiles.splice(idx, 1);
+                    wrapper.remove();
+                };
+                wrapper.appendChild(img); wrapper.appendChild(removeBtn);
+                previewDiv.appendChild(wrapper);
+            });
+        });
+        
         modal.querySelector('#saveEdit').onclick = async () => {
             try {
+                let finalImages = [...existingImages];
+                // رفع الصور الجديدة
+                for (let i = 0; i < newImageFiles.length && finalImages.length < 3; i++) {
+                    const url = await uploadToImgBB(newImageFiles[i]);
+                    finalImages.push(url);
+                }
+                // تحديث البيانات
                 await updateDoc(doc(db, 'accounts', accountId), {
-                    name: modal.querySelector('#editName').value, link: modal.querySelector('#editLink').value,
-                    followers: parseInt(modal.querySelector('#editFollowers').value), price: parseFloat(modal.querySelector('#editPrice').value),
-                    currency: modal.querySelector('#editCurrency').value, description: modal.querySelector('#editDesc').value
+                    name: modal.querySelector('#editName').value,
+                    link: modal.querySelector('#editLink').value,
+                    followers: parseInt(modal.querySelector('#editFollowers').value),
+                    price: parseFloat(modal.querySelector('#editPrice').value),
+                    currency: modal.querySelector('#editCurrency').value,
+                    description: modal.querySelector('#editDesc').value,
+                    images: finalImages.slice(0, 3)
                 });
-                alert(t('updated')); modal.remove(); loadUserAccounts(currentUser.uid); loadAccounts();
-            } catch(e) { alert("خطأ في التحديث: "+e.message); }
+                alert(t('updated'));
+                modal.remove();
+                loadUserAccounts(currentUser.uid);
+                loadAccounts();
+            } catch(e) {
+                alert("خطأ في التحديث: "+e.message);
+            }
         };
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
@@ -723,7 +786,7 @@
         } catch(e) { console.error(e); resultsContainer.innerHTML = '<div class="search-result-item">حدث خطأ أثناء البحث</div>'; }
     }
     
-    // ============ نظام الدردشة المحسن (فوري) ============
+    // ============ نظام الدردشة المحسن (فوري 100%) ============
     function addLocalMessage(tempId, text, imageUrl = null, status = 'sending') {
         const messagesContainer = document.getElementById('chatMessages');
         const messageElement = document.createElement('div');
@@ -939,14 +1002,19 @@
         const updatePreview = () => {
             previewDiv.innerHTML = '';
             imageFiles.forEach((file, idx) => {
-                const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; wrapper.style.display = 'inline-block'; wrapper.style.margin = '5px';
-                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '60px'; img.style.height = '60px'; img.style.borderRadius = '8px'; img.style.objectFit = 'cover';
-                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.color = 'white'; removeBtn.style.border = 'none'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '20px'; removeBtn.style.height = '20px'; removeBtn.style.cursor = 'pointer';
+                const wrapper = document.createElement('div'); wrapper.className = 'preview-wrapper';
+                const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.className = 'image-preview-img';
+                const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.className = 'remove-img-btn';
                 removeBtn.onclick = () => { imageFiles.splice(idx, 1); updatePreview(); };
-                wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper);
+                wrapper.appendChild(img); wrapper.appendChild(removeBtn);
+                previewDiv.appendChild(wrapper);
             });
         };
-        imagesInput.addEventListener('change', (e) => { const files = Array.from(e.target.files); files.forEach(file => { if (imageFiles.length < 3) imageFiles.push(file); else alert("الحد الأقصى 3 صور"); }); updatePreview(); imagesInput.value = ''; });
+        imagesInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => { if (imageFiles.length < 3) imageFiles.push(file); else alert("الحد الأقصى 3 صور"); });
+            updatePreview(); imagesInput.value = '';
+        });
         const form = modal.querySelector('#addForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault(); if(!currentUser) return alert("تسجيل الدخول مطلوب"); if(imageFiles.length === 0) return alert("ارفع صورة واحدة على الأقل");
