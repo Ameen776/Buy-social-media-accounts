@@ -93,7 +93,6 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 16px; background: rgba(0,0,0,0.2); color: inherit; border: 1px solid rgba(255,255,255,0.1); transition: border 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #00d4ff; }
         
-        /* حقل السعر مع العملة */
         .price-wrapper { display: flex; align-items: center; gap: 8px; }
         .price-wrapper input { flex: 1; margin: 0; }
         .price-wrapper select { width: 110px; margin: 0; background: rgba(0,0,0,0.3); font-size: 14px; padding: 12px; border-radius: 16px; }
@@ -324,7 +323,7 @@
     
     setPersistence(auth, browserLocalPersistence);
     
-    // Telegram Bot
+    // Telegram Bot (مختصر)
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     
@@ -530,7 +529,7 @@
                 document.querySelectorAll('.edit-account-btn').forEach(btn => { btn.onclick = () => { const acc = { id: btn.dataset.id, name: btn.dataset.name, link: btn.dataset.link, followers: parseInt(btn.dataset.followers), price: parseFloat(btn.dataset.price), currency: btn.dataset.currency, description: btn.dataset.desc, images: JSON.parse(btn.dataset.images) }; showEditModalWithImages(acc); }; });
                 document.querySelectorAll('.delete-account-btn').forEach(btn => { btn.onclick = async () => { if(confirm(t('confirm_delete'))) { await deleteDoc(doc(db, 'accounts', btn.dataset.id)); alert(t('deleted')); loadUserAccounts(userId); loadAccounts(); } }; });
             }
-        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; }
+        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل</div>'; console.error(e); }
     }
     
     async function showDetails(account, accountId) {
@@ -556,42 +555,107 @@
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
+    // تحميل الحسابات - محسّن للسرعة المباشرة
+    let accountsCache = null;
+    let accountsPromise = null;
+    
     async function loadAccounts() {
         const container = document.getElementById('accountsList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
+        
         try {
+            // استخدام cache مؤقت لتسريع التحميل
+            if (accountsCache && Date.now() - accountsCache.timestamp < 30000) {
+                renderAccounts(accountsCache.data);
+                return;
+            }
+            
             let followingIds = [];
-            if (currentUser) { const userSnap = await getDoc(doc(db, 'users', currentUser.uid)); followingIds = userSnap.data()?.following || []; }
+            if (currentUser) {
+                const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+                followingIds = userSnap.data()?.following || [];
+            }
+            
             const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
-            let accounts = []; snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-            accounts.sort((a,b) => { const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId); if(aF && !bF) return -1; if(!aF && bF) return 1; return (b.createdAt||0) - (a.createdAt||0); });
-            const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
-            const platform = document.getElementById('platformFilter')?.value || "all";
-            let filtered = accounts.filter(a => (a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search)) && (platform === "all" || a.platform === platform));
-            if(filtered.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">لا توجد حسابات</div>'; return; }
-            let html = '';
-            for (const acc of filtered) {
-                let sellerName = "مستخدم", sellerAvatar = null;
-                const userSnap = await getDoc(doc(db, 'users', acc.sellerId));
-                if (userSnap.exists()) { sellerName = userSnap.data().name || sellerName; sellerAvatar = userSnap.data().avatar; }
-                const isFollowing = followingIds.includes(acc.sellerId);
-                html += `<div class="card"><div style="display:flex; align-items:center; gap:10px;">${sellerAvatar ? `<img src="${sellerAvatar}" class="profile-thumb" onclick="window.viewOtherProfile('${acc.sellerId}')">` : '<div class="profile-thumb" style="background:#555; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}<div style="flex:1;"><h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name} ${isFollowing ? '<span style="font-size:0.6rem;color:#2ecc71;">● يتابع</span>' : ''}</h3><p style="margin:0; cursor:pointer; color:#00d4ff;" onclick="window.viewOtherProfile('${acc.sellerId}')">${sellerName}</p></div></div><p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p><p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p><div style="display:flex; gap:8px; margin-top:10px;"><button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers||0}" data-price="${acc.price||0}" data-currency="${acc.currency||'ريال'}" data-link="${acc.link||''}" data-desc="${(acc.description||'').replace(/"/g,'&quot;')}" data-views="${acc.views||0}" data-images='${JSON.stringify(acc.images||[])}'>🔍 ${t('details')}</button><button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button></div></div>`;
-            }
-            container.innerHTML = html;
-            document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => { const acc = { name: btn.dataset.name, platform: btn.dataset.platform, followers: parseInt(btn.dataset.followers), price: parseFloat(btn.dataset.price), currency: btn.dataset.currency, link: btn.dataset.link, description: btn.dataset.desc, views: parseInt(btn.dataset.views), images: JSON.parse(btn.dataset.images) }; showDetails(acc, btn.dataset.id); }; });
-        } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
+            let accounts = [];
+            snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+            
+            // ترتيب حسب المتابعة ثم التاريخ
+            accounts.sort((a,b) => {
+                const aF = followingIds.includes(a.sellerId), bF = followingIds.includes(b.sellerId);
+                if(aF && !bF) return -1;
+                if(!aF && bF) return 1;
+                return (b.createdAt||0) - (a.createdAt||0);
+            });
+            
+            accountsCache = { data: accounts, timestamp: Date.now() };
+            renderAccounts(accounts);
+            
+        } catch(e) {
+            console.error("خطأ في تحميل الحسابات:", e);
+            container.innerHTML = '<div style="text-align:center; padding:40px;">خطأ في التحميل</div>';
+        }
+    }
+    
+    async function renderAccounts(accounts) {
+        const container = document.getElementById('accountsList');
+        const search = document.getElementById('searchInput')?.value.toLowerCase() || "";
+        const platform = document.getElementById('platformFilter')?.value || "all";
+        
+        let filtered = accounts.filter(a => (a.name?.toLowerCase().includes(search) || a.platform?.toLowerCase().includes(search)) && (platform === "all" || a.platform === platform));
+        
+        if(filtered.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:40px;">لا توجد حسابات</div>';
+            return;
+        }
+        
+        // تحسين الأداء: جلب بيانات المستخدمين مرة واحدة
+        const userIds = [...new Set(filtered.map(a => a.sellerId))];
+        const userPromises = userIds.map(uid => getDoc(doc(db, 'users', uid)));
+        const userDocs = await Promise.all(userPromises);
+        const userMap = {};
+        userDocs.forEach(doc => { if(doc.exists()) userMap[doc.id] = doc.data(); });
+        
+        let followingIds = [];
+        if (currentUser) {
+            const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+            followingIds = userSnap.data()?.following || [];
+        }
+        
+        let html = '';
+        for (const acc of filtered) {
+            const sellerData = userMap[acc.sellerId] || {};
+            const sellerName = sellerData.name || 'مستخدم';
+            const sellerAvatar = sellerData.avatar || null;
+            const isFollowing = followingIds.includes(acc.sellerId);
+            
+            html += `<div class="card"><div style="display:flex; align-items:center; gap:10px;">${sellerAvatar ? `<img src="${sellerAvatar}" class="profile-thumb" onclick="window.viewOtherProfile('${acc.sellerId}')">` : '<div class="profile-thumb" style="background:#555; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}<div style="flex:1;"><h3><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name} ${isFollowing ? '<span style="font-size:0.6rem;color:#2ecc71;">● يتابع</span>' : ''}</h3><p style="margin:0; cursor:pointer; color:#00d4ff;" onclick="window.viewOtherProfile('${acc.sellerId}')">${sellerName}</p></div></div><p>${acc.platform} | 👥 ${acc.followers?.toLocaleString()}</p><p>💰 ${acc.price} ${acc.currency} | 👁️ ${acc.views || 0}</p><div style="display:flex; gap:8px; margin-top:10px;"><button class="details-btn btn-primary" data-id="${acc.id}" data-name="${acc.name}" data-platform="${acc.platform}" data-followers="${acc.followers||0}" data-price="${acc.price||0}" data-currency="${acc.currency||'ريال'}" data-link="${acc.link||''}" data-desc="${(acc.description||'').replace(/"/g,'&quot;')}" data-views="${acc.views||0}" data-images='${JSON.stringify(acc.images||[])}'>🔍 ${t('details')}</button><button onclick="window.openChat('${acc.sellerId}', '${sellerName.replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button></div></div>`;
+        }
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => { const acc = { name: btn.dataset.name, platform: btn.dataset.platform, followers: parseInt(btn.dataset.followers), price: parseFloat(btn.dataset.price), currency: btn.dataset.currency, link: btn.dataset.link, description: btn.dataset.desc, views: parseInt(btn.dataset.views), images: JSON.parse(btn.dataset.images) }; showDetails(acc, btn.dataset.id); }; });
     }
     
     window.viewOtherProfile = function(userId) { currentProfileUserId = userId; refreshProfilePage(); showPage('profile'); };
     
-    // الدردشة المحسنة - تظهر الرسائل فوراً
+    // الدردشة المحسنة - تظهر الرسائل فوراً ولا تختفي
     function setupGlobalMessageListener() {
         if (globalMessageListener) globalMessageListener();
         if (!currentUser) return;
         const messagesRef = collection(db, "messages");
         globalMessageListener = onSnapshot(messagesRef, (snapshot) => {
-            snapshot.docChanges().forEach(change => { if (change.type === 'added') { const msg = change.doc.data(); if (msg.receiverId === currentUser.uid && msg.senderId !== currentUser.uid && currentChatUserId !== msg.senderId) { playSound(); } } });
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const msg = change.doc.data();
+                    if (msg.receiverId === currentUser.uid && msg.senderId !== currentUser.uid && currentChatUserId !== msg.senderId) {
+                        playSound();
+                        updateUnreadBadge();
+                        // تحديث قائمة المحادثات إذا كنا في صفحة المحادثات
+                        if (currentPage === 'messages' && !currentChatUserId) loadConversations();
+                    }
+                }
+            });
             updateUnreadBadge();
         });
     }
@@ -605,28 +669,30 @@
         if (count > 0) { badge.style.display = 'flex'; badge.innerText = count > 9 ? '9+' : count; } else { badge.style.display = 'none'; }
     }
     
-    async function sendMessage(text, imageUrl = null, tempId = null) {
-        if (!text && !imageUrl) return;
-        if (!currentChatUserId) return;
+    // إرسال رسالة - الإصدار المحسن مع تحديث فوري
+    async function sendMessage(text, imageUrl = null) {
+        if (!text && !imageUrl) return false;
+        if (!currentChatUserId) return false;
         const chatId = [currentUser.uid, currentChatUserId].sort().join('_');
-        const messageData = { senderId: currentUser.uid, receiverId: currentChatUserId, chatId: chatId, text: text || "", image: imageUrl || "", timestamp: Date.now(), read: false };
+        const messageData = {
+            senderId: currentUser.uid,
+            receiverId: currentChatUserId,
+            chatId: chatId,
+            text: text || "",
+            image: imageUrl || "",
+            timestamp: Date.now(),
+            read: false
+        };
         try {
-            const docRef = await addDoc(collection(db, "messages"), messageData);
+            // إضافة الرسالة إلى Firestore - onSnapshot سيتولى عرضها فوراً
+            await addDoc(collection(db, "messages"), messageData);
             document.getElementById('messageInput').value = "";
-            if (tempId) { const el = document.getElementById(tempId); if(el) el.remove(); }
-            return docRef.id;
-        } catch (error) { console.error(error); alert("فشل الإرسال"); return null; }
-    }
-    
-    function addOptimisticMessage(text, imageUrl = null) {
-        const messagesContainer = document.getElementById('chatMessages');
-        const tempId = 'temp-' + Date.now() + Math.random();
-        const time = new Date().toLocaleTimeString();
-        const messageDiv = document.createElement('div'); messageDiv.id = tempId; messageDiv.className = 'message sent';
-        messageDiv.innerHTML = `<div class="message-bubble">${text ? `<div>${escapeHtml(text)}</div>` : ""}${imageUrl ? `<img src="${imageUrl}" class="message-image" onclick="window.open('${imageUrl}','_blank')">` : ""}<span class="message-time">${time}</span><span style="font-size:10px; margin-right:8px;">✓</span></div>`;
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        return tempId;
+            return true;
+        } catch (error) {
+            console.error("خطأ في الإرسال:", error);
+            alert("فشل إرسال الرسالة");
+            return false;
+        }
     }
     
     function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
@@ -640,11 +706,20 @@
         document.getElementById('chatBox').style.display = 'block';
         
         const userSnap = await getDoc(doc(db, 'users', otherUserId));
-        if (userSnap.exists()) { const data = userSnap.data(); document.getElementById('chatHeaderName').innerText = data.name || 'مستخدم'; document.getElementById('chatHeaderAvatar').src = data.avatar || 'https://via.placeholder.com/40'; }
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            document.getElementById('chatHeaderName').innerText = data.name || 'مستخدم';
+            document.getElementById('chatHeaderAvatar').src = data.avatar || 'https://via.placeholder.com/40';
+        }
         
         if (onlineStatusUnsubscribe) onlineStatusUnsubscribe();
-        onlineStatusUnsubscribe = watchOnlineStatusRealtime(otherUserId, (isOnline, lastSeen) => { const statusEl = document.getElementById('onlineStatus'); if (isOnline) statusEl.innerHTML = '<span class="online-dot"></span> متصل الآن'; else statusEl.innerHTML = `<span class="offline-text">آخر ظهور ${formatLastSeen(lastSeen)}</span>`; });
+        onlineStatusUnsubscribe = watchOnlineStatusRealtime(otherUserId, (isOnline, lastSeen) => {
+            const statusEl = document.getElementById('onlineStatus');
+            if (isOnline) statusEl.innerHTML = '<span class="online-dot"></span> متصل الآن';
+            else statusEl.innerHTML = `<span class="offline-text">آخر ظهور ${formatLastSeen(lastSeen)}</span>`;
+        });
         
+        // تحديث حالة القراءة
         const unreadQuery = query(collection(db, "messages"), where("senderId", "==", otherUserId), where("receiverId", "==", currentUser.uid), where("read", "==", false));
         const unreadSnap = await getDocs(unreadQuery);
         for (const msg of unreadSnap.docs) await updateDoc(doc(db, "messages", msg.id), { read: true });
@@ -653,18 +728,24 @@
         if (currentChatUnsubscribe) currentChatUnsubscribe();
         const chatId = [currentUser.uid, otherUserId].sort().join('_');
         const q = query(collection(db, "messages"), where("chatId", "==", chatId), orderBy("timestamp", "asc"));
+        
         currentChatUnsubscribe = onSnapshot(q, (snapshot) => {
             const messagesContainer = document.getElementById('chatMessages');
+            // حفظ حالة التمرير
+            const wasAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 50;
             messagesContainer.innerHTML = "";
             snapshot.forEach((doc) => {
                 const msg = doc.data();
                 const isMe = msg.senderId === currentUser.uid;
                 const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : '';
-                const messageDiv = document.createElement('div'); messageDiv.className = `message ${isMe ? 'sent' : 'received'}`;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isMe ? 'sent' : 'received'}`;
                 messageDiv.innerHTML = `<div class="message-bubble">${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ""}${msg.image ? `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">` : ""}<span class="message-time">${time}</span>${isMe ? '<span style="font-size:10px; margin-right:8px;">✓✓</span>' : ''}</div>`;
                 messagesContainer.appendChild(messageDiv);
             });
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if (wasAtBottom || snapshot.docChanges().length > 0) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         });
         
         const messageInput = document.getElementById('messageInput');
@@ -674,30 +755,66 @@
         
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
-        newSendBtn.onclick = async () => { const text = messageInput.value.trim(); if (text) { messageInput.value = ''; const tempId = addOptimisticMessage(text); await sendMessage(text, null, tempId); } };
+        newSendBtn.onclick = async () => {
+            const text = messageInput.value.trim();
+            if (text) {
+                messageInput.value = '';
+                await sendMessage(text);
+            }
+        };
         
         const newAttachBtn = attachBtn.cloneNode(true);
         attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
-        newAttachBtn.onclick = () => { const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = async (e) => { const file = e.target.files[0]; if (file) { try { const tempId = addOptimisticMessage('', URL.createObjectURL(file)); const imageUrl = await uploadToImgBB(file); await sendMessage("", imageUrl, tempId); } catch(e) { alert("خطأ في رفع الصورة"); } } }; input.click(); };
+        newAttachBtn.onclick = () => {
+            const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        const imageUrl = await uploadToImgBB(file);
+                        await sendMessage("", imageUrl);
+                    } catch(e) { alert("خطأ في رفع الصورة"); }
+                }
+            };
+            input.click();
+        };
         
         const newBackBtn = backBtn.cloneNode(true);
         backBtn.parentNode.replaceChild(newBackBtn, backBtn);
-        newBackBtn.onclick = () => { if (currentChatUnsubscribe) currentChatUnsubscribe(); if (onlineStatusUnsubscribe) onlineStatusUnsubscribe(); if (onlineInterval) clearInterval(onlineInterval); currentChatUserId = null; document.getElementById('chatBox').style.display = 'none'; document.getElementById('convList').style.display = 'block'; loadConversations(); };
+        newBackBtn.onclick = () => {
+            if (currentChatUnsubscribe) currentChatUnsubscribe();
+            if (onlineStatusUnsubscribe) onlineStatusUnsubscribe();
+            currentChatUserId = null;
+            document.getElementById('chatBox').style.display = 'none';
+            document.getElementById('convList').style.display = 'block';
+            loadConversations();
+        };
+        
+        // تفعيل إرسال بالضغط على Enter
+        messageInput.onkeypress = (e) => { if(e.key === 'Enter') newSendBtn.click(); };
     };
     
     async function loadConversations() {
         if (!currentUser) return;
         const container = document.getElementById('convList');
-        container.innerHTML = '';
+        container.innerHTML = '<div class="loader">جار التحميل...</div>';
         if (conversationsUnsubscribe) conversationsUnsubscribe();
+        
+        // جلب جميع الرسائل المرسلة والمستلمة للمستخدم الحالي
         const sentQuery = query(collection(db, "messages"), where("senderId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         const receivedQuery = query(collection(db, "messages"), where("receiverId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        
         const latestMessages = new Map();
-        let renderScheduled = false;
-        const updateConv = async () => {
-            if (latestMessages.size === 0) { container.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد محادثات بعد</div>'; return; }
-            let html = ''; let totalUnread = 0;
+        
+        const updateConversationsUI = async () => {
+            if (latestMessages.size === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد محادثات بعد</div>';
+                return;
+            }
             const sorted = Array.from(latestMessages.entries()).sort((a,b) => (b[1].timestamp||0)-(a[1].timestamp||0));
+            let html = '';
+            let totalUnread = 0;
+            
             for (const [otherId, info] of sorted) {
                 const userSnap = await getDoc(doc(db, 'users', otherId));
                 const name = userSnap.exists() ? userSnap.data().name : otherId.slice(0,6);
@@ -706,29 +823,63 @@
                 const unreadSnap = await getDocs(unreadQuery);
                 const unreadCount = unreadSnap.size;
                 totalUnread += unreadCount;
-                html += `<div class="conversation-item" data-userid="${otherId}" data-username="${name}"><div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div><div class="conversation-info"><div class="conversation-name">${name}</div><div class="conversation-last-msg">${info.lastMessage || "ابدأ المحادثة"}</div></div><div class="conversation-time">${info.timestamp ? new Date(info.timestamp).toLocaleTimeString() : ''}</div>${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}</div>`;
+                html += `<div class="conversation-item" data-userid="${otherId}" data-username="${name}">
+                    <div class="conversation-avatar">${avatar ? `<img src="${avatar}">` : '<i class="fas fa-user"></i>'}</div>
+                    <div class="conversation-info"><div class="conversation-name">${name}</div><div class="conversation-last-msg">${info.lastMessage || "ابدأ المحادثة"}</div></div>
+                    <div class="conversation-time">${info.timestamp ? new Date(info.timestamp).toLocaleTimeString() : ''}</div>
+                    ${unreadCount > 0 ? `<div class="notification-badge" style="position:relative; top:0; right:0;">${unreadCount}</div>` : ''}
+                </div>`;
             }
             container.innerHTML = html;
             const badge = document.getElementById('msgNotification');
             if (totalUnread > 0) { badge.style.display = 'flex'; badge.innerText = totalUnread > 9 ? '9+' : totalUnread; } else { badge.style.display = 'none'; }
             document.querySelectorAll('.conversation-item').forEach(el => { el.onclick = () => window.openChat(el.dataset.userid, el.dataset.username); });
         };
-        const unsubscribeSent = onSnapshot(sentQuery, (snap) => { snap.docChanges().forEach(change => { if (change.type === 'added' || change.type === 'modified') { const msg = change.doc.data(); const otherId = msg.receiverId; if (!otherId) return; const existing = latestMessages.get(otherId); if (!existing || existing.timestamp < msg.timestamp) { latestMessages.set(otherId, { lastMessage: msg.text || "📷 صورة", timestamp: msg.timestamp, otherId }); } if (!renderScheduled) { renderScheduled = true; setTimeout(() => { updateConv(); renderScheduled = false; }, 50); } } }); });
-        const unsubscribeReceived = onSnapshot(receivedQuery, (snap) => { snap.docChanges().forEach(change => { if (change.type === 'added' || change.type === 'modified') { const msg = change.doc.data(); const otherId = msg.senderId; if (!otherId) return; const existing = latestMessages.get(otherId); if (!existing || existing.timestamp < msg.timestamp) { latestMessages.set(otherId, { lastMessage: msg.text || "📷 صورة", timestamp: msg.timestamp, otherId }); } if (!renderScheduled) { renderScheduled = true; setTimeout(() => { updateConv(); renderScheduled = false; }, 50); } } }); });
+        
+        const addToMap = (msg, type) => {
+            const otherId = type === 'sent' ? msg.receiverId : msg.senderId;
+            if (!otherId) return;
+            const existing = latestMessages.get(otherId);
+            if (!existing || existing.timestamp < msg.timestamp) {
+                latestMessages.set(otherId, {
+                    lastMessage: msg.text || (msg.image ? "📷 صورة" : "رسالة"),
+                    timestamp: msg.timestamp,
+                    otherId: otherId
+                });
+            }
+            updateConversationsUI();
+        };
+        
+        const unsubscribeSent = onSnapshot(sentQuery, (snap) => {
+            snap.docChanges().forEach(change => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    addToMap(change.doc.data(), 'sent');
+                }
+            });
+        });
+        const unsubscribeReceived = onSnapshot(receivedQuery, (snap) => {
+            snap.docChanges().forEach(change => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    addToMap(change.doc.data(), 'received');
+                }
+            });
+        });
         conversationsUnsubscribe = () => { unsubscribeSent(); unsubscribeReceived(); };
-        updateConv();
+        updateConversationsUI();
         updateUnreadBadge();
     }
     
-    // البحث المتقدم
+    // البحث المتقدم - يعمل بكفاءة
     const searchModal = document.getElementById('searchModal');
     const searchBtn = document.getElementById('searchBtn');
     const closeSearchBtn = document.getElementById('closeSearchModal');
     const advancedSearchInput = document.getElementById('advancedSearchInput');
     const performSearchBtn = document.getElementById('performSearchBtn');
     const advancedSearchResults = document.getElementById('advancedSearchResults');
+    
     searchBtn.onclick = () => { searchModal.style.display = 'flex'; advancedSearchInput.focus(); };
     closeSearchBtn.onclick = () => { searchModal.style.display = 'none'; advancedSearchInput.value = ''; advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px;">اكتب اسم أو ID للبحث</div>'; };
+    
     async function performAdvancedSearch() {
         const term = advancedSearchInput.value.trim();
         if (!term) return;
@@ -747,14 +898,23 @@
                 const snapshot = await getDocs(q);
                 snapshot.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             }
-            if (results.length === 0) { advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد نتائج</div>'; return; }
+            if (results.length === 0) {
+                advancedSearchResults.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد نتائج</div>';
+                return;
+            }
             let html = '';
             for (const user of results) {
-                html += `<div class="search-result-item" data-userid="${user.id}" style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1); cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'"><img src="${user.avatar || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;"><div><div style="font-weight:bold;">${user.name || 'مستخدم'}</div><div style="font-size:0.8rem; color:#00d4ff;">@${user.username || user.name?.replace(/\s+/g,'.')}</div><div style="font-size:0.7rem;">ID: ${user.userIdRandom || user.id.slice(0,8)}</div></div></div>`;
+                html += `<div class="search-result-item" data-userid="${user.id}" style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1); cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'">
+                    <img src="${user.avatar || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                    <div><div style="font-weight:bold;">${user.name || 'مستخدم'}</div><div style="font-size:0.8rem; color:#00d4ff;">@${user.username || user.name?.replace(/\s+/g,'.')}</div><div style="font-size:0.7rem;">ID: ${user.userIdRandom || user.id.slice(0,8)}</div></div>
+                </div>`;
             }
             advancedSearchResults.innerHTML = html;
             document.querySelectorAll('.search-result-item').forEach(el => { el.onclick = () => { const userId = el.dataset.userid; searchModal.style.display = 'none'; advancedSearchInput.value = ''; window.viewOtherProfile(userId); }; });
-        } catch(e) { advancedSearchResults.innerHTML = '<div style="color:red;">خطأ في البحث</div>'; }
+        } catch(e) {
+            console.error("خطأ في البحث:", e);
+            advancedSearchResults.innerHTML = '<div style="color:red;">خطأ في البحث: ' + e.message + '</div>';
+        }
     }
     performSearchBtn.onclick = performAdvancedSearch;
     advancedSearchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') performAdvancedSearch(); });
@@ -776,7 +936,7 @@
         const updatePreview = () => { previewDiv.innerHTML = ''; imageFiles.slice(0,3).forEach((file, idx) => { const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '60px'; img.style.height = '60px'; img.style.borderRadius = '8px'; img.style.objectFit = 'cover'; const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '18px'; removeBtn.style.cursor = 'pointer'; removeBtn.onclick = () => { imageFiles.splice(idx,1); updatePreview(); }; wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper); }); };
         imagesInput.addEventListener('change', (e) => { const files = Array.from(e.target.files); files.forEach(file => { if (imageFiles.length < 3) imageFiles.push(file); else alert("الحد الأقصى 3 صور"); }); updatePreview(); imagesInput.value = ''; });
         const form = modal.querySelector('#addForm');
-        form.addEventListener('submit', async (e) => { e.preventDefault(); if(!currentUser) return alert("تسجيل الدخول مطلوب"); const submitBtn = form.querySelector('button[type="submit"]'); submitBtn.disabled = true; submitBtn.textContent = "جاري النشر..."; try { const imageUrls = []; for (let i=0; i<imageFiles.length; i++) { const url = await uploadToImgBB(imageFiles[i]); imageUrls.push(url); } await addDoc(collection(db, 'accounts'), { name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value, platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value), price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value, description: modal.querySelector('#addDesc').value, images: imageUrls, sellerId: currentUser.uid, views: 0, createdAt: Date.now() }); alert("تم النشر بنجاح"); modal.remove(); loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid); } catch(err) { alert("خطأ: "+err.message); } finally { submitBtn.disabled = false; submitBtn.textContent = t('publish'); } });
+        form.addEventListener('submit', async (e) => { e.preventDefault(); if(!currentUser) return alert("تسجيل الدخول مطلوب"); const submitBtn = form.querySelector('button[type="submit"]'); submitBtn.disabled = true; submitBtn.textContent = "جاري النشر..."; try { const imageUrls = []; for (let i=0; i<imageFiles.length; i++) { const url = await uploadToImgBB(imageFiles[i]); imageUrls.push(url); } await addDoc(collection(db, 'accounts'), { name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value, platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value), price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value, description: modal.querySelector('#addDesc').value, images: imageUrls, sellerId: currentUser.uid, views: 0, createdAt: Date.now() }); alert("تم النشر بنجاح"); modal.remove(); accountsCache = null; loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid); } catch(err) { alert("خطأ: "+err.message); } finally { submitBtn.disabled = false; submitBtn.textContent = t('publish'); } });
         modal.querySelector('#cancelAdd').onclick = () => modal.remove();
     };
     
@@ -807,7 +967,7 @@
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     document.getElementById('langSelectSide').addEventListener('change', (e) => { currentLang = e.target.value; localStorage.setItem('lang', currentLang); applyLanguage(); });
     
-    // بدء التطبيق
+    // بدء التطبيق - تحميل الحسابات فوراً بعد المصادقة
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const splash = document.getElementById('splash');
@@ -818,6 +978,7 @@
             currentProfileUserId = user.uid;
             await setupPresenceRealtime();
             await refreshProfilePage();
+            // تحميل الحسابات فوراً
             await loadAccounts();
             showPage('home');
             applyLanguage();
