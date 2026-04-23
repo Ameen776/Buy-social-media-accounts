@@ -147,6 +147,8 @@
         .chat-header-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .chat-header-info { flex: 1; }
         .chat-header-name { font-weight: bold; }
+        .error-message { color: #ff6b6b; background: rgba(255,0,0,0.1); padding: 10px; border-radius: 8px; margin: 10px 0; text-align: center; }
+        .index-link { color: var(--accent); text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -218,6 +220,7 @@
                 </div>
                 <div id="followButtonContainer"></div>
             </div>
+            <div id="profileChatButtonContainer" style="margin-top:10px;"></div>
         </div>
         <div style="margin-top:20px;">
             <h3 data-i18n="posts">المنشورات</h3>
@@ -392,11 +395,8 @@
         const statusRef = dbRef(rtdb, `status/${userId}`);
         return onValue(statusRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                callback(data.online === true, data.lastSeen ? new Date(data.lastSeen) : null);
-            } else {
-                callback(false, null);
-            }
+            if (data) callback(data.online === true, data.lastSeen ? new Date(data.lastSeen) : null);
+            else callback(false, null);
         });
     }
     
@@ -406,7 +406,6 @@
         const diffMs = now - date;
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
         if (diffMins < 1) return 'منذ لحظات';
         if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
         if (diffHours < 24) return `منذ ${diffHours} ساعة`;
@@ -506,6 +505,17 @@
         document.getElementById('settingsIcon').classList.toggle('hidden', !isOwnProfile);
         if (isOwnProfile) document.getElementById('avatarImg').onclick = () => changeAvatar();
         else document.getElementById('avatarImg').onclick = null;
+        
+        // إضافة زر المراسلة في الملف الشخصي للمستخدمين الآخرين
+        const chatBtnContainer = document.getElementById('profileChatButtonContainer');
+        if (!isOwnProfile && currentUser) {
+            chatBtnContainer.innerHTML = `<button class="btn-primary" id="profileChatBtn" style="padding:8px 20px;"><i class="fas fa-comment"></i> ${t('chat')}</button>`;
+            document.getElementById('profileChatBtn').onclick = () => {
+                window.openChat(currentProfileUserId, document.getElementById('userName').innerText);
+            };
+        } else {
+            chatBtnContainer.innerHTML = '';
+        }
     }
     
     async function loadProfileData(userId) {
@@ -550,25 +560,61 @@
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         try {
-            const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
-            const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) { container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>'; return; }
+            // محاولة الاستعلام مع الترتيب (قد يتطلب فهرس)
+            let accounts = [];
+            let error = null;
+            try {
+                const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
+            } catch (err) {
+                error = err;
+                console.warn("فهرس مفقود، سيتم التحميل بدون ترتيب:", err);
+                // إذا كان الفهرس مفقوداً، نستخدم استعلام بدون orderBy
+                const q = query(collection(db, 'accounts'), where('sellerId', '==', userId));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
+                // ترتيب من جانب العميل كحل مؤقت
+                accounts.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+            }
+            
+            if (accounts.length === 0) {
+                container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
+                return;
+            }
+            
+            // إذا كان هناك خطأ بسبب الفهرس، عرض رابط لإنشائه
+            if (error && error.message && error.message.includes('index')) {
+                const match = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/);
+                const indexUrl = match ? match[0] : '#';
+                container.innerHTML = `<div class="error-message">
+                    ⚠️ لتسريع عرض المنشورات، يرجى إنشاء الفهرس المطلوب من الرابط التالي:<br>
+                    <a href="${indexUrl}" target="_blank" class="index-link">اضغط هنا لإنشاء الفهرس</a><br>
+                    (تم تحميل المنشورات بدون ترتيب مؤقتاً)
+                </div>`;
+            }
+            
             const isOwner = (currentUser && currentUser.uid === userId);
             let html = '';
-            for (const docSnap of querySnapshot.docs) {
-                const acc = docSnap.data();
+            for (const acc of accounts) {
                 html += `<div class="my-account-card">
-                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name}</h4>
-                    <p>💰 ${acc.price} ${acc.currency} | 👥 ${acc.followers?.toLocaleString()}</p>
+                    <h4><i class="fab fa-${acc.platform?.toLowerCase()}"></i> ${acc.name || 'بدون اسم'}</h4>
+                    <p>💰 ${acc.price || 0} ${acc.currency || 'ريال'} | 👥 ${acc.followers?.toLocaleString() || 0}</p>
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${docSnap.id}" data-acc='${JSON.stringify(acc).replace(/'/g, "&#39;")}'>✏️ ${t('edit')}</button>
-                        <button class="delete-btn btn-danger" data-id="${docSnap.id}">🗑️ ${t('delete')}</button>` : ''}
+                        ${isOwner ? `<button class="edit-btn btn-primary" data-id="${acc.id}" data-acc='${JSON.stringify(acc).replace(/'/g, "&#39;")}'>✏️ ${t('edit')}</button>
+                        <button class="delete-btn btn-danger" data-id="${acc.id}">🗑️ ${t('delete')}</button>` : ''}
                         <button onclick="window.openChat('${acc.sellerId}', '${(acc.name || 'مستخدم').replace(/'/g, "\\'")}')" class="btn-outline">💬 ${t('chat')}</button>
                         <button class="details-btn btn-outline" data-acc='${JSON.stringify(acc).replace(/'/g, "&#39;")}'>🔍 ${t('details')}</button>
                     </div>
                 </div>`;
             }
-            container.innerHTML = html;
+            // إذا كان هناك رسالة خطأ بالفهرس، نضيف المنشورات بعدها
+            if (error && error.message && error.message.includes('index')) {
+                container.innerHTML = container.innerHTML + html;
+            } else {
+                container.innerHTML = html;
+            }
+            
             document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc)); });
             if(isOwner) {
                 document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -585,7 +631,10 @@
                     };
                 });
             }
-        } catch(e) { container.innerHTML = '<div class="card">خطأ في التحميل: ' + e.message + '</div>'; console.error(e); }
+        } catch(e) {
+            console.error('خطأ في تحميل المنشورات:', e);
+            container.innerHTML = `<div class="card error-message">خطأ في تحميل المنشورات: ${e.message}</div>`;
+        }
     }
     
     async function showEditModal(accountId, acc) {
@@ -613,7 +662,7 @@
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
-    // ============ نظام البحث المحسن (بالاسم أو ID) ============
+    // ============ نظام البحث المتقدم (جميع المستخدمين) ============
     async function performSearch(searchTerm) {
         const resultsContainer = document.getElementById('searchResults');
         if (!searchTerm || searchTerm.length < 2) {
@@ -627,13 +676,13 @@
             const usersRef = collection(db, 'users');
             let results = [];
             const termNum = parseInt(searchTerm);
-            // البحث بالـ ID (10 أرقام)
+            // البحث بالـ ID (10 أرقام تقريباً)
             if (!isNaN(termNum) && searchTerm.length >= 8 && searchTerm.length <= 12) {
                 const q = query(usersRef, where("userIdRandom", "==", termNum), limit(20));
                 const snap = await getDocs(q);
                 snap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             } else {
-                // البحث بالاسم (غير حساس لحالة الأحرف)
+                // البحث بالاسم
                 const searchLower = searchTerm.toLowerCase();
                 const q = query(usersRef, orderBy("nameLowerCase"), startAt(searchLower), endAt(searchLower + '\uf8ff'), limit(20));
                 const snap = await getDocs(q);
@@ -651,15 +700,34 @@
                         <div class="search-result-name">${user.name || 'مستخدم'}</div>
                         <div class="search-result-id">ID: ${user.userIdRandom || user.id.slice(0,8)}</div>
                     </div>
-                    <i class="fas fa-comment" style="color:var(--accent);"></i>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-outline chat-from-search" style="padding:4px 8px; font-size:12px;"><i class="fas fa-comment"></i> مراسلة</button>
+                        <button class="btn-primary profile-from-search" style="padding:4px 8px; font-size:12px;"><i class="fas fa-user"></i> ملف شخصي</button>
+                    </div>
                 </div>`;
             }
             resultsContainer.innerHTML = html;
+            // ربط الأزرار
             document.querySelectorAll('.search-result-item').forEach(el => {
-                el.onclick = () => {
+                const userId = el.dataset.userid;
+                const userName = el.dataset.username;
+                el.querySelector('.chat-from-search')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     document.getElementById('searchModal').classList.remove('open');
-                    window.openChat(el.dataset.userid, el.dataset.username);
-                };
+                    window.openChat(userId, userName);
+                });
+                el.querySelector('.profile-from-search')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.getElementById('searchModal').classList.remove('open');
+                    window.viewOtherProfile(userId);
+                });
+                // الضغط على أي مكان آخر في العنصر يفتح الملف الشخصي أيضاً
+                el.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        document.getElementById('searchModal').classList.remove('open');
+                        window.viewOtherProfile(userId);
+                    }
+                });
             });
         } catch(e) { console.error(e); resultsContainer.innerHTML = '<div class="search-result-item">حدث خطأ أثناء البحث</div>'; }
     }
