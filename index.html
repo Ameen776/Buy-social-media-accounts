@@ -65,8 +65,10 @@
         .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .card, .my-account-card { background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid var(--border-color); }
         .profile-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent); }
-        .btn-primary { background: var(--accent); border: none; padding: 8px 16px; border-radius: 25px; color: #111; cursor: pointer; font-weight: bold; }
-        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 25px; cursor: pointer; }
+        .btn-primary { background: var(--accent); border: none; padding: 8px 16px; border-radius: 25px; color: #111; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+        .btn-primary:hover { transform: scale(1.02); }
+        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 25px; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(0,212,255,0.1); transform: scale(1.02); }
         .btn-danger { background: #ff4444; border: none; padding: 6px 12px; border-radius: 25px; color: #fff; cursor: pointer; }
         .btn-follow-green { background: #2ecc71; border: none; padding: 8px 20px; border-radius: 25px; color: #fff; cursor: pointer; font-weight: bold; min-width: 110px; }
         .btn-follow-green.unfollow { background: #555; }
@@ -83,13 +85,32 @@
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 10px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
         .filter-row { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .filter-row input, .filter-row select { flex: 1; padding: 8px; border-radius: 20px; }
-        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: var(--bg-card); padding: 20px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
         .price-currency-row { display: flex; gap: 8px; align-items: center; }
         .price-currency-row input { flex: 2; }
         .price-currency-row select { width: auto; flex: 1; }
         .image-preview { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
         .image-preview img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        /* تصميم تفاصيل الحساب الاحترافي */
+        .details-modal { max-width: 550px; width: 90%; background: var(--bg-card); border-radius: 28px; overflow: hidden; }
+        .details-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--accent); }
+        .details-header h2 { color: var(--accent); font-size: 1.6rem; }
+        .details-platform { display: inline-block; background: var(--accent); color: #111; padding: 4px 15px; border-radius: 30px; font-size: 0.85rem; margin-top: 8px; }
+        .details-stats { display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap; gap: 10px; }
+        .stat-card { background: rgba(0, 212, 255, 0.1); border-radius: 20px; padding: 12px; text-align: center; flex: 1; min-width: 90px; border: 1px solid rgba(0,212,255,0.2); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); background: rgba(0,212,255,0.15); }
+        .stat-card i { font-size: 1.8rem; color: var(--accent); margin-bottom: 8px; display: block; }
+        .stat-value { font-size: 1.3rem; font-weight: bold; }
+        .stat-label { font-size: 0.7rem; opacity: 0.7; }
+        .details-info { background: var(--bg-body); border-radius: 20px; padding: 15px; margin: 15px 0; }
+        .info-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { width: 90px; font-weight: bold; color: var(--accent); }
+        .info-value { flex: 1; word-break: break-word; }
+        .details-images { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin: 10px 0; }
+        .details-images img { width: 100px; height: 100px; border-radius: 16px; object-fit: cover; cursor: pointer; border: 2px solid var(--border-color); transition: transform 0.2s; }
+        .details-images img:hover { transform: scale(1.05); }
         .chat-messages { height: 400px; overflow-y: auto; background: var(--bg-body); border-radius: 16px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .message { display: flex; margin: 4px 0; }
         .message.sent { justify-content: flex-end; }
@@ -148,7 +169,6 @@
         .chat-header-info { flex: 1; }
         .chat-header-name { font-weight: bold; }
         .error-message { color: #ff6b6b; background: rgba(255,0,0,0.1); padding: 10px; border-radius: 8px; margin: 10px 0; text-align: center; }
-        .index-link { color: var(--accent); text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -381,7 +401,7 @@
         if (pageId === 'support') { loadUserTickets(); loadSupportReplies(); }
     };
     
-    // ============ نظام حالة الاتصال (Online/Offline) باستخدام Realtime Database ============
+    // ============ نظام حالة الاتصال (Online/Offline) ============
     async function setupPresenceRealtime() {
         if (!currentUser) return;
         const userStatusRef = dbRef(rtdb, `status/${currentUser.uid}`);
@@ -463,25 +483,29 @@
         } catch(e) { container.innerHTML = '<div>خطأ في التحميل</div>'; console.error(e); }
     }
     
+    // تصميم تفاصيل الحساب الاحترافي (مثل الأول)
     async function showDetails(account) {
         const modal = document.createElement('div'); modal.className = 'modal';
         let imagesHtml = '';
         if (account.images && account.images.length) {
-            imagesHtml = `<div class="details-images" style="display:flex; gap:8px; overflow-x:auto; margin:10px 0;">${account.images.map(img => `<img src="${img}" style="width:80px; height:80px; border-radius:8px; cursor:pointer;" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
+            imagesHtml = `<div class="details-images">${account.images.map(img => `<img src="${img}" onclick="window.open('${img}','_blank')">`).join('')}</div>`;
         }
         modal.innerHTML = `<div class="modal-content details-modal">
-            <div class="details-header"><h2>${account.name}</h2><span class="details-platform"><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.platform}</span></div>
+            <div class="details-header">
+                <h2><i class="fab fa-${account.platform?.toLowerCase()}"></i> ${account.name}</h2>
+                <span class="details-platform">${account.platform}</span>
+            </div>
             <div class="details-stats">
                 <div class="stat-card"><i class="fas fa-users"></i><div class="stat-value">${account.followers?.toLocaleString()}</div><div class="stat-label">${t('followers')}</div></div>
                 <div class="stat-card"><i class="fas fa-money-bill-wave"></i><div class="stat-value">${account.price} ${account.currency}</div><div class="stat-label">${t('price')}</div></div>
                 <div class="stat-card"><i class="fas fa-eye"></i><div class="stat-value">${account.views || 0}</div><div class="stat-label">${t('views')}</div></div>
             </div>
-            <div class="details-info" style="background:var(--bg-body); border-radius:16px; padding:15px; margin:15px 0;">
-                <div class="info-row" style="display:flex; padding:8px 0;"><div class="info-label" style="width:80px; font-weight:bold; color:var(--accent);"><i class="fas fa-link"></i> ${t('link')}:</div><div class="info-value" style="flex:1;"><a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></div></div>
+            <div class="details-info">
+                <div class="info-row"><div class="info-label"><i class="fas fa-link"></i> ${t('link')}:</div><div class="info-value"><a href="${account.link}" target="_blank" style="color:var(--accent);">${account.link}</a></div></div>
                 ${account.description ? `<div class="info-row"><div class="info-label"><i class="fas fa-align-left"></i> ${t('description')}:</div><div class="info-value">${account.description}</div></div>` : ''}
             </div>
-            ${imagesHtml}
-            <button class="btn-primary" id="closeDetailsModal" style="width:100%; margin-top:15px;">${t('details')}</button>
+            ${imagesHtml ? `<div class="details-info"><div class="info-label"><i class="fas fa-images"></i> ${t('images')}:</div>${imagesHtml}</div>` : ''}
+            <button class="btn-primary" id="closeDetailsModal" style="width:100%; margin-top:20px;">${t('details')}</button>
         </div>`;
         document.body.appendChild(modal);
         modal.querySelector('#closeDetailsModal').onclick = () => modal.remove();
@@ -494,7 +518,7 @@
         showPage('profile');
     };
     
-    // ============ الملف الشخصي والمنشورات ============
+    // ============ الملف الشخصي والمنشورات - بدون فهرس ============
     async function refreshProfilePage() {
         if (!currentProfileUserId) return;
         await loadProfileData(currentProfileUserId);
@@ -506,7 +530,6 @@
         if (isOwnProfile) document.getElementById('avatarImg').onclick = () => changeAvatar();
         else document.getElementById('avatarImg').onclick = null;
         
-        // إضافة زر المراسلة في الملف الشخصي للمستخدمين الآخرين
         const chatBtnContainer = document.getElementById('profileChatButtonContainer');
         if (!isOwnProfile && currentUser) {
             chatBtnContainer.innerHTML = `<button class="btn-primary" id="profileChatBtn" style="padding:8px 20px;"><i class="fas fa-comment"></i> ${t('chat')}</button>`;
@@ -556,42 +579,22 @@
         });
     }
     
+    // تحميل منشورات المستخدم بدون الحاجة إلى فهرس (بدون orderBy في الاستعلام)
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
         container.innerHTML = '<div class="loader">جار التحميل...</div>';
         try {
-            // محاولة الاستعلام مع الترتيب (قد يتطلب فهرس)
+            // استعلام بدون orderBy لتجنب الحاجة إلى فهرس
+            const q = query(collection(db, 'accounts'), where('sellerId', '==', userId));
+            const querySnapshot = await getDocs(q);
             let accounts = [];
-            let error = null;
-            try {
-                const q = query(collection(db, 'accounts'), where('sellerId', '==', userId), orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
-            } catch (err) {
-                error = err;
-                console.warn("فهرس مفقود، سيتم التحميل بدون ترتيب:", err);
-                // إذا كان الفهرس مفقوداً، نستخدم استعلام بدون orderBy
-                const q = query(collection(db, 'accounts'), where('sellerId', '==', userId));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
-                // ترتيب من جانب العميل كحل مؤقت
-                accounts.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-            }
+            querySnapshot.forEach(docSnap => accounts.push({ id: docSnap.id, ...docSnap.data() }));
+            // ترتيب من جانب العميل (بما أن العدد قليل)
+            accounts.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
             
             if (accounts.length === 0) {
                 container.innerHTML = '<div class="card">لا توجد حسابات منشورة</div>';
                 return;
-            }
-            
-            // إذا كان هناك خطأ بسبب الفهرس، عرض رابط لإنشائه
-            if (error && error.message && error.message.includes('index')) {
-                const match = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/);
-                const indexUrl = match ? match[0] : '#';
-                container.innerHTML = `<div class="error-message">
-                    ⚠️ لتسريع عرض المنشورات، يرجى إنشاء الفهرس المطلوب من الرابط التالي:<br>
-                    <a href="${indexUrl}" target="_blank" class="index-link">اضغط هنا لإنشاء الفهرس</a><br>
-                    (تم تحميل المنشورات بدون ترتيب مؤقتاً)
-                </div>`;
             }
             
             const isOwner = (currentUser && currentUser.uid === userId);
@@ -608,12 +611,7 @@
                     </div>
                 </div>`;
             }
-            // إذا كان هناك رسالة خطأ بالفهرس، نضيف المنشورات بعدها
-            if (error && error.message && error.message.includes('index')) {
-                container.innerHTML = container.innerHTML + html;
-            } else {
-                container.innerHTML = html;
-            }
+            container.innerHTML = html;
             
             document.querySelectorAll('.details-btn').forEach(btn => { btn.onclick = () => showDetails(JSON.parse(btn.dataset.acc)); });
             if(isOwner) {
@@ -676,13 +674,11 @@
             const usersRef = collection(db, 'users');
             let results = [];
             const termNum = parseInt(searchTerm);
-            // البحث بالـ ID (10 أرقام تقريباً)
             if (!isNaN(termNum) && searchTerm.length >= 8 && searchTerm.length <= 12) {
                 const q = query(usersRef, where("userIdRandom", "==", termNum), limit(20));
                 const snap = await getDocs(q);
                 snap.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             } else {
-                // البحث بالاسم
                 const searchLower = searchTerm.toLowerCase();
                 const q = query(usersRef, orderBy("nameLowerCase"), startAt(searchLower), endAt(searchLower + '\uf8ff'), limit(20));
                 const snap = await getDocs(q);
@@ -707,7 +703,6 @@
                 </div>`;
             }
             resultsContainer.innerHTML = html;
-            // ربط الأزرار
             document.querySelectorAll('.search-result-item').forEach(el => {
                 const userId = el.dataset.userid;
                 const userName = el.dataset.username;
@@ -721,7 +716,6 @@
                     document.getElementById('searchModal').classList.remove('open');
                     window.viewOtherProfile(userId);
                 });
-                // الضغط على أي مكان آخر في العنصر يفتح الملف الشخصي أيضاً
                 el.addEventListener('click', (e) => {
                     if (!e.target.closest('button')) {
                         document.getElementById('searchModal').classList.remove('open');
@@ -732,7 +726,7 @@
         } catch(e) { console.error(e); resultsContainer.innerHTML = '<div class="search-result-item">حدث خطأ أثناء البحث</div>'; }
     }
     
-    // ============ نظام الدردشة (Optimistic UI + حالات) ============
+    // ============ نظام الدردشة ============
     function addLocalMessage(tempId, text, imageUrl = null, status = 'sending') {
         const messagesContainer = document.getElementById('chatMessages');
         const messageElement = document.createElement('div');
@@ -1036,7 +1030,6 @@
     document.getElementById('settingsIcon')?.addEventListener('click', () => showSettingsModal());
     document.getElementById('langSelectSide').addEventListener('change', (e) => { currentLang = e.target.value; localStorage.setItem('lang', currentLang); applyLanguage(); });
     
-    // إعدادات البحث
     const searchModalDiv = document.getElementById('searchModal');
     const searchInputModal = document.getElementById('searchInputModal');
     document.getElementById('searchBtn').onclick = () => { searchModalDiv.classList.toggle('open'); if(searchModalDiv.classList.contains('open')) searchInputModal.focus(); };
