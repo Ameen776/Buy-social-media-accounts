@@ -12,7 +12,6 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co/VcT4bzWQ/1776423732636a.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
         body {
             --bg-layer-1: radial-gradient(circle at 20% 30%, rgba(0, 180, 255, 0.08) 0%, transparent 40%);
             --bg-layer-2: radial-gradient(circle at 80% 70%, rgba(155, 89, 182, 0.06) 0%, transparent 50%);
@@ -25,7 +24,6 @@
             padding-bottom: 70px;
             min-height: 100vh;
         }
-        
         body.light {
             --bg-layer-5: linear-gradient(135deg, #f5f7fc 0%, #eef2f6 100%);
             --bg-layer-1: radial-gradient(circle at 20% 30%, rgba(0, 100, 200, 0.04) 0%, transparent 40%);
@@ -34,7 +32,6 @@
             --bg-layer-4: repeating-linear-gradient(90deg, rgba(0,100,200,0.02) 0px, rgba(0,100,200,0.02) 1px, transparent 1px, transparent 40px);
             color: #1a1e24;
         }
-        
         body.light .card, body.light .sidebar, body.light .modal-content,
         body.light .search-modal-content, body.light .message.received .message-bubble,
         body.light .auth-card, body.light .bottom-nav, body.light .header {
@@ -42,43 +39,34 @@
             border-color: rgba(0, 0, 0, 0.08);
             color: #1a1e24;
         }
-        
         .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(18, 25, 35, 0.85); position: sticky; top: 0; z-index: 99; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
         .profile-icon, .search-btn, .menu-btn { background: none; border: none; color: inherit; font-size: 24px; cursor: pointer; transition: transform 0.2s; }
-        .profile-icon:hover, .search-btn:hover, .menu-btn:hover { transform: scale(1.05); }
         .logo { font-size: 1.3rem; font-weight: bold; background: linear-gradient(45deg, #9b59b6, #00d4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        
         .sidebar { position: fixed; top: 0; right: 0; width: 280px; height: 100%; background: rgba(18, 25, 35, 0.96); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; z-index: 1000; border-left: 1px solid rgba(255,255,255,0.08); overflow-y: auto; will-change: transform; }
         .sidebar.open { transform: translateX(0); }
         .sidebar button { display: block; width: 100%; text-align: right; padding: 14px 12px; margin: 4px 0; background: none; border: none; color: inherit; font-size: 15px; cursor: pointer; border-radius: 12px; transition: background 0.2s; }
         .sidebar button:hover { background: rgba(255,255,255,0.1); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: 0.2s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
-        
         .card { background: rgba(22, 30, 42, 0.85); padding: 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.06); transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,212,255,0.1); }
         .accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .my-accounts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-        
         .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); border: none; padding: 10px 20px; border-radius: 30px; color: #111; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
         .btn-primary:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,212,255,0.3); }
         .btn-outline { background: transparent; border: 1px solid #00d4ff; color: #00d4ff; padding: 8px 16px; border-radius: 30px; cursor: pointer; transition: all 0.2s; }
         .btn-outline:hover { background: rgba(0,212,255,0.1); transform: scale(1.02); }
         .btn-danger { background: linear-gradient(135deg, #ff4444, #cc0000); border: none; padding: 6px 12px; border-radius: 25px; color: #fff; cursor: pointer; }
         .btn-follow-green { background: #2ecc71; border: none; padding: 8px 20px; border-radius: 30px; color: #fff; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .btn-follow-green:hover { transform: scale(1.02); }
         .btn-follow-green.unfollow { background: #555; }
-        
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(18,25,35,0.9); display: flex; justify-content: space-around; padding: 10px; z-index: 100; border-top: 1px solid rgba(255,255,255,0.06); }
         .bottom-nav button { background: none; border: none; color: #888; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; transition: color 0.2s; }
         .bottom-nav button:hover { color: #00d4ff; }
         .bottom-nav button.active { color: #00d4ff; }
         .notification-badge { position: absolute; top: -3px; right: -8px; background: #ff4444; color: #fff; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-        
         .page { display: none; padding: 15px; }
         .active-page { display: block; }
-        
         .chat-messages { height: 380px; overflow-y: auto; background: rgba(0,0,0,0.15); border-radius: 24px; padding: 15px; display: flex; flex-direction: column; }
         .message { margin: 8px 0; display: flex; }
         .message.sent { justify-content: flex-end; }
@@ -86,38 +74,29 @@
         .message-bubble { max-width: 75%; padding: 12px 16px; border-radius: 24px; word-break: break-word; }
         .message.sent .message-bubble { background: linear-gradient(135deg, #9b59b6, #7d3c98); color: white; border-bottom-right-radius: 8px; }
         .message.received .message-bubble { background: rgba(22,30,42,0.9); border: 1px solid rgba(255,255,255,0.1); border-bottom-left-radius: 8px; }
-        
         .online-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; display: inline-block; margin-left: 5px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 16px; background: rgba(0,0,0,0.2); color: inherit; border: 1px solid rgba(255,255,255,0.1); transition: border 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #00d4ff; }
-        
         .price-wrapper { display: flex; align-items: center; gap: 8px; }
         .price-wrapper input { flex: 1; margin: 0; }
         .price-wrapper select { width: 110px; margin: 0; background: rgba(0,0,0,0.3); font-size: 14px; padding: 12px; border-radius: 16px; }
-        
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: rgba(22,30,42,0.95); padding: 25px; border-radius: 32px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        
         .profile-avatar { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px; display: block; border: 3px solid #00d4ff; object-fit: cover; transition: transform 0.2s; }
         .profile-avatar:hover { transform: scale(1.05); }
-        
         .search-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .search-modal-content { background: rgba(22,30,42,0.95); border-radius: 28px; width: 100%; max-width: 500px; border: 1px solid rgba(255,255,255,0.1); }
-        
         .splash-screen { position: fixed; inset: 0; background: #0a0e15; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; animation: fadeOut 0.8s ease forwards; animation-delay: 1.5s; }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
         .splash-logo { font-size: 60px; font-weight: 800; background: linear-gradient(45deg, #9b59b6, #00d4ff, #2ecc71); -webkit-background-clip: text; background-clip: text; color: transparent; animation: floatLogo 2s ease-in-out infinite; }
         @keyframes floatLogo { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        
         .about-container { text-align: center; padding: 30px 20px; }
         .about-card-3d { background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); backdrop-filter: blur(10px); border-radius: 60px; padding: 40px 30px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(0,212,255,0.2); animation: glowPulse 3s ease-in-out infinite; }
         @keyframes glowPulse { 0%,100% { box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(0,212,255,0.2); } 50% { box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(0,212,255,0.5); } }
         .about-shield-3d { font-size: 4rem; margin-bottom: 20px; animation: rotate3d 4s ease-in-out infinite; }
         @keyframes rotate3d { 0%,100% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } }
         .developer-name { background: linear-gradient(45deg, #00d4ff, #9b59b6); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.5rem; font-weight: bold; }
-        
         .details-modal { max-width: 550px; }
         .details-header { text-align: center; margin-bottom: 20px; }
         .details-header h2 { font-size: 1.8rem; background: linear-gradient(45deg, #00d4ff, #9b59b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -131,7 +110,6 @@
         .info-row { display: flex; margin: 10px 0; flex-wrap: wrap; }
         .info-label { width: 100px; font-weight: bold; color: #00d4ff; }
         .info-value { flex: 1; word-break: break-word; }
-        
         .conversation-item { padding: 15px; border-radius: 24px; cursor: pointer; display: flex; align-items: center; gap: 15px; background: rgba(22,30,42,0.85); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px; transition: all 0.2s; }
         .conversation-item:hover { background: rgba(0,212,255,0.1); transform: translateX(-5px); }
         .conversation-avatar { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(135deg, #00d4ff, #9b59b6); }
@@ -140,7 +118,6 @@
         .profile-thumb:hover { transform: scale(1.05); }
         .settings-icon.hidden { display: none; }
         .message-image { max-width: 200px; border-radius: 16px; margin-top: 8px; cursor: pointer; }
-        
         .auth-container { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 10001; }
         .auth-card { background: rgba(22,30,42,0.95); border-radius: 40px; padding: 30px; width: 90%; max-width: 380px; border: 1px solid rgba(255,255,255,0.1); }
         .password-wrapper { position: relative; }
@@ -149,9 +126,8 @@
         .forgot-password { text-align: left; cursor: pointer; color: #00d4ff; margin: 10px 0; font-size: 0.9rem; }
         .reply-item { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 12px; margin: 8px 0; }
         .reply-admin { background: rgba(0,212,255,0.1); border-right: 3px solid #00d4ff; }
-        .loader { text-align: center; padding: 40px; color: #00d4ff; }
-        .loader::after { content: ''; display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(0,212,255,0.3); border-radius: 50%; border-top-color: #00d4ff; animation: spin 1s ease-in-out infinite; margin-right: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .search-result-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: background 0.2s; }
+        .search-result-item:hover { background: rgba(0,212,255,0.1); }
     </style>
 </head>
 <body>
@@ -212,7 +188,7 @@
                 <option>Snapchat</option><option>Twitter</option><option>Facebook</option>
             </select>
         </div>
-        <div id="accountsList" class="accounts-grid">جار التحميل...</div>
+        <div id="accountsList" class="accounts-grid"></div>
     </div>
     
     <div id="profilePage" class="page">
@@ -234,7 +210,7 @@
         </div>
         <div style="margin-top:20px;">
             <h3 data-i18n="posts">المنشورات</h3>
-            <div id="userAccountsList" class="my-accounts-grid">جار التحميل...</div>
+            <div id="userAccountsList" class="my-accounts-grid"></div>
         </div>
     </div>
     
@@ -323,7 +299,7 @@
     
     setPersistence(auth, browserLocalPersistence);
     
-    // Telegram Bot (مختصر)
+    // Telegram Bot
     const TELEGRAM_BOT_TOKEN = "8754475928:AAGUwrtO96nDjZH6xxFAig1CuM3d1e5k14A";
     const ADMIN_CHAT_ID = "8562687782";
     
@@ -432,6 +408,7 @@
     let globalMessageListener = null;
     let onlineStatusUnsubscribe = null;
     let onlineInterval = null;
+    let accountsUnsubscribe = null;
     let notificationSound = new Audio('https://files.catbox.moe/ow1xx4.wav');
     let audioEnabled = false;
     function playSound() { if (audioEnabled) { try { notificationSound.currentTime = 0; notificationSound.play().catch(e=>{}); } catch(e){} } }
@@ -502,7 +479,7 @@
     
     async function loadUserAccounts(userId) {
         const container = document.getElementById('userAccountsList');
-        container.innerHTML = '<div class="loader">جار التحميل...</div>';
+        container.innerHTML = '';
         try {
             const q = query(collection(db, 'accounts'), where("sellerId", "==", userId));
             const querySnapshot = await getDocs(q);
@@ -555,12 +532,10 @@
         modal.querySelector('#cancelEdit').onclick = () => modal.remove();
     }
     
-    // ============ تحميل الحسابات - مباشر باستخدام onSnapshot ============
-    let accountsUnsubscribe = null;
-    
+    // تحميل الحسابات - مباشر باستخدام onSnapshot
     function loadAccounts() {
         const container = document.getElementById('accountsList');
-        container.innerHTML = '<div class="loader">جار التحميل...</div>';
+        container.innerHTML = '';
         
         if (accountsUnsubscribe) accountsUnsubscribe();
         
@@ -591,7 +566,6 @@
                 return;
             }
             
-            // جلب بيانات المستخدمين بشكل متوازي
             const userIds = [...new Set(filtered.map(a => a.sellerId))];
             const userPromises = userIds.map(uid => getDoc(doc(db, 'users', uid)));
             const userDocs = await Promise.all(userPromises);
@@ -618,7 +592,7 @@
     
     window.viewOtherProfile = function(userId) { currentProfileUserId = userId; refreshProfilePage(); showPage('profile'); };
     
-    // ============ الدردشة المحسنة بالكامل ============
+    // الدردشة المحسنة
     function setupGlobalMessageListener() {
         if (globalMessageListener) globalMessageListener();
         if (!currentUser) return;
@@ -627,9 +601,8 @@
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
                     const msg = change.doc.data();
-                    if (msg.receiverId === currentUser.uid && msg.senderId !== currentUser.uid) {
+                    if (msg.receiverId === currentUser.uid && msg.senderId !== currentUser.uid && currentChatUserId !== msg.senderId) {
                         playSound();
-                        // تحديث قائمة المحادثات فوراً
                         if (currentPage === 'messages') loadConversations();
                     }
                 }
@@ -695,7 +668,6 @@
             else statusEl.innerHTML = `<span class="offline-text">آخر ظهور ${formatLastSeen(lastSeen)}</span>`;
         });
         
-        // تحديث حالة القراءة
         const unreadQuery = query(collection(db, "messages"), where("senderId", "==", otherUserId), where("receiverId", "==", currentUser.uid), where("read", "==", false));
         const unreadSnap = await getDocs(unreadQuery);
         for (const msg of unreadSnap.docs) await updateDoc(doc(db, "messages", msg.id), { read: true });
@@ -768,14 +740,14 @@
         messageInput.onkeypress = (e) => { if(e.key === 'Enter') newSendBtn.click(); };
     };
     
-    // ============ قائمة المحادثات - على قيد الحياة ============
+    // قائمة المحادثات
     let conversationsUnsubscribeSent = null;
     let conversationsUnsubscribeReceived = null;
     
     async function loadConversations() {
         if (!currentUser) return;
         const container = document.getElementById('convList');
-        container.innerHTML = '<div class="loader">جار التحميل...</div>';
+        container.innerHTML = '';
         
         if (conversationsUnsubscribeSent) conversationsUnsubscribeSent();
         if (conversationsUnsubscribeReceived) conversationsUnsubscribeReceived();
@@ -848,7 +820,7 @@
         updateUnreadBadge();
     }
     
-    // ============ البحث المتقدم ============
+    // البحث المتقدم
     const searchModal = document.getElementById('searchModal');
     const searchBtn = document.getElementById('searchBtn');
     const closeSearchBtn = document.getElementById('closeSearchModal');
@@ -868,7 +840,7 @@
             let results = [];
             const termNum = parseInt(term);
             if (!isNaN(termNum) && term.length >= 8 && term.length <= 12) {
-                const q = query(usersRef, where("userIdRandom", "==", termNum), limit(10));
+                const q = query(usersRef, where("userIdRandom", "==", termNum), limit(20));
                 const snapshot = await getDocs(q);
                 snapshot.forEach(doc => { if (doc.id !== currentUser?.uid) results.push({ id: doc.id, ...doc.data() }); });
             } else {
@@ -915,7 +887,7 @@
         const updatePreview = () => { previewDiv.innerHTML = ''; imageFiles.slice(0,3).forEach((file, idx) => { const wrapper = document.createElement('div'); wrapper.style.position = 'relative'; const img = document.createElement('img'); img.src = URL.createObjectURL(file); img.style.width = '60px'; img.style.height = '60px'; img.style.borderRadius = '8px'; img.style.objectFit = 'cover'; const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✖'; removeBtn.style.position = 'absolute'; removeBtn.style.top = '-8px'; removeBtn.style.right = '-8px'; removeBtn.style.background = 'red'; removeBtn.style.borderRadius = '50%'; removeBtn.style.width = '18px'; removeBtn.style.cursor = 'pointer'; removeBtn.onclick = () => { imageFiles.splice(idx,1); updatePreview(); }; wrapper.appendChild(img); wrapper.appendChild(removeBtn); previewDiv.appendChild(wrapper); }); };
         imagesInput.addEventListener('change', (e) => { const files = Array.from(e.target.files); files.forEach(file => { if (imageFiles.length < 3) imageFiles.push(file); else alert("الحد الأقصى 3 صور"); }); updatePreview(); imagesInput.value = ''; });
         const form = modal.querySelector('#addForm');
-        form.addEventListener('submit', async (e) => { e.preventDefault(); if(!currentUser) return alert("تسجيل الدخول مطلوب"); const submitBtn = form.querySelector('button[type="submit"]'); submitBtn.disabled = true; submitBtn.textContent = "جاري النشر..."; try { const imageUrls = []; for (let i=0; i<imageFiles.length; i++) { const url = await uploadToImgBB(imageFiles[i]); imageUrls.push(url); } await addDoc(collection(db, 'accounts'), { name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value, platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value), price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value, description: modal.querySelector('#addDesc').value, images: imageUrls, sellerId: currentUser.uid, views: 0, createdAt: Date.now() }); alert("تم النشر بنجاح"); modal.remove(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid); } catch(err) { alert("خطأ: "+err.message); } finally { submitBtn.disabled = false; submitBtn.textContent = t('publish'); } });
+        form.addEventListener('submit', async (e) => { e.preventDefault(); if(!currentUser) return alert("تسجيل الدخول مطلوب"); const submitBtn = form.querySelector('button[type="submit"]'); submitBtn.disabled = true; submitBtn.textContent = "جاري النشر..."; try { const imageUrls = []; for (let i=0; i<imageFiles.length; i++) { const url = await uploadToImgBB(imageFiles[i]); imageUrls.push(url); } await addDoc(collection(db, 'accounts'), { name: modal.querySelector('#addName').value, link: modal.querySelector('#addLink').value, platform: modal.querySelector('#addPlatform').value, followers: parseInt(modal.querySelector('#addFollowers').value), price: parseFloat(modal.querySelector('#addPrice').value), currency: modal.querySelector('#addCurrency').value, description: modal.querySelector('#addDesc').value, images: imageUrls, sellerId: currentUser.uid, views: 0, createdAt: Date.now() }); alert("تم النشر بنجاح"); modal.remove(); loadAccounts(); if(currentProfileUserId === currentUser.uid) loadUserAccounts(currentUser.uid); } catch(err) { alert("خطأ: "+err.message); } finally { submitBtn.disabled = false; submitBtn.textContent = t('publish'); } });
         modal.querySelector('#cancelAdd').onclick = () => modal.remove();
     };
     
@@ -957,7 +929,7 @@
             currentProfileUserId = user.uid;
             await setupPresenceRealtime();
             await refreshProfilePage();
-            loadAccounts(); // تحميل فوري باستخدام onSnapshot
+            loadAccounts();
             showPage('home');
             applyLanguage();
             setupGlobalMessageListener();
